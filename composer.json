@@ -1,7 +1,6 @@
 {
     "name": "mkny/cinimod",
     "description": "A complex generator",
-    "type": "package",
     "authors": [
     {
         "name": "Marcony Neves",
@@ -12,9 +11,9 @@
         "php": ">=5.4.0"
         },
         "autoload": {
-            "files": [
-            "src/helpers.php"
-            ]
+            "psr-4": {
+                "Mkny\\": "src/"
+            }
         }
 
     }
