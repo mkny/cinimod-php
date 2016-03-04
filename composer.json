@@ -10,12 +10,12 @@
     "require": {
         "php": ">=5.4.0"
         },
-        "autoload": {
-            "psr-4": {
-                "Mkny\\": "src/"
-            }
+    "autoload": {
+        "psr-4": {
+            "Mkny\\": "src"
         }
-
     }
+}
+
 
 
