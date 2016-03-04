@@ -11,6 +11,9 @@
         "php": ">=5.4.0"
         },
     "autoload": {
+        "files" : [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "Mkny\\": "src"
         }
