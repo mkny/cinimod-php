@@ -1,0 +1,11 @@
+<?php 
+
+	/**
+	 * Campo para relacionamento com {{relation_class_name}} > {{relation_field_id}}
+	 * Usar o campo {{relation_field_name}}
+	 * 
+	 * @return Eloquent\Model
+	 */
+	public function {{relation_field_id}}(){
+		return $this->belongsTo('\Mkny\App\Models\{{relation_class_name}}', '{{relation_field_id}}');
+	}

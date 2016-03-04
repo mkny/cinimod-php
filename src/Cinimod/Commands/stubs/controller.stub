@@ -1,0 +1,96 @@
+<?php
+
+namespace Mkny\DummyNamespace;
+
+// Eloquent-Model
+use Mkny\App\Models;
+// Main CRUDController
+use Mkny\Cinimod\Controllers\CRUDController;
+// Request
+use Mkny\App\Requests\DummyClassRequest;
+
+
+// Route::controller('routeToDummyClassController', 'DummyClassController');
+class DummyClassController extends CRUDController  {
+	/**
+	 * Nome do controlador
+	 * @var string
+	 */
+	protected $controllerName = 'DummyClass';
+
+	protected $reports = [];
+
+	/**
+	 * Construtor da classe
+	 * @param Models\DummyClass $m Model para operações com o DB
+	 */
+	public function __construct(Models\DummyClass $m)
+	{
+		parent::__construct();
+		$this->model = $m;
+	}
+
+	/**
+	 * Retorna o nome deste controller para o CRUD
+	 * @return string Nome da classe controlador
+	 */
+	protected function _getController(){
+		return class_basename($this);
+	}
+
+	/**
+	 * Retorna o nome deste controller original
+	 * @return string Nome do controlador
+	 */
+	protected function _getControllerName()
+	{
+		return $this->controllerName;
+	}
+
+	/**
+	 * Ação principal do controlador
+	 * @return view index
+	 */
+	public function getIndex(){
+		return $this->index();
+	}
+
+	/**
+	 * Ação para edit-mode
+	 * @param  integer $id Id do objeto de edição
+	 * @return view     Form para edição
+	 */
+	public function getEdit($id){
+		return $this->edit($id);
+	}
+
+	// Default
+	public function postEdit(DummyClassRequest $r, $id){
+		return $this->update($r,$id);
+	}
+
+	// Default
+	public function getAdd(){
+		return $this->create();
+	}
+
+	// Default
+	public function postAdd(DummyClassRequest $r){
+		return $this->store($r);
+	}
+
+	// Default
+	public function getDelete($id){
+		return $this->destroy($id);
+	}
+
+	// Default
+	public function getShow($id){
+		return $this->show($id);
+	}
+
+	// Default
+	public function getSwitchStatus($id){
+		return $this->statusChange($id);
+	}
+}

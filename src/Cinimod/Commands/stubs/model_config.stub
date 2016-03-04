@@ -1,0 +1,21 @@
+<?php
+
+	// {{var_name}}
+	'{{var_name}}' => array(
+	'name' => '{{var_name}}', // Nome do campo
+	// 'type_laravel' => '{{var_type}}', // Fieldtype na configuracao
+	'type' => '{{var_type_laravel}}', // Fieldtype no Laravel
+
+	// Enable/disable field Form/Grid
+	'form' => {{go_to_form}}, // Boolean Exibe no form (pode ser que de problema, caso esteja presente no FormRequest!)
+	'grid' => {{go_to_grid}}, // Boolean Exibe na grid
+
+	// Form-specific
+	'required' => {{is_required}}, // Boolean para exibir campo pre-requerido
+	// 'default_value' => '', // Valor default pro input
+	'values' => {{var_values}}, // Caso o campo seja select e tenha valores pre-definidos
+	'relationship' => {{var_relationship}}
+	// 'tooltip' => false, // Exibe tooltip (not working)
+	// 'editor' => false, // Exibe editor (nw)
+	// 'calendar' => false, // Exibe calendario (nw)
+	),

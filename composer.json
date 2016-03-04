@@ -1,0 +1,22 @@
+{
+    "name": "mkny/cinimod",
+    "description": "A complex generator",
+    "type": "package",
+    "authors": [
+    {
+        "name": "Marcony Neves",
+        "email": "desenvolvedor@me.com"
+    }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+        },
+        "autoload": {
+            "files": [
+            "src/helpers.php"
+            ]
+        }
+
+    }
+
+

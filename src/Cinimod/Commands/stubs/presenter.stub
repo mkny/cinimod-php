@@ -1,0 +1,9 @@
+<?php
+
+namespace Mkny\DummyNamespace;
+
+use Mkny\Cinimod\Presenter\BaseMknyPresenter;
+
+class DummyClass extends BaseMknyPresenter {
+	
+}

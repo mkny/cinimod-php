@@ -1,0 +1,77 @@
+<?php
+
+namespace Mkny\DummyNamespace;
+
+use Mkny\Cinimod\Models\BaseMknyModel;
+
+use Laracasts\Presenter\PresentableTrait;
+
+class DummyClass extends BaseMknyModel  {
+
+
+    /**
+     * Implementação das view-presenters.
+     * Laracasts/Presenter
+     */
+    use PresentableTrait;
+
+    protected $presenter = '\Mkny\App\Presenters\DummyClassPresenter';
+    
+    /**
+     * Nome da tabela, utilizada pelo Model
+     *
+     * @var string
+     */
+    protected $table = '{{table}}';
+
+    /**
+     * Variavel que guarda o schema. Muito util. Falta no Laravel!
+     * 
+     * @var string
+     */
+    // protected $schema = '{{schema}}';
+
+    /**
+     * Atributos que poderão passar pelo mass-assign; (laravel)
+     *
+     * @var array
+     */
+    protected $fillable = [{{fillable}}];
+
+    /**
+     * Define se o Model irá trabalhar com timestamps; (laravel)
+     *
+     * @var bool
+     */
+    public $timestamps = {{timestamps}};
+
+
+    /**
+     * Nome do atributo primário;
+     * 
+     * @var string
+     */
+    public $primaryKey = '{{primaryKey}}';
+
+    /**
+     * Nome da conexão, estratégia para fugir do bug de schema do PG
+     * 
+     * @var string
+     */
+    public $connection = '{{connectionName}}';
+
+    // Custom vars
+    
+    // Custom vars end
+    
+
+
+    // Relation functions
+    {{model_function_relation}}
+    // Relation functions end
+
+    // Custom functions
+
+    // Custom functions end
+
+}
