@@ -6,7 +6,7 @@
 	<ul>
 		@foreach ($configs as $config)
 		<li>
-			<a href="{{route('adm::gen::cfg', [$config])}}">{{$config}}</a>
+			<a href="{{route('adm::config', [$config])}}">{{$config}}</a>
 		</li>
 		@endforeach
 	</ul>
