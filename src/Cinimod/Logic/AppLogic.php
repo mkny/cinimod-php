@@ -97,7 +97,7 @@ class AppLogic extends MknyLogic {
 		WHERE
 		TABLE_TYPE = 'BASE TABLE'
 		AND TABLE_SCHEMA = '{{schema}}'
-		ORDER BY TABLE_NAME ";
+		";
 		$sql = substr($this->unifySchema($sql),0,-1). " ORDER BY \"schema\", \"name\"";
 		// echo '<pre>';
 		// print_r($sql);
