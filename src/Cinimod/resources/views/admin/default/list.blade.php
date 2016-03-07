@@ -12,9 +12,9 @@
 	@endif
 
 	<div>
-		<a title="{{ trans('cinimod::'.$data['controller'].'.button_new') }}" href="{{-- action($data['controller'].'Controller@getAdd') --}}">
+		<a title="{{ trans($data['controller'].'.button_new') }}" href="{{action($data['controller'].'Controller@getAdd')}}">
 			<button type="button" class="btn btn-primary">
-				<span class="glyphicon glyphicon-file"></span> {{trans('cinimod::'.$data['controller'].'.button_new')}}
+				<span class="glyphicon glyphicon-file"></span> {{trans($data['controller'].'.button_new')}}
 			</button>
 
 		</a>
@@ -34,8 +34,8 @@
 					<?php $i=0; ?>
 					@foreach($data['fields'] as $gridColumnHeader => $field_config)
 					<th>
-						<a href="?order={{ $i++ }}&card={{ $data['card'] }}">{{ trans('cinimod::'.$data['controller'].'.'.$gridColumnHeader.'_grid') }}</a>
-						<!-- <span>{{ trans('cinimod::'.$data['controller'].'.'.$gridColumnHeader.'_grid') }}</span> -->
+						<a href="?order={{ $i++ }}&card={{ $data['card'] }}">{{ trans($data['controller'].'.'.$gridColumnHeader.'_grid') }}</a>
+						<!-- <span>{{ trans($data['controller'].'.'.$gridColumnHeader.'_grid') }}</span> -->
 					</th>
 					@endforeach
 					<!-- Ações title -->
@@ -69,11 +69,11 @@
 						@endforeach
 						<!-- Coluna de ações -->
 						<td class="col-md-2">
-							<a title="{{ trans('cinimod::'.$data['controller'].'.button_edit') }}" role="button" href="{{-- action($data['controller'].'Controller@getEdit', ['id' => $id]) --}}" class="glyphicon glyphicon-edit btn btn-success"></a>
+							<a title="{{ trans($data['controller'].'.button_edit') }}" role="button" href="{{action($data['controller'].'Controller@getEdit', ['id' => $id])}}" class="glyphicon glyphicon-edit btn btn-success"></a>
 							@if (isset($gridLine['ind_status']))
-							<a title="{{ trans('cinimod::'.$data['controller'].'.button_status_'.($gridLine['ind_status'] == 'A'?'disable':'enable')) }}" role="button" href="{{-- action($data['controller'].'Controller@getSwitchStatus', ['id' => $id]) --}}" class="glyphicon glyphicon-{{ $gridLine['ind_status'] == 'A' ? 'ban-circle':'ok' }} btn btn-{{ $gridLine['ind_status'] == 'A' ? 'warning':'info' }}"></a>
+							<a title="{{ trans($data['controller'].'.button_status_'.($gridLine['ind_status'] == 'A'?'disable':'enable')) }}" role="button" href="{{action($data['controller'].'Controller@getSwitchStatus', ['id' => $id])}}" class="glyphicon glyphicon-{{ $gridLine['ind_status'] == 'A' ? 'ban-circle':'ok' }} btn btn-{{ $gridLine['ind_status'] == 'A' ? 'warning':'info' }}"></a>
 							@endif
-							<a title="{{ trans('cinimod::'.$data['controller'].'.button_delete') }}" role="button" href="{{-- action($data['controller'].'Controller@getDelete', ['id' => $id]) --}}" class="glyphicon glyphicon-trash btn btn-danger"></a>
+							<a title="{{ trans($data['controller'].'.button_delete') }}" role="button" href="{{action($data['controller'].'Controller@getDelete', ['id' => $id])}}" class="glyphicon glyphicon-trash btn btn-danger"></a>
 						</td>
 					</tr>
 					<?php } ?>
@@ -85,7 +85,7 @@
 						</th>
 						@foreach($data['fields'] as $gridColumnHeader => $field_config)
 						<th>
-							<span>{{ trans('cinimod::'.$data['controller'].'.'.$gridColumnHeader.'_grid') }}</span>
+							<span>{{ trans($data['controller'].'.'.$gridColumnHeader.'_grid') }}</span>
 						</th>
 						@endforeach
 						<!-- Ações title -->
