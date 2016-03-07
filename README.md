@@ -3,7 +3,7 @@ Installation
 
 ## Laravel
 
-Run `composer require artisaninweb/laravel-soap:dev-master` to add the project to your composer.json
+Run `composer require mkny/cinimod:dev-master` to add the project to your composer.json
 
 or add manually
 
