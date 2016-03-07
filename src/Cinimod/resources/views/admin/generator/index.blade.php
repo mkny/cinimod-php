@@ -1,4 +1,4 @@
-@extends('layout.admin')
+@extends('cinimod.layout.admin')
 
 
 

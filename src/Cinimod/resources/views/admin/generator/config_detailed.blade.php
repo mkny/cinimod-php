@@ -1,4 +1,4 @@
-@extends('layout.admin')
+@extends('cinimod.layout.admin')
 
 @section('conteudo')
 <h1 class="jumbotron">Model-Generator / Configurator - ({{ $controller or 'Default' }})</h1>
