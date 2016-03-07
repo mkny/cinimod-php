@@ -23,9 +23,19 @@ class CinimodServiceProvider extends ServiceProvider
 		$this->artisanize();
 		$this->routerize($router);
 
-		$this->loadTranslationsFrom(mkny_app_path().'/resources/lang', 'cinimod');
+    	// $this->loadViewsFrom(mkny_path().'/Cinimod/resources/views', 'cinimod');
+		$this->publishes([
+			mkny_path().'/Cinimod/resources/views' => resource_path('views/cinimod'),
+			mkny_path().'/Cinimod/resources/lang' => resource_path('lang'),
+			mkny_path().'/Cinimod/resources/assets' => resource_path('assets/cinimod')
+			]);
+		// __DIR__.'/path/to/config/courier.php' => config_path('courier.php'),
+
+		// $this->loadTranslationsFrom(mkny_app_path().'/resources/lang', 'cinimod');
 
 		// AliasLoader::getInstance()->alias('FormField', 'Way\Form\FormField');
+		// $loader = \Illuminate\Foundation\AliasLoader::getInstance();
+  //     	$loader->alias('Tools', 'Pulpitum\Core\Models\Tools');
 	}
 	
 	public function register() {
@@ -63,7 +73,7 @@ class CinimodServiceProvider extends ServiceProvider
 				$router->controller('g', 'GeneratorController', [
 					'getIndex' => 'gen::index',
 					'getDeleter' => 'gen::del',
-					'getConfig' => 'gen::cfg'
+					'getConfig' => 'config'
 					]);
 				$router->controller('dashboard', 'DashboardController');
 				$router->controller('rel', 'ReportController');

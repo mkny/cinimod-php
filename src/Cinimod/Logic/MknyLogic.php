@@ -10,6 +10,6 @@ class MknyLogic
 	
 	function __construct()
 	{
-		UtilLogic::addViewVar('scripts', ['/js/app.js']);
+		UtilLogic::addViewVar('scripts', ['/js/cinimod.js']);
 	}
 }

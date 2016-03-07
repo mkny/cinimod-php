@@ -3,7 +3,6 @@
 namespace Mkny\Cinimod\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
 
 use Mkny\Cinimod\Logic;
 
@@ -16,7 +15,7 @@ class MknyModel extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'mkny:model {modelo} {--table=}';
+    protected $signature = 'mkny:model {modelo} {table}';
 
     /**
      * The console command description.
@@ -107,16 +106,7 @@ class MknyModel extends GeneratorCommand
      */
     protected function setClassVariables()
     {
-        $tb = $this->getNameInput();
-
-        // ???
-        if(strstr($tb,'/') !== false){
-            $tbx = explode('/',$this->getNameInput());
-            $tb = $tbx[1];
-        }
-
-        // Plurazica, caso nao exista a tabela
-        $table = $this->option('table')? : str_plural(strtolower($tb));
+        $table = $this->argument('table');
 
         // Setta a tabela
         $this->setTranslation('table', $table);
@@ -222,20 +212,6 @@ class MknyModel extends GeneratorCommand
         return $this->basepath.ucfirst(strtolower($this->argument('modelo')));
     }
 
-
-     /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-     protected function getOptions()
-     {
-        return [
-        ['--table', null, InputOption::VALUE_OPTIONAL, 'The table name.', null],
-        ['fillable', null, InputOption::VALUE_NONE, 'The fillable columns.', null]
-        ];
-    }
-
     /**
      * Get the destination class path.
      *
@@ -246,7 +222,7 @@ class MknyModel extends GeneratorCommand
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);//.$this->type;
         
-        return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
+        // return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
         return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 }

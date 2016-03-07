@@ -1,13 +1,14 @@
 <?php
 
-namespace Mkny\DummyNamespace;
+namespace DummyNamespace;
 
 // Eloquent-Model
-use Mkny\App\Models;
+use App\Models;
+// Request
+use App\Requests\DummyClassRequest;
+
 // Main CRUDController
 use Mkny\Cinimod\Controllers\CRUDController;
-// Request
-use Mkny\App\Requests\DummyClassRequest;
 
 
 // Route::controller('routeToDummyClassController', 'DummyClassController');

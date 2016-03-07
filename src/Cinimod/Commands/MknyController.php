@@ -36,8 +36,8 @@ class MknyController extends GeneratorCommand
      * O basepath para o arquivo
      * @var string
      */
-    protected $basepath = 'Controllers/';
-    // protected $basepath = 'Http/Controllers/';
+    // protected $basepath = 'Controllers/';
+    protected $basepath = 'Http/Controllers/';
 
     /**
      * Get the stub file for the generator.
@@ -70,7 +70,7 @@ class MknyController extends GeneratorCommand
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name).$this->type;
         
-        return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
+        // return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
         return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 }

@@ -186,7 +186,7 @@ class MknyModelconfig extends GeneratorCommand
                 // variabilizar o relationship
                 $arrConfig['var_relationship'] = 
                 "\n\t[\n\t\t".
-                "'model' => '\App\Mkny\Models\\".$this->var_config_relations[$row->name]['relation_class_name']."',\n\t\t".
+                "'model' => '\App\Models\\".$this->var_config_relations[$row->name]['relation_class_name']."',\n\t\t".
                     // "'model' => '\App\Models\{$this->var_config_relations[$row->name]['relation_class_name']}',\n\t\t".
                 "'field_key' => '{$this->var_config_relations[$row->name]['relation_field_id']}',\n\t\t".
                 "'field_fkey' => '{$this->var_config_relations[$row->name]['relation_field_fkey']}',\n\t\t".
@@ -225,7 +225,7 @@ class MknyModelconfig extends GeneratorCommand
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
 
-        return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';        
+        // return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';        
         return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 }

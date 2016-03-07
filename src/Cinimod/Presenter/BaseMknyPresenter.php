@@ -43,8 +43,4 @@ class BaseMknyPresenter extends Presenter {
 		}
 		return date('d/m/Y H:i', strtotime($this->entity->dta_atualizacao));
 	}
-
-	public function ind_status(){
-		return $this->array_parser(trans('cinimod::default.ind_status'), $this->entity->ind_status);
-	}
 }

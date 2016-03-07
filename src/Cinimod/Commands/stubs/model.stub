@@ -1,6 +1,6 @@
 <?php
 
-namespace Mkny\DummyNamespace;
+namespace DummyNamespace;
 
 use Mkny\Cinimod\Models\BaseMknyModel;
 
@@ -15,7 +15,7 @@ class DummyClass extends BaseMknyModel  {
      */
     use PresentableTrait;
 
-    protected $presenter = '\Mkny\App\Presenters\DummyClassPresenter';
+    protected $presenter = '\App\Presenters\DummyClassPresenter';
     
     /**
      * Nome da tabela, utilizada pelo Model

@@ -47,19 +47,19 @@ class MknyDeleter extends Command
     public function handle()
     {
         $c = strtolower($this->argument('controller'));
-        $p = mkny_app_path();
+        // exit($c);
 
         $files = [];
-        $files[] = $p.'/Models/'.ucfirst($c).'.php';
-        $files[] = $p.'/Modelconfig/'.ucfirst($c).'.php';
-        $files[] = $p.'/Presenters/'.ucfirst($c).'Presenter.php';
 
-        $files[] = $p.'/Controllers/'.ucfirst($c).'Controller.php';
-        $files[] = $p.'/Requests/'.ucfirst($c).'Request.php';
-
-        $files[] = $p.'/resources/lang/'.\App::getLocale().'/'.$c.'.php';
+        $files[] = mkny_models_path($c).'.php';
+        $files[] = mkny_model_config_path($c).'.php';
+        $files[] = mkny_presenters_path($c).'Presenter.php';
+        $files[] = mkny_controllers_path($c).'Controller.php';
+        $files[] = mkny_requests_path($c).'Request.php';
+        $files[] = mkny_lang_path(\App::getLocale().'/'.$c).'.php';
 
         $errors = [];
+        
         foreach ($files as $file) {
             if(!$this->files->exists($file)){
                 $errors[] = $file;

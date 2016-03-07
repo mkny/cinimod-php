@@ -13,7 +13,7 @@ use Mkny\Cinimod\Logic;
 // Report related
 use DB;
 use Illuminate\Filesystem\Filesystem;
-use Mkny\App\Models;
+use App\Models;
 
 class ReportController extends Controller
 {

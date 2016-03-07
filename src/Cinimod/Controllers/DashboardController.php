@@ -29,6 +29,6 @@ class DashboardController extends Controller
 		// exit;
 
 
-		return view('admin.default_dashboard');
+		return view('cinimod.admin.default_dashboard');
 	}
 }

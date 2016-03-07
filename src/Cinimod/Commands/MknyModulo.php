@@ -12,7 +12,7 @@ class MknyModulo extends Command
      *
      * @var string
      */
-    protected $signature = 'mkny:modulo {controlador} {tabela?} {--notable}';
+    protected $signature = 'mkny:modulo {modulo} {tabela?}';
 
     /**
      * The console command description.
@@ -38,16 +38,19 @@ class MknyModulo extends Command
      */
     public function handle()
     {
-        if (!$this->option('notable')) {
-            $this->mknyTranslate($this->argument('controlador'),  $this->argument('tabela'));
-            $this->mknyRequest($this->argument('controlador'),  $this->argument('tabela'));
-            $this->mknyModel($this->argument('controlador'),  $this->argument('tabela'));
-            $this->mknyModelconfig($this->argument('controlador'),  $this->argument('tabela'));
-            $this->mknyPresenter($this->argument('controlador'));
-        }
+        $modulo = $this->argument('modulo');
+        $table = $this->argument('tabela')?:str_plural($this->argument('modulo'));
 
-        $this->mknyController($this->argument('controlador'));
-        # CriaLogic
+        
+        $this->mknyTranslate($modulo,  $table);
+        $this->mknyRequest($modulo,  $table);
+        $this->mknyModel($modulo,  $table);
+        $this->mknyModelconfig($modulo,  $table);
+
+        $this->mknyPresenter($modulo);
+        
+
+        $this->mknyController($this->argument('modulo'));
 
         echo 'finished..!';
     }
@@ -97,14 +100,13 @@ class MknyModulo extends Command
      * @param  string $table Nome da tabela
      * @return void
      */
-    private function mknyModel($name, $table=false)
+    private function mknyModel($name, $table)
     {
-        $options["modelo"] = $name;
-        if ($table) {
-            $options["--table"] = ($table?:'');
-        }
-        
-        $this->call("mkny:model", $options);
+
+        $this->call("mkny:model", [
+            "modelo" => $name,
+            "table" => $table
+            ]);
     }
 
     /**
@@ -115,11 +117,11 @@ class MknyModulo extends Command
      */
     private function mknyModelconfig($name, $table)
     {
-        $options["modelconfig"] = $name;
-        $options["table"] = $table;
-        
-        
-        $this->call("mkny:mconfig", $options);
+
+        $this->call("mkny:mconfig", [
+            "modelconfig" => $name,
+            "table" => $table
+            ]);
     }
     /**
      * Chama o criador de Presenter
@@ -128,23 +130,8 @@ class MknyModulo extends Command
      */
     private function mknyPresenter($name)
     {
-        $options["apresentador"] = $name;
-        
-        
-        $this->call("mkny:presenter", $options);
+
+        $this->call("mkny:presenter", ['apresentador' => $name]);
     }
-
-
-     /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    //  protected function getOptions()
-    //  {
-    //     return [
-    //     ['--notable', null, InputOption::VALUE_OPTIONAL, 'Cancel table creation.', null]
-    //     ];
-    // }
 
  }

@@ -1,6 +1,6 @@
 {
     "name": "mkny/cinimod",
-    "description": "A complex generator",
+    "description": "A complex mvc/laravel generator",
     "authors": [
     {
         "name": "Marcony Neves",
@@ -8,7 +8,9 @@
     }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.5.9",
+        "laravel/framework": "5.2.*",
+        "laracasts/presenter": "~0.2.1",
         },
     "autoload": {
         "files" : [
@@ -17,8 +19,16 @@
         "psr-4": {
             "Mkny\\": "src"
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "gulp"
+        ],
+        "pre-update-cmd": [
+            "gulp"
+        ],
+        "post-update-cmd": [
+            "gulp"
+        ]
     }
 }
-
-
-

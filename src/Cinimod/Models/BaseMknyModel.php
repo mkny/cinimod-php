@@ -43,7 +43,7 @@ class BaseMknyModel extends Model
         $config = [];
 
 
-        $cfg = Logic\UtilLogic::load(mkny_app_path().'/Modelconfig/'.class_basename($this).'.php');
+        $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php');
 
         
         switch ($type) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mkny\DummyNamespace;
+namespace DummyNamespace;
 
 use Mkny\Cinimod\Presenter\BaseMknyPresenter;
 

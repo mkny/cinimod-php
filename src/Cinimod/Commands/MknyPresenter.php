@@ -3,7 +3,7 @@
 namespace Mkny\Cinimod\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
+
 use Schema;
 
 class MknyPresenter extends GeneratorCommand
@@ -74,7 +74,7 @@ class MknyPresenter extends GeneratorCommand
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
 
-        return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
+        // return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
         return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 }

@@ -142,8 +142,9 @@ class MknyTranslate extends GeneratorCommand
     protected function getPath($name)
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
-        
-        return mkny_app_path().'/resources/lang/'.\App::getLocale().'/'.str_replace('\\', '/', $name).'.php';
+
+        // return mkny_app_path().'/resources/lang/'.\App::getLocale().'/'.str_replace('\\', '/', $name).'.php';
+        return base_path().'/resources/lang/'.\App::getLocale().'/'.str_replace('\\', '/', $name).'.php';
         // return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 }

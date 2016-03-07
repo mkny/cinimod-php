@@ -42,10 +42,8 @@ class GeneratorController extends Controller
 		$this->logic = $logic;
 		$this->files = $files;
 
-    \Mkny\Cinimod\Logic\UtilLogic::addViewVar('scripts', ['/javascripts/admin/admin-main.js']);
-
-
-
+    \Mkny\Cinimod\Logic\UtilLogic::addViewVar('scripts', ['/js/mkny.main.js']);
+    
     if (isset($_GET['banco'])) {
       if ($_GET['banco']) {
         Session::put('banco', $_GET['banco']);
@@ -88,7 +86,7 @@ class GeneratorController extends Controller
       $tables[$key]->controller = $controller;
 
       // Verifica se o [Modulo] ja foi gerado
-      $tables[$key]->is_generated = $this->files->exists(mkny_app_path().'/Models/'.$controller.'.php');
+      $tables[$key]->is_generated = $this->files->exists(mkny_models_path($controller).'.php');
 
     }
     // Cria uma collection das tables
@@ -106,7 +104,7 @@ class GeneratorController extends Controller
 
     $data['tables'] = $tables->all();
 
-    return view('admin.generator.index')->with($data);
+    return view('cinimod.admin.generator.index')->with($data);
   }
 
     /**
@@ -127,7 +125,7 @@ class GeneratorController extends Controller
 
             // Call do artisan [modulo]
         \Artisan::call('mkny:modulo', [
-         'controlador' => $controller, 'tabela' => $table
+         'modulo' => $controller, 'tabela' => $table
          ]);
       }
 
@@ -155,7 +153,8 @@ class GeneratorController extends Controller
     }
 
     public function postConfig($module){
-      $cfg = Logic\UtilLogic::load(mkny_app_path().'/Modelconfig/'.$module.'.php');
+      $cfg_file = mkny_model_config_path($module).'.php';
+      $cfg = Logic\UtilLogic::load($cfg_file);
       $ncfg = array_replace_recursive($cfg, array_filter(\Request::only(array_keys($cfg))));
 
       foreach ($ncfg as $key => $value) {
@@ -173,9 +172,9 @@ class GeneratorController extends Controller
       $string = '<?php return '.var_export($ncfg,true).';';
 
       
-      $this->files->put(mkny_app_path().'/Modelconfig/'.$module.'.php', $string);
+      $this->files->put($cfg_file, $string);
 
-      return back()->with(array(
+      return redirect()->route('adm::config')->with(array(
         'status' => 'success',
         'message' => 'Arquivo atualizado!'
         ));
@@ -184,15 +183,14 @@ class GeneratorController extends Controller
     public function getConfig(Logic\AppLogic $apl, $module=false)
     {
       if($module){
+        $cfg_file = mkny_model_config_path($module).'.php';
+
         $f_types = array_unique(array_values($apl->_getFieldTypes()));
         
-        $cfg = Logic\UtilLogic::load(mkny_app_path().'/Modelconfig/'.$module.'.php');
+        $cfg = Logic\UtilLogic::load($cfg_file);
         
         array_shift($cfg);
         foreach ($cfg as $key => $value) {
-          // echo '<pre>';
-          // print_r($cfg[$key]);
-          // exit('_var');
           $cfg[$key][(string) 'types'] = $f_types;
         }
 
@@ -201,15 +199,15 @@ class GeneratorController extends Controller
         $data['data'] = $cfg;
 
         // return 'detailed';
-        return view('admin.generator.config_detailed')->with($data);
+        return view('cinimod.admin.generator.config_detailed')->with($data);
       }
 
-      return view('admin.generator.config')->with('configs', $this->allConfigs());
+      return view('cinimod.admin.generator.config')->with('configs', $this->allConfigs());
     }
 
     private function allConfigs()
     {
-      $configs = $this->files->files(mkny_app_path().'/Modelconfig');
+      $configs = $this->files->files(mkny_model_config_path());
 
       $arrConfig = array();
       foreach ($configs as $config) {
