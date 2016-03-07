@@ -33,7 +33,7 @@ abstract class CRUDController extends Controller
      * @param Logic\CRUDLogic $logic
      */
     public function __construct(){
-        Logic\UtilLogic::addViewVar('scripts', ['/javascripts/admin/admin-main.js']);
+        Logic\UtilLogic::addViewVar('scripts', ['/js/cinimod.js']);
 
     }
 
