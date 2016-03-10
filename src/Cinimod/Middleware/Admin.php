@@ -10,6 +10,27 @@ use Mkny\Cinimod\Logic;
 
 class Admin
 {
+
+    private function getIncoming()
+    {
+        $endpoint = explode('@', class_basename(\Request::route()->getActionName()));
+        
+            // dd(\Request::route());
+        if($endpoint[0] == 'Closure'){
+
+            return array(
+                'module' => \Request::route()->getPrefix()?:'site',
+                'controller' => 'SystemController',
+                'action' => 'getClosure'
+                );
+        }
+        return array(
+            'module' => \Request::route()->getPrefix()?:'site',
+            'controller' => $endpoint[0],
+            'action' => $endpoint[1],
+            );
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -20,8 +41,8 @@ class Admin
     public function handle($request, Closure $next)
     {
         Logic\UtilLogic::addViewVar('scripts', ['/js/cinimod.js']);
-        echo (\Request::route()->getActionName());
-        exit;
+
+        $route = $this->getIncoming();
 
         // Build menu
         \Menu::make('MyNavBar', function($menu){
