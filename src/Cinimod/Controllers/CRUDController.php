@@ -16,31 +16,10 @@ abstract class CRUDController extends Controller
      */
     protected $model;
 
-    /**
-     * CRUDLogic Related
-     * @var object
-     */
-    private $logic;
-
-    /**
-     * CRUD Logic
-     * @var object
-     */
-    private $CL;
-    /**
-     * Class constructor
-     * 
-     * @param Logic\CRUDLogic $logic
-     */
-    public function __construct(){
-        Logic\UtilLogic::addViewVar('scripts', ['/js/cinimod.js']);
-
-    }
-
     protected function index()
     {
         $data = $this->datagrid();
-        return view('cinimod.admin.default.list')->with('data',$data);
+        return view('cinimod::admin.default.list')->with('data',$data);
     }
 
 
@@ -104,7 +83,7 @@ abstract class CRUDController extends Controller
         $data['controller'] = $this->_getControllerName();
         $data['data'] = $fields;
 
-        return view('cinimod.admin.default.add')->with($data);
+        return view('cinimod::admin.default.add')->with($data);
     }
 
     /**
@@ -143,7 +122,7 @@ abstract class CRUDController extends Controller
     protected function show($id)
     {
         $this->model->find($id)->toArray();
-        return view('cinimod.admin.default.show');
+        return view('cinimod::admin.default.show');
     }
     
     /**
@@ -175,7 +154,7 @@ abstract class CRUDController extends Controller
 
         // dd($data);
         
-        return view('cinimod.admin.default.edit')->with($data);
+        return view('cinimod::admin.default.edit')->with($data);
     }
 
     /**
@@ -242,6 +221,6 @@ abstract class CRUDController extends Controller
         $data['reports'] = isset($this->reports) && $this->reports?$this->reports:array();
         // \App\Logic\UtilLogic::addViewVar('data', $data);
 
-        return view('cinimod.admin.default.dashboard')->with($data);
+        return view('cinimod::admin.default.dashboard')->with($data);
     }
 }

@@ -104,7 +104,7 @@ class GeneratorController extends Controller
 
     $data['tables'] = $tables->all();
 
-    return view('cinimod.admin.generator.index')->with($data);
+    return view('cinimod::admin.generator.index')->with($data);
   }
 
     /**
@@ -199,10 +199,10 @@ class GeneratorController extends Controller
         $data['data'] = $cfg;
 
         // return 'detailed';
-        return view('cinimod.admin.generator.config_detailed')->with($data);
+        return view('cinimod::admin.generator.config_detailed')->with($data);
       }
 
-      return view('cinimod.admin.generator.config')->with('configs', $this->allConfigs());
+      return view('cinimod::admin.generator.config')->with('configs', $this->allConfigs());
     }
 
     private function allConfigs()

@@ -18,7 +18,9 @@
 	
 </head>
 <body>
-	{{-- @include('layout.admin_navbar_default') --}}
+	@include('cinimod::layout.admin_navbar')
+	
+
 	<div class="container">
 		@yield('conteudo')
 	</div>

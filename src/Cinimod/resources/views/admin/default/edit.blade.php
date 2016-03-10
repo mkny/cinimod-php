@@ -1,4 +1,4 @@
-@extends('cinimod.layout.admin')
+@extends('cinimod::layout.admin')
 
 
 
@@ -11,6 +11,6 @@
 		{{session('message')}}
 	</div>
 	@endif
+	@include('cinimod::admin.default.form')
 </div>
-@include('admin.default.form')
 @stop

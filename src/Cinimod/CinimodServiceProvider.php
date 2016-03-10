@@ -62,8 +62,11 @@ class CinimodServiceProvider extends ServiceProvider
 	public function routerize(Router $router)
 	{
 		// Route for the admin controllers
+		$router->middleware('admin','Mkny\Cinimod\Middleware\Admin');
+		$router->middleware('site','Mkny\Cinimod\Middleware\Site');
+
 		$router->group([
-			'middleware' => 'web',
+			'middleware' => ['web', 'admin'],
 			'prefix' => 'admin',
 			'as' => 'adm::',
 			'namespace' => $this->namespace
