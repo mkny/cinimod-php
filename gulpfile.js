@@ -30,5 +30,6 @@ var elixir = require('laravel-elixir');
 
 
  	.scriptsIn('../../../resources/assets/cinimod/javascript', '../../../public/js/cinimod.js')
- 	.copy('../../../resources/assets/cinimod/favicon.ico', '../../../public/');
+ 	.copy('../../../resources/assets/cinimod/favicon.ico', '../../../public/')
+ 	.stylesIn('../../../resources/assets/cinimod/css', '../../../public/css/cinimod.css');
  });
