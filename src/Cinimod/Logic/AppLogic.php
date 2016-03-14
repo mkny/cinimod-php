@@ -33,24 +33,28 @@ class AppLogic extends MknyLogic {
 
 	/**
 	 * Table namespace usado para remoçao ao criar o controller
+	 * 
 	 * @var array
 	 */
 	private $defaultTableNamespace = ['tab_', 'web_', 'tab_web_'];
 
 	/**
 	 * Funcao que retorna as colunas da tabela, com informacoes adicionais
+	 * 
 	 * @param  string  $table  Tabela para buscar no banco
 	 * @param  string $schema Schema do banco (caso PG)
 	 * @return array          Dados da tabela
 	 */
 	public function buildColumns($table, $schema=false)
 	{
+		// Quando a tabela e fornecida com "schema"."table"
 		if(strpos($table, '.')){
 			$table_parts = explode('.', $table);
 			$schema = $table_parts[0];
 			$table = $table_parts[1];
 		}
 
+		// Monta os campos
 		$sql = "SELECT
 		COLUMN_NAME AS name,
 		DATA_TYPE AS type,
@@ -59,6 +63,7 @@ class AppLogic extends MknyLogic {
 		COLUMN_DEFAULT AS default_value";
 
 		// Odeio fazer esses "fix"
+		// Funciona para buscar os valores de "enum" do banco MYSQL!
 		switch(Schema::getConnection()->getDriverName()){
 			case 'mysql':
 			$sql .= " ,CASE WHEN DATA_TYPE = 'enum' THEN COLUMN_TYPE ELSE NULL END AS def_constraint ";
@@ -75,34 +80,46 @@ class AppLogic extends MknyLogic {
 		WHERE
 		1 = 1
 		AND TABLE_NAME = '{$table}'
-
 		AND TABLE_SCHEMA = '{$schema}'";
 
 		return DB::select($sql);
 	}
 
 	/**
-	 * Funcao que retorna as tabelas
+	 * Funcao que busca as tabelas
 	 * 
 	 * @return array Tabelas do banco, no schema especificado
 	 */
-
 	public function buildTables()
 	{
 		$sql = "SELECT
 		TABLE_SCHEMA AS \"schema\",
 		TABLE_NAME AS \"name\"
-		FROM
-		information_schema.TABLES
+		FROM information_schema.TABLES
 		WHERE
-		TABLE_TYPE = 'BASE TABLE'
-		AND TABLE_SCHEMA = '{{schema}}'
-		";
-		$sql = substr($this->unifySchema($sql),0,-1). " ORDER BY \"schema\", \"name\"";
-		// echo '<pre>';
-		// print_r($sql);
-		// exit;
+		TABLE_TYPE = 'BASE TABLE' AND
+		TABLE_SCHEMA = '{{schema}}' ";
+
+		// Busca em todos os schemas fornecidos
+		$sql = $this->unifySchema($sql). " ORDER BY \"schema\", \"name\"";
+
 		return DB::select($sql);
+	}
+
+	/**
+	 * Helper pra buscar apenas os nomes das colunas no banco!
+	 * 
+	 * @param string $table Nome da tabela
+	 * @return array
+	 */
+	public function buildColumnsName($table){
+		$arrColumns = $this->buildColumns($table);
+
+		$arrData = [];
+		foreach ($arrColumns as $column) {
+			$arrData[] = $column->name;
+		}
+		return $arrData;
 	}
 
 	/**
@@ -117,15 +134,14 @@ class AppLogic extends MknyLogic {
 		});
 	}
 
-
 	/**
 	 * Busca na tabela as constraints UNIQUE, FOREIGN e CHECK (pgsql)
 	 * 
 	 * @param string $table Nome da tabela
 	 * @return array
+	 * // sqlserver, sqlite
 	 */
 	public function _getConstraints($table){
-	// public function buildRelationships($table){
 		if(strpos($table, '.')){
 			$table_parts = explode('.', $table);
 			$schema = $table_parts[0];
@@ -190,7 +206,6 @@ class AppLogic extends MknyLogic {
 			WHEN pgc.confupdtype = 'd' THEN
 			'DEFAULT'
 			END AS update_type,
-			-- NOVAS PARADAS
 			CASE
 			WHEN pgc.contype = 'u' AND pns2.nspname is null THEN
 			'UNIQUE'
@@ -198,10 +213,8 @@ class AppLogic extends MknyLogic {
 			'CHECK'
 			WHEN pgc.contype = 'f' THEN
 			'FOREIGN'
-			END AS rel_type,
-			pgc.consrc AS expression
-
-
+			END AS rel_type
+			-- ,pgc.consrc AS expression
 
 			FROM
 			pg_constraint AS pgc
@@ -226,14 +239,8 @@ class AppLogic extends MknyLogic {
 			throw new Exception('Driver não tratado');
 			break;
 		}
-		
-		// echo $sql;exit;
-		// echo '<pre>';
-		// print_r($this->unifySchema($sql));
-		// exit;
 
 		return DB::select($sql);
-		// return DB::select($sql);
 	}
 
 	/**
@@ -242,11 +249,7 @@ class AppLogic extends MknyLogic {
 	 * @return string        Controller name camelCased
 	 */
 	public function controllerName($table){
-		return UtilLogic::camelCase(str_replace($this->defaultTableNamespace,'', $table));
-	}
-
-	private function schemaSelector($schemas, $sql){
-
+		return studly_case(str_replace($this->defaultTableNamespace,'', $table));
 	}
 	
 	/**
@@ -256,22 +259,6 @@ class AppLogic extends MknyLogic {
 	public function _getFieldTypes()
 	{
 		return $this->fieldTypes;
-	}
-
-	/**
-	 * Helper pra buscar apenas os nomes das colunas no banco!
-	 * 
-	 * @param string $table Nome da tabela
-	 * @return array
-	 */
-	public function buildColumnsName($table){
-		$arrColumns = $this->buildColumns($table);
-
-		$arrData = [];
-		foreach ($arrColumns as $column) {
-			$arrData[] = $column->name;
-		}
-		return $arrData;
 	}
 
 	/**
@@ -288,7 +275,7 @@ class AppLogic extends MknyLogic {
 			$sqls[] = str_replace('{{schema}}', $schema, $sql);
 		}
 		
-		return '('.implode(') UNION ALL (', $sqls).');';
+		return '('.implode(') UNION ALL (', $sqls).')';
 	}
 
 	/**
@@ -338,41 +325,29 @@ class AppLogic extends MknyLogic {
      * @return array
      */
     public function _getCheck($value){
-        $arrValues = [];
+    	$arrValues = [];
         // echo '<pre>';
         // print_r($value);
         // exit;
-        if(substr($value,0,4) == 'enum'){
-            $arrValues = explode("','", substr($value,6,-2));
-        } elseif(substr($value,0,1) == '(' && strpos($value, 'ANY (') > 0){
-            $matches = [];
-            preg_match_all('/\'(.*?)\'/', $value, $matches);
-            
-            $arrValues = $matches[1];
-        } elseif(substr($value,0,1) == '(' && strpos($value, ' OR ') > 0){
+    	if(substr($value,0,4) == 'enum'){
+    		$arrValues = explode("','", substr($value,6,-2));
+    	} elseif(substr($value,0,1) == '(' && strpos($value, 'ANY (') > 0){
+    		$matches = [];
+    		preg_match_all('/\'(.*?)\'/', $value, $matches);
+
+    		$arrValues = $matches[1];
+    	} elseif(substr($value,0,1) == '(' && strpos($value, ' OR ') > 0){
             // se comeca com "(" e tem "bpchar" no meio
 
-            $value = preg_replace('/[\(\)]/', '', $value);
-            $value_parts = explode('OR', $value);
-            foreach ($value_parts as $value_part) {
-                $matches = array();
-                preg_match_all('/\'(.*)\'/', $value_part, $matches);
-                $arrValues[] = $matches[1][0];
-            }
-        }
+    		$value = preg_replace('/[\(\)]/', '', $value);
+    		$value_parts = explode('OR', $value);
+    		foreach ($value_parts as $value_part) {
+    			$matches = array();
+    			preg_match_all('/\'(.*)\'/', $value_part, $matches);
+    			$arrValues[] = $matches[1][0];
+    		}
+    	}
 
-        return $arrValues;
+    	return $arrValues;
     }
 }
-
-
-
-
-/**
- *Relations 3:)
- *
- *
- *
- * 
- */
-

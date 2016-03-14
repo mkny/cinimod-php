@@ -42,7 +42,7 @@ class CinimodServiceProvider extends ServiceProvider
 	
 	public function register() {
 		// app('')
-		// $this->app->bind('Mkny\Report', 'Logic\ReportLogic');
+		// $this->app->bind('Class');
 	}
 
 	private function artisanize(){

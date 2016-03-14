@@ -5,7 +5,7 @@ namespace DummyNamespace;
 // Eloquent-Model
 use App\Models;
 // Request
-use App\Requests\DummyClassRequest;
+use App\Http\Requests\DummyClassRequest;
 
 // Main CRUDController
 use Mkny\Cinimod\Controllers\CRUDController;
@@ -13,13 +13,13 @@ use Mkny\Cinimod\Controllers\CRUDController;
 
 // Route::controller('routeToDummyClassController', 'DummyClassController');
 class DummyClassController extends CRUDController  {
-	/**
-	 * Nome do controlador
-	 * @var string
-	 */
-	protected $controllerName = 'DummyClass';
 
-	protected $reports = [];
+	/**
+	 * Armazena o nome dos relatorios. Ainda nao funciona.
+	 * 
+	 * @var array
+	 */
+	// protected $reports = [];
 
 	/**
 	 * Construtor da classe
@@ -29,23 +29,6 @@ class DummyClassController extends CRUDController  {
 	{
 		parent::__construct();
 		$this->model = $m;
-	}
-
-	/**
-	 * Retorna o nome deste controller para o CRUD
-	 * @return string Nome da classe controlador
-	 */
-	protected function _getController(){
-		return class_basename($this);
-	}
-
-	/**
-	 * Retorna o nome deste controller original
-	 * @return string Nome do controlador
-	 */
-	protected function _getControllerName()
-	{
-		return $this->controllerName;
 	}
 
 	/**

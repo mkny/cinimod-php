@@ -57,6 +57,11 @@ class BaseMknyModel extends Model
                 return isset($var['form']) && $var['form'] == 1;
             });
             break;
+            case 'search':
+            $config = array_filter($cfg, function($var){
+                return isset($var['searchable']) && $var['searchable'] == 1;
+            });
+            break;
             case 'all':
             default:
             $config = $cfg;

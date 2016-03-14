@@ -1,103 +1,110 @@
 /* Menu Topo */
+.nav { 
+    margin: 0;
+    margin-left: 20px !important;
+    line-height: 100%;
+}
+.nav li {
+    float: left;
+    position: relative;
+    list-style: none;
+}
+
+/* main level link */
+.nav a {
+    text-decoration: none;
+    display: block;
+    margin: 0;
+}
+
+.nav a:hover {}
+
+/* main level link hover */
+.nav .current a, .nav li:hover > a {}
+
+/* sub levels link hover */
+.nav ul li:hover a, .nav li:hover li a {}
+.nav ul a:hover {}
+
+/* dropdown */
+.nav li:hover > ul {
+    display: block;
+}
+
+/* level 2 list */
+.nav ul {
+    display: none;
+    margin: 0;
+    position: absolute;
+}
+.nav ul li {
+    float: none;
+}
+
+.nav ul a {}
+
+/* level 3+ list */
+.nav ul ul {
+    left: 100%;
+    top: -2px;
+}
+/* rounded corners of first and last link */
+.nav ul li:first-child > a {}
+.nav ul li:last-child > a {}
+/* clearfix */
+.nav:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+.nav {
+    display: inline-block;
+}
+html[xmlns] .nav {
+    display: block;
+}
+
+* html .nav {
+    height: 1%;
+}
+.nav i.awesome-caret-right {
+    display: inline-block;
+    height: 0;
+    position: absolute;
+    right: 20px;
+    width: 0;
+}
+
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 980px)  {
     .nav { 
         margin: 0;
-        margin-left: 20px !important;
-        line-height: 100%;
-    }
-    .nav li {
-        float: left;
-        position: relative;
-        list-style: none;
     }
 
-    /* main level link */
-    .nav a {
-        text-decoration: none;
-        display: block;
-        margin: 0;
-    }
-
-    .nav a:hover {}
-
-    /* main level link hover */
-    .nav .current a, .nav li:hover > a {}
-
-    /* sub levels link hover */
-    .nav ul li:hover a, .nav li:hover li a {}
-    .nav ul a:hover {}
-
-    /* dropdown */
-    .nav li:hover > ul {
-        display: block;
-    }
-
-    /* level 2 list */
-    .nav ul {
-        display: none;
-        margin: 0;
-        position: absolute;
-    }
-    .nav ul li {
-        float: none;
-    }
-
-    .nav ul a {}
-
-    /* level 3+ list */
-    .nav ul ul {
-        left: 100%;
-        top: -2px;
-    }
-    /* rounded corners of first and last link */
-    .nav ul li:first-child > a {}
-    .nav ul li:last-child > a {}
-    /* clearfix */
-    .nav:after {
-        content: ".";
-        display: block;
-        clear: both;
+    .nav i.awesome-caret-down {
         visibility: hidden;
-        line-height: 0;
-        height: 0;
-    }
-    .nav {
-        display: inline-block;
-    }
-    html[xmlns] .nav {
-        display: block;
+        background: none;
+        /*content: '';*/
+        display: none;
     }
 
-    * html .nav {
-        height: 1%;
-    }
     .nav i.awesome-caret-right {
-        display: inline-block;
-        height: 0;
-        position: absolute;
-        right: 20px;
-        width: 0;
+        visibility: hidden;
+        background: none;
+        /*content: '';*/
+        display: none;
     }
+}
 
-    @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 980px)  {
-        .nav { 
-            margin: 0;
-        }
+.nav ul .caret {
+    -ms-transform: rotate(270deg); /* IE 9 */
+    -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
+    transform: rotate(270deg);
+}
 
-        .nav i.awesome-caret-down {
-            visibility: hidden;
-            background: none;
-            /*content: '';*/
-            display: none;
-        }
-
-        .nav i.awesome-caret-right {
-            visibility: hidden;
-            background: none;
-            /*content: '';*/
-            display: none;
-        }
-    }
-    /* Menu Lateral */
-    .nav-side, .well { padding: 0 !important; }
-    .nav-side li { list-style: none; }
-    ul.nav-list { margin: 15px 10px; }
+/* Menu Lateral */
+.nav-side, .well { padding: 0 !important; }
+.nav-side li { list-style: none; }
+ul.nav-list { margin: 15px 10px; }

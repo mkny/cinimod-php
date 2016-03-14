@@ -14,7 +14,6 @@ class DummyClass extends BaseMknyModel  {
      * Laracasts/Presenter
      */
     use PresentableTrait;
-
     protected $presenter = '\App\Presenters\DummyClassPresenter';
     
     /**

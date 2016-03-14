@@ -88,14 +88,7 @@
 						</li>
 						@endforeach
 					</ol>
-
 					@endif
-					<!-- <p>Relations (tab_produto.cod_categoria > tab_categoria.cod_categoria)</p> -->
-					<!-- <div class="checkbox">
-						<label><input type="checkbox"> Form</label>
-						<label><input type="checkbox"> Grid</label>
-					</div> -->
-
 				</small>
 			</td>
 			<td>
@@ -115,8 +108,4 @@
 
 	<button type="submit" class="btn btn-success">Gerar</button>
 </form>
-
-
-
-
 @stop

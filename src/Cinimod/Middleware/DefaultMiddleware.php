@@ -5,6 +5,7 @@ namespace Mkny\Cinimod\Middleware;
 use Closure;
 use DB;
 use Cache;
+use Illuminate\Http\Request;
 
 use Mkny\Cinimod\Logic;
 // use Lavary\Menu;
@@ -12,18 +13,23 @@ use Mkny\Cinimod\Logic;
 
 abstract class DefaultMiddleware
 {
+    private $request;
+
 	protected $module;
 	protected $action;
 	protected $controller;
 
 	abstract protected function getAmbient();
 
-	private function setAmbient()
+	private function setAmbient(Request $request)
 	{
+
 		$data = $this->getAmbient();
 		$this->module = $data['module'];
 		$this->action = $data['action'];
 		$this->controller = $data['controller'];
+        // $request->attributes->add($data);
+        // dd($request);
 
 	}
 
@@ -37,6 +43,8 @@ abstract class DefaultMiddleware
     public function handle($request, Closure $next)
     {
     	$this->init();
+
+        $this->setAmbient($request);
 
     	$this->getMenus();
 
@@ -65,7 +73,12 @@ abstract class DefaultMiddleware
     {
     	\Menu::make('navBar', function($menu) use ($tree) {
     		foreach ($tree as $link) {
-    			$item = $menu->add($link['description'], 'localink/'.$link['linkhref']);
+
+    			$item = $menu->add($link['description'], array(
+    				'action' => 'CidadeController@getEdit'
+    				));
+    			// $item = $menu->add($link['description'], 'localink/'.$link['linkhref']);
+
     			if (isset($link['children'])) {
     				$this->extractChild($link['children'], $item);
     			}
@@ -105,44 +118,10 @@ abstract class DefaultMiddleware
 
 }
 
+/**
+ * 
+ * 
+ * 
 
-// Build menu
-// \Menu::make('MyNavBar', function($menu){
-//     $links = [];
-//     $links[] = array(
-//         'name' => 'System of a down',
-//         'link' => '',
-//         'route' => '',
-//         'belongs' => ''
-//         );
-//     $links[] = array(
-//         'name' => 'Generator',
-//         'link' => '/admin/g',
-//         'route' => 'adm::gen::index',
-//         'belongs' => 'System of a down',
-//         );
-//     // $a = collect($links);
-//     // ;
-//     // echo '<pre>';
-//     // print_r($a->where("belongs",'')->all());
-//     // exit('_var');
-
-//     // foreach ($links as $link) {
-//     //     $item = $menu;
-//     //     if($link['belongs']){
-//     //         // $item = 
-//     //         $menu->{camel_case($link['belongs'])}->add($link['name'], $link['route']?:$link['link']);
-//     //     } else {
-
-//     //     }
-//     // }
-//     // echo url()->current();exit;
-
-
-//     $menu->add('Matrix');
-//     $menu->matrix->add('Generator', array('route' => 'adm::gen::index'));
-//     $menu->matrix->add('Generator2', url('admin/g/config'));
-//     $menu->matrix->add('Generator2', 'www.google.com');
-//     // $menu->system->add('Configurator', array('route' => 'adm::config'));
-//     // dd($menu->get('system'));
-// });
+ * 
+ */

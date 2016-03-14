@@ -8,7 +8,7 @@
 </div>
 @endif
 
-<form class="form-horizontal col-md-12" method="post" action="{{$action}}">
+<form class="form-horizontal col-md-12" method="post" action="{{$action or ''}}">
 	{{ csrf_field() }}
 	@foreach ($data as $field_config)
 	

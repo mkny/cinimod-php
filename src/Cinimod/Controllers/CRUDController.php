@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Mkny\Cinimod\Logic;
 
-// class_basename will halp
 
 abstract class CRUDController extends Controller
 {
@@ -25,6 +24,8 @@ abstract class CRUDController extends Controller
 
     /**
      * Datagrid action
+     * 
+     * Implementando busca referenciada (parei kk)
      */
     protected function datagrid()
     {
@@ -52,13 +53,19 @@ abstract class CRUDController extends Controller
             // Pega os fieldnames para o select
             array_keys($config)
             )->appends(\Request::only(['order', 'card', 'perpage']));
-        
+        // dd($rows);
         // Titulo da pagina
         $data['title'] = $this->_getControllerName()." List ";
         $data['fields'] = $config;
         $data['card'] = (\Request::input('card', 'asc') == 'asc') ? 'desc':'asc';
-        // Resultados
         $data['grid'] = $rows;
+        // echo '<pre>';
+        // print_r(collect($config)->only(['cod_cidade']));
+        // exit;
+        $data['form']['data'] = $this->model->_getConfig('search');
+        // dd($data['form']);
+        $data['form']['action'] = '';
+        $data['form']['controller'] = 'dump';
 
         // Nome do controlador
         $data['controller'] = $this->_getControllerName();
@@ -135,12 +142,18 @@ abstract class CRUDController extends Controller
     {
         $fields = $this->model->_getConfig('form');
 
-        
-
-        $data_values = $this
+        $M = $this
         ->model
-        ->find($id, $this->model->getFillable())
-        ->toArray();
+        ->find($id, $this->model->getFillable());
+
+        if(!$M){
+            return redirect()->action($this->_getController()."@getIndex")->with(array(
+                'status' => 'danger',
+                'message' => "not found!"
+                ));
+        }
+
+        $data_values = $M->toArray();
 
         foreach ($fields as $key => $field) {
             $fields[$key]['default_value'] = $data_values[$field['name']];
@@ -170,22 +183,20 @@ abstract class CRUDController extends Controller
             return ($dataPost == '') ?null:$dataPost;
         }, $request->all());
 
-        // echo '<pre>';print_r($post);exit;
+        $M = $this->model->find($id);
+        if(!$M){
+            return redirect()->action($this->_getController()."@getIndex")->with(array(
+                'status' => 'danger',
+                'message' => "not found!"
+                ));
+        }
 
-        $this->model->find($id)->update($post);
-        return
-        redirect()->action($this->_getController()."@getIndex")
-        // back()
+        $M->update($post);
+        return redirect()->action($this->_getController()."@getIndex")
         ->with(array(
             'status' => 'success',
             'message' => "Register ({$id}) Updated!"
             ));
-        // } else {
-            // return redirect()->action($this->_getController()."@getEdit", ['id' => $id])->with(array(
-            //     'status' => 'error',
-            //     'message' => 'xabanaias'
-            //     ));;
-        // }
     }
 
     /**
@@ -196,19 +207,39 @@ abstract class CRUDController extends Controller
      */
     protected function destroy($id)
     {
-        $this->model->find($id)->delete();
+        $M = $this->model->find($id);
+        if(!$M){
+            return redirect()->action($this->_getController()."@getIndex")->with(array(
+                'status' => 'danger',
+                'message' => "not found!"
+                ));
+        }
+
+        $M->delete();
         return redirect()->action($this->_getController()."@getIndex")->with(array(
             'status' => 'danger',
             'message' => "Register ({$id}) Deleted!"
             ));
     }
 
+    /**
+     * Atualiza o status (ativo/bloqueado) do item
+     * 
+     * @param int $id Id a ser atualizado
+     * @return void
+     */
     protected function statusChange($id){
         $M = $this->model->find($id);
+        if(!$M){
+            return redirect()->action($this->_getController()."@getIndex")->with(array(
+                'status' => 'danger',
+                'message' => "not found!"
+                ));
+        }
+
         $M->ind_status = ($M->ind_status == 'A')?'B':'A';
         $M->save();
-        return back()
-        ->with(array(
+        return back()->with(array(
             'status' => 'success',
             'message' => 'Alter with Success!'
             ));
@@ -222,5 +253,30 @@ abstract class CRUDController extends Controller
         // \App\Logic\UtilLogic::addViewVar('data', $data);
 
         return view('cinimod::admin.default.dashboard')->with($data);
+    }
+
+    /**
+     * Retorna o nome deste controller para o CRUD
+     * @return string Nome da classe controlador
+     */
+    protected function _getController(){
+        return class_basename($this);
+    }
+
+    /**
+     * Retorna o nome deste controller para o CRUD
+     * @return string Nome da classe controlador
+     */
+    protected function _getControllerName(){
+        return str_replace('Controller', '', $this->_getController());
+    }
+
+
+    public function getTest()
+    {
+
+        
+
+        return view('cinimod::admin.default.form_model');
     }
 }
