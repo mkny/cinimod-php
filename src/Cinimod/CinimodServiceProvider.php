@@ -10,6 +10,8 @@ use Mkny\Cinimod\Commands;
 use Mkny\Cinimod\Logic;
 
 use Config;
+use Illuminate\Foundation\AliasLoader;
+use Collective;
 /**
 * 
 */
@@ -43,6 +45,10 @@ class CinimodServiceProvider extends ServiceProvider
 	public function register() {
 		// app('')
 		// $this->app->bind('Class');
+		$this->app->register(Collective\Html\HtmlServiceProvider::class);
+		AliasLoader::getInstance()->alias('Form', Collective\Html\FormFacade::class);
+		AliasLoader::getInstance()->alias('Html', Collective\Html\HtmlFacade::class);
+
 	}
 
 	private function artisanize(){

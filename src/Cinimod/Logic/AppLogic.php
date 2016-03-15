@@ -214,7 +214,7 @@ class AppLogic extends MknyLogic {
 			WHEN pgc.contype = 'f' THEN
 			'FOREIGN'
 			END AS rel_type
-			-- ,pgc.consrc AS expression
+			,pgc.consrc AS expression
 
 			FROM
 			pg_constraint AS pgc

@@ -13,12 +13,7 @@
 				<li>Data</li>
 			</ol>
 		</div> -->
-		<div class="row">
-			<div class="col-md-12">
-				@include('cinimod::admin.default.form', $data['form'])
-			</div>
-		</div>
-
+		
 		@if (session('status'))
 		<div class="row">
 			<div class="col-md-12">

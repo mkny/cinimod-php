@@ -15,6 +15,22 @@ abstract class CRUDController extends Controller
      */
     protected $model;
 
+    /**
+     * CRUDLogic
+     * 
+     * @var object
+     */
+    private $CL;
+
+    /**
+     * Construtor da classe
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->CL = new Logic\CRUDLogic;
+    }
+
     protected function index()
     {
         $data = $this->datagrid();
@@ -25,7 +41,7 @@ abstract class CRUDController extends Controller
     /**
      * Datagrid action
      * 
-     * Implementando busca referenciada (parei kk)
+     * -Implementando busca referenciada (parei kk)
      */
     protected function datagrid()
     {
@@ -59,14 +75,6 @@ abstract class CRUDController extends Controller
         $data['fields'] = $config;
         $data['card'] = (\Request::input('card', 'asc') == 'asc') ? 'desc':'asc';
         $data['grid'] = $rows;
-        // echo '<pre>';
-        // print_r(collect($config)->only(['cod_cidade']));
-        // exit;
-        $data['form']['data'] = $this->model->_getConfig('search');
-        // dd($data['form']);
-        $data['form']['action'] = '';
-        $data['form']['controller'] = 'dump';
-
         // Nome do controlador
         $data['controller'] = $this->_getControllerName();
         // dd($data);
@@ -83,14 +91,12 @@ abstract class CRUDController extends Controller
      */
     protected function create()
     {
-
-        $fields = $this->model->_getConfig('form');
-        
-        $data['action'] = '';
-        $data['controller'] = $this->_getControllerName();
-        $data['data'] = $fields;
-
-        return view('cinimod::admin.default.add')->with($data);
+        return view('cinimod::admin.default.add')->with(['form' => $this->CL->getForm(
+            false,
+            action($this->_getController().'@postAdd'),
+            $this->model->_getConfig('form'),
+            $this->_getControllerName()
+            )]);
     }
 
     /**
@@ -128,7 +134,7 @@ abstract class CRUDController extends Controller
      */
     protected function show($id)
     {
-        $this->model->find($id)->toArray();
+        $this->model->findOrFail($id)->toArray();
         return view('cinimod::admin.default.show');
     }
     
@@ -140,34 +146,16 @@ abstract class CRUDController extends Controller
      */
     protected function edit($id)
     {
-        $fields = $this->model->_getConfig('form');
-
         $M = $this
         ->model
-        ->find($id, $this->model->getFillable());
+        ->findOrFail($id, $this->model->getFillable());
 
-        if(!$M){
-            return redirect()->action($this->_getController()."@getIndex")->with(array(
-                'status' => 'danger',
-                'message' => "not found!"
-                ));
-        }
-
-        $data_values = $M->toArray();
-
-        foreach ($fields as $key => $field) {
-            $fields[$key]['default_value'] = $data_values[$field['name']];
-        }
-        
-        $data['action'] = '';
-        $data['controller'] = $this->_getControllerName();
-        $data['data'] = $fields;
-
-        
-
-        // dd($data);
-        
-        return view('cinimod::admin.default.edit')->with($data);
+        return view('cinimod::admin.default.edit')->with(['form' => $this->CL->getForm(
+            $M,
+            action($this->_getController().'@postEdit', [$id]),
+            $this->model->_getConfig('form'),
+            $this->_getControllerName()
+            )]);
     }
 
     /**
@@ -183,14 +171,7 @@ abstract class CRUDController extends Controller
             return ($dataPost == '') ?null:$dataPost;
         }, $request->all());
 
-        $M = $this->model->find($id);
-        if(!$M){
-            return redirect()->action($this->_getController()."@getIndex")->with(array(
-                'status' => 'danger',
-                'message' => "not found!"
-                ));
-        }
-
+        $M = $this->model->findOrFail($id);
         $M->update($post);
         return redirect()->action($this->_getController()."@getIndex")
         ->with(array(
@@ -207,16 +188,12 @@ abstract class CRUDController extends Controller
      */
     protected function destroy($id)
     {
-        $M = $this->model->find($id);
-        if(!$M){
-            return redirect()->action($this->_getController()."@getIndex")->with(array(
-                'status' => 'danger',
-                'message' => "not found!"
-                ));
-        }
+        $M = $this
+        ->model
+        ->findOrFail($id)
+        ->delete();
 
-        $M->delete();
-        return redirect()->action($this->_getController()."@getIndex")->with(array(
+        return back()->with(array(
             'status' => 'danger',
             'message' => "Register ({$id}) Deleted!"
             ));
@@ -229,14 +206,7 @@ abstract class CRUDController extends Controller
      * @return void
      */
     protected function statusChange($id){
-        $M = $this->model->find($id);
-        if(!$M){
-            return redirect()->action($this->_getController()."@getIndex")->with(array(
-                'status' => 'danger',
-                'message' => "not found!"
-                ));
-        }
-
+        $M = $this->model->findOrFail($id);
         $M->ind_status = ($M->ind_status == 'A')?'B':'A';
         $M->save();
         return back()->with(array(
@@ -269,14 +239,5 @@ abstract class CRUDController extends Controller
      */
     protected function _getControllerName(){
         return str_replace('Controller', '', $this->_getController());
-    }
-
-
-    public function getTest()
-    {
-
-        
-
-        return view('cinimod::admin.default.form_model');
     }
 }

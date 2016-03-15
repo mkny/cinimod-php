@@ -11,6 +11,6 @@
 		{{session('message')}}
 	</div>
 	@endif
-	@include('cinimod::admin.default.form')
+	@include('cinimod::admin.default.form', ['form' => $form])
 </div>
 @stop

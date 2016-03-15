@@ -23,7 +23,7 @@ class BaseMknyModel extends Model
         // $fields[] = $conf['field_key']. ' AS id';
     	$fields[] = $conf['field_fkey']. ' AS id';
     	$fields[] = $conf['field_show'].' AS name';
-        
+
         $model = self::orderBy($conf['field_show'], 'ASC');
         if(isset($conf['where']) && $conf['where']) {
             $model->whereRaw(implode(' and ', $conf['where']));
@@ -67,6 +67,17 @@ class BaseMknyModel extends Model
             $config = $cfg;
             break;
         }
+        
+        if(isset(array_values($config)[0]['order'])){
+            usort(($config), function($dt, $db){
+                if(isset($dt['order'])){
+                    return $dt['order'] - $db['order'];
+                } else {
+                    return true;
+                }
+            });
+        }
+        
         return $config;
     }
 

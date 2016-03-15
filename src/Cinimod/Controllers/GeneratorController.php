@@ -218,18 +218,21 @@ class GeneratorController extends Controller
           $config_str[$key]['type'] = isset($value['type']) ? $value['type']:'string';
           $config_str[$key]['form'] = isset($value['form']) ? $value['form']:true;
           $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
-          $config_str[$key]['search'] = isset($value['search']) ? $value['search']:false;
+          $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
 
-          $config_str[$key]['types'] = $f_types;
+          $config_str[$key]['types'] = array_combine($f_types,$f_types);
         }
-        // echo '<pre>';
-        // print_r($config_str);
-        // exit;
-
+        if(isset(array_values($config_str)[0]['order'])){
+          usort(($config_str), function($dt, $db){
+            return $dt['order'] - $db['order'];
+          });
+        }
+        
         $data['controller'] = $controller;
         $data['data'] = $config_str;
 
-        return view('cinimod::admin.generator.config_detailed')->with($data);
+        return view('cinimod::admin.generator.config_detailed_new')->with($data);
+        // return view('cinimod::admin.generator.config_detailed')->with($data);
       }
 
       return view('cinimod::admin.generator.config')->with('configs', $this->_getConfigFiles());
@@ -245,11 +248,15 @@ class GeneratorController extends Controller
 
       $cfg_file = mkny_model_config_path($module).'.php';
       $config_str = $this->files->getRequire($cfg_file);
-      $new_config_str = array_replace_recursive($config_str, array_filter(\Request::only(array_keys($config_str))));
-
+      $config_new = array_filter(\Request::only(array_keys($config_str)));
+      $new_config_str = array_replace_recursive($config_str, $config_new);
+      
       // Tratamento do true / false
       foreach ($new_config_str as $key => $value) {
         foreach ($value as $vKey => $vValue) {
+          if(in_array($vKey, array('order'))){
+            continue;
+          }
           if($vValue == '0' || $vValue === false){
             // Forca false
             $vValue = false;
