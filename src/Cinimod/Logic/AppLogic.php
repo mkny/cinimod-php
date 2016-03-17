@@ -308,7 +308,7 @@ class AppLogic extends MknyLogic {
 			}
 
 			if($cvalue->rel_type == 'UNIQUE'){
-				$arrUnify[$cvalue->table_foreign_field]->uniq_field = "{$cvalue->table_foreign},{$cvalue->table_foreign_field},'.(\$this->one?:0).',{$constraints[0]->table_foreign_field}";
+				$arrUnify[$cvalue->table_foreign_field]->uniq_field = "'.(\Schema::getConnection()->getName()).'.{$cvalue->schema_foreign}.{$cvalue->table_foreign},{$cvalue->table_foreign_field},'.(\$this->one?:0).',{$constraints[0]->table_foreign_field}";
 			}
 		}
 

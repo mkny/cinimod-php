@@ -7,6 +7,7 @@ use DB;
 class CRUDLogic extends MknyLogic {
 	public function getForm($Model = false, $Action, $FormFields, $ControllerName)
 	{
+
         if($Model){
             // Abre o form com os campos preenchidos 
             $data[] = \Form::model($Model, array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
@@ -31,17 +32,34 @@ class CRUDLogic extends MknyLogic {
             // Verifica os tipos de campos fornecidos
             switch($field_config['type']){
                 case 'select':
+                // Helper classname
+                
+                $options = [];
+                $options['class'] = ['form-control'];
+
                 // No select, adiciona o primeiro indice um campo vazio, solicitando alteracao
                 $arrDataSelect = ['' => '- Selecione -'];
 
                 // Se for um relacionamento
-                if($field_config['relationship']){
+                if(isset($field_config['relationship']) && $field_config['relationship']){
+                    if(isset($field_config['relationship']['dependsOn']) && $field_config['relationship']['dependsOn']){
+                        // class para funcoes ajax
+                        $options['class'][] = 'mkny-select-depends';
 
-                    $dataModel = $field_config['relationship']['model']::relation($field_config['relationship']);
+                        // data-value depends
+                        $options['data-depends'] = $field_config['relationship']['dependsOn'];
+
+                        $dataModel = [];
+                        // $dataModel = $field_config['relationship']['model']::relation($field_config['relationship']);
+                    } else {
+                        // dd($field_config);exit;
+                        $dataModel = $field_config['relationship']['model']::relation($field_config['relationship']);
+                    }
+
                     foreach ($dataModel as $dm){
                         $arrDataSelect[$dm['id']] = $dm['name'];
                     }
-                } elseif($field_config['values']) {
+                } elseif(isset($field_config['values']) && $field_config['values']) {
                     // Se houverem valores definidos
                     foreach ($field_config['values'] as $fcv) {
                         $transFields = trans($form_data_name.'_values');
@@ -50,8 +68,15 @@ class CRUDLogic extends MknyLogic {
                         $arrDataSelect[$fcv] = is_array($transFields) ? $transFields[$fcv]:$fcv;
                     }
                 }
+
+                
+                $options['data-value'] = ($Model?$Model->{$field_config['name']}:'');
+
+                $options['class'] = implode(' ', $options['class']);
+
+
                 // Monta o field select
-                $field = \Form::select($field_config['name'], $arrDataSelect, null, ['class' => 'form-control']);
+                $field = \Form::select($field_config['name'], $arrDataSelect, null, $options);
                 break;
                 case 'date':
                 case 'string':

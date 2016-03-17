@@ -26,6 +26,55 @@ Mkny.prototype = {
 				}
 			});
 		}
+	},
+
+	backbone : function(caller, jsonForm, callOk, callFail, options){
+		if(!options) {
+			options = {};
+		}
+		options['data'] = jsonForm;
+
+		if(typeof callOk != 'function'){
+			callOk = function(){};
+		}
+
+		if(typeof callFail != 'function'){
+			callFail = function(){};
+		}
+
+		var _type = options['type'] || 'post';
+
+
+		var ajx = $.ajax(caller, {
+			data : options['data'],
+			type : _type,
+			dataType: 'json'
+		});
+
+		ajx
+		.done(function( data, textStatus, jqXHR ) {
+			if(textStatus == 'success' && data['status'] == 'success'){
+				callOk(data);
+			} else {
+				callFail(data);
+			}
+		})
+		.fail(function( jqXHR, textStatus, errorThrown ) {
+			callFail();
+		});
+
+
+		// var def = $.Deferred(),
+  //           promise = def.promise();
+
+
+		// ajx.fail(def.resolve.apply(this, arguments));
+		// ajx.fail(function(){
+		// 	def.reject.apply(this, arguments);
+		// });
 	}
 };
 
+(function(){
+	window._mkny = new Mkny();
+})();

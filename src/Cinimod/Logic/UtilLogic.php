@@ -60,4 +60,14 @@ class UtilLogic extends MknyLogic {
         view()->share($key, $value);
     }
 
+    static public function array_finder($array, $key)
+    {
+        foreach ($array as $k => $v) {
+            if($v['name'] == $key){
+                return $k;
+            }
+        }
+        return false;
+    }
+
 }

@@ -219,6 +219,7 @@ class GeneratorController extends Controller
           $config_str[$key]['form'] = isset($value['form']) ? $value['form']:true;
           $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
           $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
+          $config_str[$key]['order'] = isset($value['order']) ? $value['order']:0;
 
           $config_str[$key]['types'] = array_combine($f_types,$f_types);
         }
@@ -245,12 +246,34 @@ class GeneratorController extends Controller
      * @return void
      */
     public function postConfig($module){
-
+      // Arquivo de configuracao
       $cfg_file = mkny_model_config_path($module).'.php';
+
+      // String do arquivo
       $config_str = $this->files->getRequire($cfg_file);
-      $config_new = array_filter(\Request::only(array_keys($config_str)));
-      $new_config_str = array_replace_recursive($config_str, $config_new);
+
+      // Construcao da nova string
+      // $config_new = array_filter(\Request::all());
+      $config_new = array_filter(\Request::only(array_merge(array_keys($config_str),array('new_fields'))));
+
+      if (isset($config_new['new_fields'])) {
+          $nf = $config_new['new_fields'];
+
+          foreach ($nf as $n_field) {
+            $name = $n_field['name'];
+            // unset($n_field['name']);
+
+            $config_new[$name] = $n_field;
+          }
+          
+          unset($config_new['new_fields']);
+      }
+
       
+
+      // Resultado gerado
+      $new_config_str = array_replace_recursive($config_str, $config_new);
+      // dd($new_config_str);
       // Tratamento do true / false
       foreach ($new_config_str as $key => $value) {
         foreach ($value as $vKey => $vValue) {
@@ -282,8 +305,6 @@ class GeneratorController extends Controller
         'message' => 'Arquivo atualizado!'
         ));
     }
-
-
 
     /**
      * Varre o diretorio em busca de arquivos de configuracao

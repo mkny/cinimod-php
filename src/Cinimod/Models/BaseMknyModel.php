@@ -17,20 +17,28 @@ class BaseMknyModel extends Model
 	 * @param  int Id para filtrar direto
 	 * @return array
 	 */
-    static public function relation($conf,$id=false)
+    static public function relation($conf,$filterID=false)
     {
+
+        // echo '<pre>';
+        // print_r($conf['field_key'] = $filterID);
+        // exit;
     	$fields = [];
         // $fields[] = $conf['field_key']. ' AS id';
     	$fields[] = $conf['field_fkey']. ' AS id';
     	$fields[] = $conf['field_show'].' AS name';
 
-        $model = self::orderBy($conf['field_show'], 'ASC');
+        $model = $conf['model']::orderBy($conf['field_show'], 'ASC');
         if(isset($conf['where']) && $conf['where']) {
             $model->whereRaw(implode(' and ', $conf['where']));
         }
-        
+
+        if ($filterID) {
+            $model->whereRaw("{$conf['dependsOn']} = {$filterID}");
+        }
+
         return $model->get($fields);
-        
+
     }
 
     /**

@@ -31,6 +31,7 @@ class CinimodServiceProvider extends ServiceProvider
 		$this->publishes([
 			// mkny_path().'/Cinimod/resources/views' => resource_path('views/cinimod'),
 			// mkny_path().'/Cinimod/resources/lang' => resource_path('lang'),
+			// mkny_path().'/Cinimod/resources/assets' => resource_path('assets/cinimod')
 			mkny_path().'/Cinimod/resources/assets' => resource_path('assets/cinimod')
 			]);
 		// __DIR__.'/path/to/config/courier.php' => config_path('courier.php'),

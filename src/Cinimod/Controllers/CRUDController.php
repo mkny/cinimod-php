@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Mkny\Cinimod\Logic;
 
+use DB;
+
 
 abstract class CRUDController extends Controller
 {
@@ -149,7 +151,7 @@ abstract class CRUDController extends Controller
         $M = $this
         ->model
         ->findOrFail($id, $this->model->getFillable());
-
+        
         return view('cinimod::admin.default.edit')->with(['form' => $this->CL->getForm(
             $M,
             action($this->_getController().'@postEdit', [$id]),
@@ -239,5 +241,22 @@ abstract class CRUDController extends Controller
      */
     protected function _getControllerName(){
         return str_replace('Controller', '', $this->_getController());
+    }
+
+    public function getCombo()
+    {
+
+
+
+        $fields = $this->model->_getConfig('form');
+        $field_request = \Request::input('method_name');
+
+        $data = $this->model->relation($fields[Logic\UtilLogic::array_finder($fields, $field_request)]['relationship'], \Request::input('filter'));
+
+
+        return [
+        'status' => 'success',
+        'data' => $data
+        ];
     }
 }
