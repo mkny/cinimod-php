@@ -71,7 +71,7 @@ abstract class CRUDController extends Controller
             // Pega os fieldnames para o select
             array_keys($config)
             )->appends(\Request::only(['order', 'card', 'perpage']));
-        // dd($rows);
+        
         // Titulo da pagina
         $data['title'] = $this->_getControllerName()." List ";
         $data['fields'] = $config;

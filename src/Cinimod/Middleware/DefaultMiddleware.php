@@ -16,23 +16,20 @@ abstract class DefaultMiddleware
 {
     private $request;
 
-	protected $module;
-	protected $action;
-	protected $controller;
+    protected $module;
+    protected $action;
+    protected $controller;
 
-	abstract protected function getAmbient();
+    abstract protected function getAmbient();
 
-	private function setAmbient(Request $request)
-	{
+    private function setAmbient(Request $request)
+    {
 
-		$data = $this->getAmbient();
-		$this->module = $data['module'];
-		$this->action = $data['action'];
-		$this->controller = $data['controller'];
-        // $request->attributes->add($data);
-        // dd($request);
-
-	}
+        $data = $this->getAmbient();
+        $this->module = $data['module'];
+        $this->action = $data['action'];
+        $this->controller = $data['controller'];
+    }
 
     /**
      * Handle an incoming request.
@@ -47,9 +44,9 @@ abstract class DefaultMiddleware
 
         $this->setAmbient($request);
 
-    	$this->getMenus();
+        $this->getMenus();
 
-    	return $next($request);
+        return $next($request);
     }
 
     public function getMenus()
@@ -63,30 +60,30 @@ abstract class DefaultMiddleware
 	    // 		DB::raw('cod_menu_pai AS parent_id')
 	    // 		])), true);
      //    });
-            $menus = [
-                [
-                'id' => '1',
-                'linkhref' => '',
-                'description' => 'Gerencial',
-                'parent_id' => '',
-                ],
-                [
-                'id' => '2',
-                'linkhref' => 'admin/g',
-                'description' => 'Gerador',
-                'parent_id' => '1',
-                ],
-                [
-                'id' => '3',
-                'linkhref' => 'admin/g/config',
-                'description' => 'Configurador',
-                'parent_id' => '1',
-                ],
-            ];
+        $menus = [
+        [
+        'id' => '1',
+        'linkhref' => '',
+        'description' => 'Gerencial',
+        'parent_id' => '',
+        ],
+        [
+        'id' => '2',
+        'linkhref' => 'admin/g',
+        'description' => 'Gerador',
+        'parent_id' => '1',
+        ],
+        [
+        'id' => '3',
+        'linkhref' => 'admin/g/config',
+        'description' => 'Configurador',
+        'parent_id' => '1',
+        ],
+        ];
 
-    	$menus_tree = $this->buildTree($menus);
+        $menus_tree = $this->buildTree($menus);
 
-    	$this->buildMenu($menus_tree);
+        $this->buildMenu($menus_tree);
 
     }
 

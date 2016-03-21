@@ -26,12 +26,59 @@ $(function(){
 	});
 	
 });
+function recount(){
+	$('.input-count').val(function(k,v){
+		return k;
+	});
+}
+
+function addDynamicField(obj){
+	var block = $(obj).clone();
+
+
+	block.addClass('clone-block');
+	var indice = $(obj).parent().find('.clone-block').length;
+
+	block.find('td:eq(1)').html('<input type="text" name="new_fields[name]" class="form-control" />')
+	block.find('td').each(function(){
+		var e = $(this);
+		e.find(':input').attr('name', function(){
+			var e2 = $(this);
+
+
+			return 'new_fields['+indice+']'+e2.attr('name').match(/\[(.*)\]/)[0];
+
+
+		});
+	});
+
+	$(obj).before(block);
+}
+
+function selectRequired(type){
+	$('[name*="\['+type+'\]"]').attr('checked', false);
+
+	$(':input[name*="\[required\]"]:checked').each(function(){
+		var e = $(this);
+		e
+		.closest('tr')
+		.find('[name*="\['+type+'\]"]')
+		.prop('checked', e.is(':checked'));
+	});
+}
+function selectFormRequired(){
+	return selectRequired('form');
+}
+function selectGridRequired(){
+	return selectRequired('grid');
+}
 
 function highlightRow(id){
 	$('.default-admin tr[data-rowid="'+id+'"]').css('backgroundColor', function(){
 		return ($(this).css('backgroundColor') != 'rgb(240, 248, 255)')?'rgb(240, 248, 255)':'rgba(0, 0, 0, 0)';
 	});
 }
+
 
 function selectValue(e){
 	// Busca os values do select

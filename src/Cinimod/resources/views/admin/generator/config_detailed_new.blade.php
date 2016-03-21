@@ -8,44 +8,14 @@
 	{!! csrf_field() !!}
 	
 	<!-- Each field -->
-<script type="text/javascript">
-	function recount(){
-		$('.input-count').val(function(k,v){
-			return k;
-		});
-	}
-
-	function addDynamicField(obj){
-		var block = $(obj).clone();
-
-
-		block.addClass('clone-block');
-		var indice = $(obj).parent().find('.clone-block').length;
-
-		block.find('td:eq(1)').html('<input type="text" name="new_fields[name]" class="form-control" />')
-		block.find('td').each(function(){
-			var e = $(this);
-			e.find(':input').attr('name', function(){
-				var e2 = $(this);
-
-
-				return 'new_fields['+indice+']'+e2.attr('name').match(/\[(.*)\]/)[0];
-
-
-			});
-		});
-
-		$(obj).before(block);
-	}
-</script>
 	<ol>
 		<!-- <li>Select all form</li>
 		<li>Select all grid</li> -->
-		<li>Select form required's</li>
-		<li>Select grid required's</li>
-		<li>Reorder</li>
+		<li><a href="javascript:;" onclick="selectFormRequired();">Select form required's</a></li>
+		<li><a href="javascript:;" onclick="selectGridRequired();">Select grid required's</a></li>
+		<li><a href="javascript:;" onclick="recount();">Reorder</a></li>
 		<li>
-		<a href="javascript:;" onclick="addDynamicField('table tr:not(.clone-block):eq(1)');">Add new field (dynamic)</a>
+			<a href="javascript:;" onclick="addDynamicField('table tr:not(.clone-block):eq(1)');">Add new field (dynamic)</a>
 		</li>
 	</ol>
 	<table class="table table-striped">
@@ -57,6 +27,7 @@
 				<th>Form</th>
 				<th>Grid</th>
 				<th>Required</th>
+				<!-- <th>Relationship</th> -->
 				<th>Searchable</th>
 			</tr>
 		</thead>
@@ -72,6 +43,73 @@
 				<td>{{$field_config['name']}}</td>
 				<td>
 					{!! Form::select($field_config['name'].'[type]', $field_config['types'], $field_config['type'], ['class' => 'form-control']) !!}
+					@if (isset($field_config['relationship']) && $field_config['relationship'])
+					
+					<!-- 	<a href="javascript:;" onclick="$(this).next().toggleClass('hidden');">Relations</a> -->
+					
+					<table class="table table-bordered">
+						<tr>
+							<td>depends</td>
+							<td>
+								{!! Form::text(
+										$field_config['name'].'[relationship][dependsOn]',
+										isset($field_config['relationship']['dependsOn'])?$field_config['relationship']['dependsOn']:null,
+										['class' => 'form-control']
+									)
+								!!}
+							</td>
+						</tr>
+						<tr>
+							<td>model</td>
+							<td>
+								{!! Form::text(
+										$field_config['name'].'[relationship][model]',
+										isset($field_config['relationship']['model'])?$field_config['relationship']['model']:null,
+										['class' => 'form-control']
+									)
+								!!}
+							</td>
+						</tr>
+						<tr>
+							<td>field_key</td>
+							<td>
+								{!! Form::text(
+								$field_config['name'].'[relationship][field_key]',
+								isset($field_config['relationship']['field_key']) ?$field_config['relationship']['field_key']:null,
+								['class' => 'form-control']
+								) !!}
+							</td>
+						</tr>
+						<tr>
+							<td>field_fkey</td>
+							<td>
+								{!! Form::text(
+								$field_config['name'].'[relationship][field_fkey]',
+								isset($field_config['relationship']['field_fkey']) ?$field_config['relationship']['field_fkey']:null,
+								['class' => 'form-control']
+								) !!}
+							</td>
+						</tr>
+						<tr>
+							<td>field_show</td>
+							<td>
+								{!! Form::text(
+								$field_config['name'].'[relationship][field_show]',
+								isset($field_config['relationship']['field_show']) ?$field_config['relationship']['field_show']:null,
+								['class' => 'form-control']
+								) !!}
+							</td>
+						</tr>
+						<tr>
+							<td>where</td>
+							<td>
+								<!-- [relationship][where] -->
+								{!! Form::text($field_config['name'].'[relationship][where][]', '', ['class' => 'form-control']) !!}
+							</td>
+						</tr>
+					</table>
+					
+					@endif
 				</td>
 				<td>
 					<div class="checkbox">
@@ -97,6 +135,14 @@
 						</label>
 					</div>
 				</td>
+				<!-- <td>
+					<div class="checkbox">
+						<label>
+							{!! Form::hidden($field_config['name'].'[relationship]', 0) !!}
+							{!! Form::checkbox($field_config['name'].'[relationship]', '1', $field_config['relationship'], ['class' => '']) !!} Enable
+						</label>
+					</div>
+				</td> -->
 				<td>
 					<div class="checkbox">
 						<label>

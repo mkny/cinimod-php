@@ -51,7 +51,7 @@ Selection.prototype = {
 
 			
 			if(e.val()){
-				_mkny.backbone('/routeToPessoaController/combo', {
+				_mkny.backbone('/q/combo', {
 					'method_name' : that.element.attr('name'),
 					'filter' : that.firer.val() || that.firer.data('value')
 				}, function(data){

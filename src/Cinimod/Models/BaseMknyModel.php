@@ -29,9 +29,9 @@ class BaseMknyModel extends Model
     	$fields[] = $conf['field_show'].' AS name';
 
         $model = $conf['model']::orderBy($conf['field_show'], 'ASC');
-        if(isset($conf['where']) && $conf['where']) {
-            $model->whereRaw(implode(' and ', $conf['where']));
-        }
+        // if(isset($conf['where']) && !empty(trim($conf['where']))) {
+        //     $model->whereRaw(implode(' and ', $conf['where']));
+        // }
 
         if ($filterID) {
             $model->whereRaw("{$conf['dependsOn']} = {$filterID}");

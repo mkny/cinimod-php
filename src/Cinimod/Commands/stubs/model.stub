@@ -70,6 +70,24 @@ class DummyClass extends BaseMknyModel  {
     // Relation functions end
 
     // Custom functions
+    
+    // Caso a utilizacao seja constante, eu vou colocar isso automatizado!
+    // Modelo estado
+    // public function getCodPaisAttribute()
+    // {
+    //     return $this->cod_estado()->first()->cod_pais;
+    // }
+
+    // Modelo principal
+    // public function getCodEstadoAttribute()
+    // {
+    //     return $this->cod_cidade()->first() <> '' ? $this->cod_cidade()->first()->cod_estado:'';
+    // }
+
+    // public function getCodPaisAttribute()
+    // {
+    //     return $this->cod_cidade()->first() <> ''? $this->cod_cidade()->first()->cod_pais:'';
+    // }
 
     // Custom functions end
 

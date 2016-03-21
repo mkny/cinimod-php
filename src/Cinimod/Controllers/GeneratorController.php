@@ -218,6 +218,7 @@ class GeneratorController extends Controller
           $config_str[$key]['type'] = isset($value['type']) ? $value['type']:'string';
           $config_str[$key]['form'] = isset($value['form']) ? $value['form']:true;
           $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
+          $config_str[$key]['relationship'] = isset($value['relationship']) ? $value['relationship']:false;
           $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
           $config_str[$key]['order'] = isset($value['order']) ? $value['order']:0;
 
