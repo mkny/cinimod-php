@@ -72,6 +72,13 @@ class CinimodServiceProvider extends ServiceProvider
 		$router->middleware('admin','Mkny\Cinimod\Middleware\Admin');
 		$router->middleware('site','Mkny\Cinimod\Middleware\Site');
 
+		// Sai do csrf
+		// $router->group([
+		// 	'prefix' => 'admin',
+		// 	'namespace' => $this->namespace], function($router){
+		// 	
+		// });
+		
 		$router->group([
 			'middleware' => ['web', 'admin'],
 			'prefix' => 'admin',
@@ -91,32 +98,32 @@ class CinimodServiceProvider extends ServiceProvider
 				$router->controller('rel', 'ReportController');
 			});
 
-		$this->routeResolver($router);
+		// $this->routeResolver($router);
 
 		
 
 	}
 
-	public function routeResolver($router)
-	{
-		// Router resolver
-		$fs = new \Illuminate\Filesystem\Filesystem();
-		$controllersPath = mkny_app_path().'/Controllers';
-		$files = $fs->files($controllersPath);
-		if(!count($files)){
-			return;
-		}
+	// public function routeResolver($router)
+	// {
+	// 	// Router resolver
+	// 	$fs = new \Illuminate\Filesystem\Filesystem();
+	// 	$controllersPath = mkny_app_path().'/Controllers';
+	// 	$files = $fs->files($controllersPath);
+	// 	if(!count($files)){
+	// 		return;
+	// 	}
 
-		$router->group([
-			'namespace' => 'Mkny\App\Controllers',
-			'as' => 'app',
-			'prefix' => 'resolver',
-			], function($router) use($files) {
-				foreach ($files as $c) {
-					$router->controller(strtolower(substr(basename($c),0,1)),substr(basename($c),0,-4));
-				}
-			});
+	// 	$router->group([
+	// 		'namespace' => 'Mkny\App\Controllers',
+	// 		'as' => 'app',
+	// 		'prefix' => 'resolver',
+	// 		], function($router) use($files) {
+	// 			foreach ($files as $c) {
+	// 				$router->controller(strtolower(substr(basename($c),0,1)),substr(basename($c),0,-4));
+	// 			}
+	// 		});
 
 		
-	}
+	// }
 }

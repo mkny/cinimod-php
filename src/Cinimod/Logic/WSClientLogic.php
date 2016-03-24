@@ -4,47 +4,78 @@ namespace Mkny\Cinimod\Logic;
 
 // WS Type (soap/rest)
 
-
 /**
  * Classe para tratamento de WS - Requests
  * 
- * usage:
+ * @usage
  * 
- * $ws->init('http://www.predic8.com:8080/material/ArticleService?wsdl');
- * dd($ws->getAll());
- * or
- * $ws->init('http://www.webservicex.com/globalweather.asmx?wsdl');
- * dd($ws->GetCitiesByCountry('Brazil'));
+$ws->init('http://lara.local/soap?wsdl', array(
+
+));
+$a = $ws->getTreinos();
+dd($a);
+
+or
+
+$ws->init('http://www.predic8.com:8080/material/ArticleService?wsdl');
+dd($ws->getAll());
+
+or
+
+$ws->init('http://www.webservicex.com/globalweather.asmx?wsdl');
+dd($ws->GetCitiesByCountry('Brazil'));
+ *
+ * 
  */
-class WSLogic extends MknyLogic {
+class WSClientLogic {
 	// private $ws_url;
+	/**
+	 * Armazena o objeto soap
+	 * 
+	 * @var \SoapClient
+	 */
 	private $ws_client;
+
+	/**
+	 * Armazena os tipos de dados da funcao
+	 * 
+	 * @var array
+	 */
 	private $ws_types;
+
+	/**
+	 * Armazena os metodos da funcao
+	 * @var array
+	 */
 	private $ws_methods;
 
-
+	/**
+	 * Armazena as funcoes disponiveis no WS, com os tipos casados
+	 * 
+	 * @var array
+	 */
 	private $available_functions;
 
 	// private $debug = false;
-
-	public function __construct()
-	{
-		parent::__construct();
-		ini_set('default_socket_timeout', '10');
-	}
-
+	
 	/**
 	 * Inicializador da classe
 	 * 
 	 * @param  string $url Url do WS
 	 * @return void
 	 */
-	public function init($url){
-		$this->ws_client = @new \SoapClient($url, array(
-			// 'soap_version' => SOAP_1_2
-			));
-		// Implementar debug-trace
-		// array('trace' => 1);
+	public function init($url, $config=false){
+		if($this->ws_client){
+			return;
+		}
+
+		// 'soap_version' => SOAP_1_2
+		// 'trace' => TRUE
+		$config = $config?:array();
+		
+		$this->ws_client = new SoapClientDebug($url, $config);
+		
+		// Chama o construtor de metodos da classe
 		return $this->build();
 	}
 
@@ -52,8 +83,8 @@ class WSLogic extends MknyLogic {
 	 * Faz a chamada do metodo do webservice
 	 * 
 	 * @param  string $method Nome do metodo
-	 * @param  array $args   Argumentos passados na funcao
-	 * @return array         Retorno do metodo WS
+	 * @param  array $args Argumentos passados na funcao
+	 * @return array Retorno do metodo WS
 	 */
 	public function __call($method, $args){
 		$methods = $this->getAvailableFunctions();
@@ -62,35 +93,50 @@ class WSLogic extends MknyLogic {
 		if (!isset($methods[$method])) {
 			abort(400, 'Metodo invalido!');
 		} elseif(count($methods[$method]) > 0){
+
 			// Se existem parametros
 			$method_parameters = $methods[$method];
 			if(count($method_parameters) <> count($args)){
 				abort(400, 'Quantidade de parametros nao bate');
 			}
+
 			// Combina os parametros solicitados, com os argumentos informados, montando o request
 			$params = array_combine($method_parameters,$args);
 		} else {
-			$params = null;
+			$params = [];
 		}
 
 		// Passa pro tratador, apos efetuar o request no ws, fornecendo os parametros
-		return $this->treatRequest($this->getWSClient()->{$method}($params));
+		if(count($params) == 0){
+			return $this->treatRequest($this->getWSClient()->{$method}());
+		} else {
+			return $this->treatRequest($this->getWSClient()->{$method}($params));
+		}
 	}
 
 	/**
 	 * Faz o tratamento do retorno
 	 * 
-	 * @param  \stdClass $request Retorno da requisicao
+	 * @todo Implementar tratamento do retorno, com os objetos
+	 * 
+	 * @param  \stdClass|array $request Retorno da requisicao
 	 * @return array             Dados retornados
 	 */
-	private function treatRequest(\stdClass $request)
+	private function treatRequest($request)
 	{
 		// Define um formato vazio
 		$fRequest = '';
-		// Pre-formata o request (tirando o primeiro indice inutil que vem sempre)
-		$pre = array_values((array) $request)[0];
-		
-		// Faz o tratamento, pelo tipo de variavel !important
+
+		// Preformatacao do request
+		$pre = $request;
+
+		// Tratamento para WS em .NET
+		if(strstr(array_keys((array) $request)[0], 'Result') !== false){
+			// Pre-formata o request (tirando o primeiro indice inutil que vem sempre)
+			$pre = array_values((array) $request)[0];
+		}
+
+		// Faz o tratamento, pelo tipo de variavel
 		switch(gettype($pre)){
 			case 'object':
 			case 'array':
@@ -102,13 +148,14 @@ class WSLogic extends MknyLogic {
 			break;
 		}
 
+		// Retorna os dados
 		return $fRequest;
 	}
 
 	/**
 	 * Retorna o objeto ws_client
 	 * 
-	 * @return SoapClient Objeto cliente
+	 * @return \SoapClient Objeto cliente
 	 */
 	public function getWSClient(){
 		return $this->ws_client;
@@ -137,9 +184,17 @@ class WSLogic extends MknyLogic {
 		// Varre as funcoes, formatando
 		foreach ($functions as $func) {
 			$f_parts = explode('(', explode(' ', trim($func))[1]);
+
+			// No WS em php, vem esse indice
+			if ($f_parts[1] == ')') {
+				$f_parts[1] = null;
+			}
+
+			// Atribui tipo de parametro, a funcao
 			$arrFunctions[$f_parts[0]] = $f_parts[1];
 		}
 
+		// Setta na classe
 		return $this->ws_methods = $arrFunctions;
 	}
 
@@ -148,7 +203,7 @@ class WSLogic extends MknyLogic {
 	 * @param  array $types Array de tipos informados
 	 * @return array        Array de tipos tratados
 	 */
-	private function build_types($types)
+	private function build_types($types, $types_aux=false)
 	{
 		// Array vazio
 		$arrTypes = array();
@@ -186,13 +241,10 @@ class WSLogic extends MknyLogic {
 
 		// Faz o casamento funcao <> tipos
 		foreach ($functions as $fname => $ftype) {
-			$functions[$fname] = $types[$ftype];
+			$functions[$fname] = isset($types[$ftype]) ? $types[$ftype]:array();
 		}
 
 		// Armazena na variavel principal
 		$this->available_functions = $functions;
 	}
-
-
-
 }
