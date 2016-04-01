@@ -9,12 +9,12 @@ use Zend\Soap;
 
 /**
 * Cria um WebService Server, em SOAP
-* 
+* @depends zendframework/zend-soap (composer require "zendframework/zend-soap": "^2.5")
 * @usage
 * 
 $wss->init();
 $wss->setClass('\App\Services\TreinoService');
-$wss->handle();
+return $wss->handle();
 */
 class WSServerLogic
 {
@@ -35,6 +35,8 @@ class WSServerLogic
 	 * 
 	 * @param  string $wsUrl Url do WS
 	 * @return xml|WS
+	 * 
+	 * @reminder Ao chamar a funcao, necessario criar uma rota (head/get ou any) simplificada para a mesma!
 	 */
 	public function init($wsUrl=false)
 	{
@@ -43,10 +45,10 @@ class WSServerLogic
 		if(!$wsUrl){
 			$wsUrlMake = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 			$wsUrlParts = parse_url($wsUrlMake);
-			$wsUrl = "http://{$wsUrlParts['host']}{$wsUrlParts['path']}";
+			$wsUrl = "http://{$wsUrlParts['host']}".(isset($wsUrlParts['port'])?':'.$wsUrlParts['port']:'')."{$wsUrlParts['path']}";
 		}
 
-		// Atribuia  url para a classe
+		// Atribui a url para a classe
 		$this->ws_url = $wsUrl;
 	}
 
@@ -90,7 +92,8 @@ class WSServerLogic
 
         // Informa a url do WS
 		$autodiscover->setUri($this->ws_url);
-		// Gera
+
+		// Gera os dados
 		$wsdl = $autodiscover->generate();
 		$wsdl = $wsdl->toDomDocument();
 

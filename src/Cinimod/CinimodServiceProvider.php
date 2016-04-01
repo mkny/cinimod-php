@@ -73,11 +73,15 @@ class CinimodServiceProvider extends ServiceProvider
 		$router->middleware('site','Mkny\Cinimod\Middleware\Site');
 
 		// Sai do csrf
-		// $router->group([
-		// 	'prefix' => 'admin',
-		// 	'namespace' => $this->namespace], function($router){
-		// 	
-		// });
+		$router->group([
+			'middleware' => ['web', 'admin'],
+			'prefix' => 'admin',
+			'as' => 'adm::',
+			'namespace' => $this->namespace
+			], function($router){
+			$router->controller('dashboard', 'DashboardController');
+			$router->controller('rel', 'ReportController');
+		});
 		
 		$router->group([
 			'middleware' => ['web', 'admin'],
@@ -94,8 +98,8 @@ class CinimodServiceProvider extends ServiceProvider
 					'getDeleter' => 'gen::del',
 					'getConfig' => 'config'
 					]);
-				$router->controller('dashboard', 'DashboardController');
-				$router->controller('rel', 'ReportController');
+				// $router->controller('dashboard', 'DashboardController');
+				
 			});
 
 		// $this->routeResolver($router);

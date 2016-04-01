@@ -44,3 +44,7 @@ class BaseMknyPresenter extends Presenter {
 		return date('d/m/Y H:i', strtotime($this->entity->dta_atualizacao));
 	}
 }
+
+$treino->dta_cadastro;
+// $a = new BaseMknyPresenter();
+// $a->blablaba();

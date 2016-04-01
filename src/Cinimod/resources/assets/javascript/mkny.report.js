@@ -160,11 +160,12 @@ $(function(){
 	$('[data-chart]').each(function(){
 		var e = $(this);
 		var charttype = e.data('charttype') || 'pie';
-		new Report(e.get(0))[charttype](e.data('chart'));
 
-		// r(e.get(0), function(t){
-		// 	t[charttype](e.data('chart'));
-		// });
+		// Instancia o Report
+		var r = new Report(e.get(0));
+
+		// Chama a funcao especifica, passando o nome do chart
+		r[charttype](e.data('chart'));
 	});
 });
 

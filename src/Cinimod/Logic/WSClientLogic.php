@@ -9,9 +9,7 @@ namespace Mkny\Cinimod\Logic;
  * 
  * @usage
  * 
-$ws->init('http://lara.local/soap?wsdl', array(
-
-));
+$ws->init('http://lara.local/soap?wsdl');
 $a = $ws->getTreinos();
 dd($a);
 
@@ -28,7 +26,7 @@ dd($ws->GetCitiesByCountry('Brazil'));
  * 
  */
 class WSClientLogic {
-	// private $ws_url;
+
 	/**
 	 * Armazena o objeto soap
 	 * 
@@ -64,16 +62,10 @@ class WSClientLogic {
 	 * @param  string $url Url do WS
 	 * @return void
 	 */
-	public function init($url, $config=false){
-		if($this->ws_client){
-			return;
-		}
-
-		// 'soap_version' => SOAP_1_2
-		// 'trace' => TRUE
-		$config = $config?:array();
+	public function init($url, $config=array()){
 		
-		$this->ws_client = new SoapClientDebug($url, $config);
+		// Instancia do SoapClient
+		$this->ws_client = new \SoapClient($url, $config);
 		
 		// Chama o construtor de metodos da classe
 		return $this->build();
@@ -87,9 +79,9 @@ class WSClientLogic {
 	 * @return array Retorno do metodo WS
 	 */
 	public function __call($method, $args){
-		$methods = $this->getAvailableFunctions();
-
+		
 		// Verifica se o metodo existe no WS
+		$methods = $this->getAvailableFunctions();
 		if (!isset($methods[$method])) {
 			abort(400, 'Metodo invalido!');
 		} elseif(count($methods[$method]) > 0){
@@ -129,7 +121,7 @@ class WSClientLogic {
 
 		// Preformatacao do request
 		$pre = $request;
-
+		
 		// Tratamento para WS em .NET
 		if(strstr(array_keys((array) $request)[0], 'Result') !== false){
 			// Pre-formata o request (tirando o primeiro indice inutil que vem sempre)
@@ -149,7 +141,7 @@ class WSClientLogic {
 		}
 
 		// Retorna os dados
-		return $fRequest;
+		return json_decode(json_encode($fRequest));
 	}
 
 	/**

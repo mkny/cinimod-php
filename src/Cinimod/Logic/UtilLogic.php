@@ -6,11 +6,11 @@ use DB;
 
 use Illuminate\Filesystem\Filesystem;
 
-class UtilLogic extends MknyLogic {
-    public function __construct()
-    {
-        parent::__construct();
-    }
+class UtilLogic {
+    // public function __construct()
+    // {
+    //     parent::__construct();
+    // }
 
     // camel_case
 	static public function camelCase($string, $search="_", $replace="")

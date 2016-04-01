@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 // Controller
 use App\Http\Controllers\Controller;
 // Logic
-use Mkny\Cinimod\Logic;
+use Mkny\Cinimod\Logic\ReportLogic;
 
 // Report related
 use DB;
@@ -22,17 +22,17 @@ class ReportController extends Controller
 	 * 
 	 * @var object
 	 */
-	private $logic;
+	// private $logic;
 
 	/**
 	 * Construtor da classe
 	 * 
 	 * @param ReportLogic $r
 	 */
-	public function __construct(Logic\ReportLogic $r)
-	{
-		$this->logic = $r;
-	}
+	// public function __construct(Logic\ReportLogic $r)
+	// {
+	// 	$this->logic = $r;
+	// }
 
 	/**
 	 * Index, retorna uma tela simples parametrizada
@@ -50,24 +50,17 @@ class ReportController extends Controller
 	 * 
 	 * @return json Relatorio formatado para o Google Charts
 	 */
-	public function getGet()
+	public function getGet(ReportLogic $r)
 	{
 		// Busca o nome do relatorio
-		$report_namespace = $this;
+		// $report_namespace = $this;
 		$report_request = \Request::input('report');
-
-		// Depois implementar isso
-		// if(strstr($report_request, '::')){
-		// 	$report_parts = explode('::', $report_request);
-		// 	$report_namespace = app("\App\Http\Controllers\\".(ucfirst($report_parts[0])).'Controller');
-		// 	$report_request = $report_parts[1];
-		// }
 
 		// Atribui um rows vazio
 		$rows = array();
 
 		// Verifica se é mesmo um report request!
-		if(substr($report_request, 0,6) === 'report' && method_exists($report_namespace, $report_request)){
+		if(substr($report_request, 0,6) === 'report' && method_exists($this, $report_request)){
 			$rows = $this->{$report_request}();
 		} else {
 			// Joga uma exception caso nao exista!
@@ -78,13 +71,13 @@ class ReportController extends Controller
 		$arrConfig = [];
 
 		// Adiciona as linhas no Logic
-		$this->logic->setBody($rows);
+		$r->setBody($rows);
 
 		// Montador de colunas
-		$arrConfig['cols'] = $this->logic->getHeadersFormat('js');
+		$arrConfig['cols'] = $r->getHeadersFormat('js');
 
 		// Montador de linhas
-		$arrConfig['rows'] = $this->logic->getBodyFormat('js');
+		$arrConfig['rows'] = $r->getBodyFormat('js');
 
 		// Retorna o array para o laravel, que ira retornar o json
 		return $arrConfig;
@@ -113,8 +106,9 @@ class ReportController extends Controller
 	// Dummy report - Database + Geo
 	private function report_geo_selling()
 	{
-		$rows = Models\Cidade::where('cod_estado', '=', '13')
-		->where('nom_cidade', 'ilike', 'u%')
+		$rows = Models\Cidade::orderBy('nom_cidade')
+		// ->where('cod_estado', '=', '13')
+		->where('nom_cidade', 'ilike', 'aba%')
 		->get([
 			'nom_cidade',
 			'cod_cidade'
@@ -129,8 +123,8 @@ class ReportController extends Controller
 		->groupBy('tc.nom_categoria')
 		->get([
 			DB::raw('tc.nom_categoria AS "Categoria"'),
-			DB::raw('count(tab_questao.des_questao) AS "Quantidade"'),
-			DB::raw('10 AS "Quantidade_2"')
+			DB::raw('count(tab_questao.des_questao)::integer AS "Quantidade"'),
+			// DB::raw('10 AS "Quantidade_2"')
 			])
 		->toArray();
 		return $rows;

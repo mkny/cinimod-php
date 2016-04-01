@@ -2,7 +2,7 @@
 
 namespace Mkny\Cinimod\Logic;
 
-class ReportLogic extends MknyLogic {
+class ReportLogic {
 	private $options = [];
 	private $headers;
 	private $body;
@@ -12,7 +12,7 @@ class ReportLogic extends MknyLogic {
 	 * 
 	 */
 	public function __construct(){
-		parent::__construct();
+		// parent::__construct();
 
 		// Estes scripts devem ser carregados diretamente na view
 		UtilLogic::addViewVar('scripts', ['https://www.gstatic.com/charts/loader.js']);

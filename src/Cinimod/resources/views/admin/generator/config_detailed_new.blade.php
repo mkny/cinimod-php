@@ -74,9 +74,9 @@
 							<td>field_key</td>
 							<td>
 								{!! Form::text(
-								$field_config['name'].'[relationship][field_key]',
-								isset($field_config['relationship']['field_key']) ?$field_config['relationship']['field_key']:null,
-								['class' => 'form-control']
+									$field_config['name'].'[relationship][field_key]',
+									isset($field_config['relationship']['field_key']) ?$field_config['relationship']['field_key']:null,
+									['class' => 'form-control']
 								) !!}
 							</td>
 						</tr>
