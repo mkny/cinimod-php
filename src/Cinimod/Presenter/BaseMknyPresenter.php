@@ -45,6 +45,6 @@ class BaseMknyPresenter extends Presenter {
 	}
 }
 
-$treino->dta_cadastro;
+// $treino->dta_cadastro;
 // $a = new BaseMknyPresenter();
 // $a->blablaba();

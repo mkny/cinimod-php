@@ -8,8 +8,7 @@
       	@else
       		
       	@endif
-      	href="{!! $item->url() !!}"
-      	>
+      	href="{!! $item->url() !!}">
       	{!! $item->title !!} @if($item->hasChildren())<b class="caret"></b>@endif
       </a>
 

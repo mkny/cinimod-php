@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/">
                 <i><img src="/img/mafia-flower.png" style="width:20px;height: 20px;margin-top: -4px;" alt=""></i>
                 <b>Cinimod</b>
             </a>

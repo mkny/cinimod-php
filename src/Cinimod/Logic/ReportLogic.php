@@ -2,6 +2,29 @@
 
 namespace Mkny\Cinimod\Logic;
 
+
+
+/**
+ * Classe Report Logic
+ * 
+ * @usage
+	$d = \App\Models\Questao::orderBy('des_questao')
+	->join('sistema.tab_opcao', 'tab_questao.cod_questao', '=' ,'tab_opcao.cod_questao')
+	->groupBy('des_questao')
+	->get([
+		'des_questao',
+		DB::raw('count(0)::int AS qtd_opcoes')
+		])
+	->toArray()
+	;
+
+	$r->setHeaders([
+		'Questao' => 'string',
+		'Qtd Opcoes' => 'number'
+		]);
+	$r->setBody($d);
+	$r->pie('chart');
+ */
 class ReportLogic {
 	private $options = [];
 	private $headers;
@@ -140,6 +163,14 @@ class ReportLogic {
 		$fBody = '';
 		switch($type){
 			case 'normal':
+
+			$hBody = [];
+
+			foreach ($body as $key => $value) {
+				$hBody[] = (array_values($value));
+			}
+
+			$fBody = json_encode($hBody);
 			break;
 
 			// Caso seja 'js', o corpo ja vai formatado com as chaves adicionais
@@ -198,7 +229,7 @@ class ReportLogic {
 		$headers = $this->getHeadersFormat();
 
 		// Corpo do report
-		$data = json_encode($this->getBody());
+		$data = ($this->getBodyFormat());
 
 		// Monta o script
 		$script = "
@@ -231,7 +262,7 @@ class ReportLogic {
 		$headers = $this->getHeadersFormat();
 
 		// Corpo do report
-		$data = json_encode($this->getBody());
+		$data = ($this->getBodyFormat());
 
 		// Monta o script
 		$script = "
@@ -264,7 +295,7 @@ class ReportLogic {
 		$headers = $this->getHeadersFormat();
 
 		// Corpo do report
-		$data = json_encode($this->getBody());
+		$data = ($this->getBodyFormat());
 
 		// Monta o script
 		$script = "

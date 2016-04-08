@@ -75,17 +75,26 @@ class BaseMknyModel extends Model
             $config = $cfg;
             break;
         }
-        
-        if(isset(array_values($config)[0]['order'])){
+
+        if (isset(array_values($config)[1]['order'])) {
             usort(($config), function($dt, $db){
+                if(!isset($db['order'])){
+                    $db['order'] = 0;
+                }
                 if(isset($dt['order'])){
                     return $dt['order'] - $db['order'];
                 } else {
-                    return true;
+                    return 0;
                 }
             });
+
+            $newConfig = [];
+            foreach ($config as $sortfix) {
+                $newConfig[$sortfix['name']] = $sortfix;
+            }
+            $config = $newConfig;
         }
-        
+
         return $config;
     }
 

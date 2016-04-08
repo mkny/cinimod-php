@@ -7,19 +7,6 @@ use DB;
 use Illuminate\Filesystem\Filesystem;
 
 class UtilLogic {
-    // public function __construct()
-    // {
-    //     parent::__construct();
-    // }
-
-    // camel_case
-	static public function camelCase($string, $search="_", $replace="")
-	{
-		return str_replace(' ', $replace, ucwords(str_replace($search, ' ', $string)));
-
-	}
-
-
 
     /**
      * Funcao para traduzir a stub
@@ -60,6 +47,7 @@ class UtilLogic {
         view()->share($key, $value);
     }
 
+    
     static public function array_finder($array, $key)
     {
         foreach ($array as $k => $v) {

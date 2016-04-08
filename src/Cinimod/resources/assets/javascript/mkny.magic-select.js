@@ -12,7 +12,8 @@
 
 	var firer,
 	oldvalues,
-	element;
+	element,
+	isLoading=false;
 
 	var isInit = false;
 
@@ -50,8 +51,9 @@ Selection.prototype = {
 			that.element.html(load);
 
 			
-			if(e.val()){
-				_mkny.backbone('/q/combo', {
+			if(e.val() && !that.isLoading){
+				that.isLoading = true;
+				_mkny.backbone('/p/combo', {
 					'method_name' : that.element.attr('name'),
 					'filter' : that.firer.val() || that.firer.data('value')
 				}, function(data){
@@ -60,14 +62,15 @@ Selection.prototype = {
 						var ob = data.data[i];
 						that.opt(ob.name,ob.id).appendTo(that.element);
 					}
+					isLoading = false;
 					selectValue(that.element);
 					that.element.trigger('change');
 				}, function(){
-
+					isLoading = false;
 				}, {
 					type: 'get'
 				});
-			} else {
+			} else if(!that.isLoading){
 				setTimeout(function(){
 					that.element.html(that.oldvalues);
 				},1000);

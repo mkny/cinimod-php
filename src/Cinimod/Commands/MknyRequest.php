@@ -119,6 +119,10 @@ class MknyRequest extends GeneratorCommand
 
         $strRules = '';
         foreach ($columns as $key => $col) {
+            // Debug Estado!
+            // echo '<pre>';
+            // print_r($col);
+            // exit;
             // Pula a primary key
             if($key==0) {
                 continue;

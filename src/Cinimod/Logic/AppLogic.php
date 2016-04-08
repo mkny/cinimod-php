@@ -5,7 +5,7 @@ namespace Mkny\Cinimod\Logic;
 use DB;
 use Schema;
 
-class AppLogic extends MknyLogic {
+class AppLogic {
 	/**
 	 * Array associativo de formatos (db) para rules (code)
 	 * @var array
@@ -292,6 +292,37 @@ class AppLogic extends MknyLogic {
 		return $schema;
 	}
 
+	public function _getPrimaryKey($table)
+	{
+		$table_parts = explode('.', $table);
+		$table_name = $table_parts[1];
+		$sql = "SELECT  t.table_catalog,
+         t.table_schema,
+         t.table_name,
+         kcu.constraint_name,
+         kcu.column_name,
+         kcu.ordinal_position
+FROM    INFORMATION_SCHEMA.TABLES t
+         LEFT JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+                 ON tc.table_catalog = t.table_catalog
+                 AND tc.table_schema = t.table_schema
+                 AND tc.table_name = t.table_name
+                 AND tc.constraint_type = 'PRIMARY KEY'
+         LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
+                 ON kcu.table_catalog = tc.table_catalog
+                 AND kcu.table_schema = tc.table_schema
+                 AND kcu.table_name = tc.table_name
+                 AND kcu.constraint_name = tc.constraint_name
+WHERE   t.table_name = '{$table_name}'
+ORDER BY t.table_catalog,
+         t.table_schema,
+         t.table_name,
+         kcu.constraint_name,
+         kcu.ordinal_position;";
+         
+         return DB::select($sql)[0]->column_name;
+	}
+
 	public function buildColumnsWithKeys($table){
 		$arrUnify = [];
 
@@ -308,7 +339,7 @@ class AppLogic extends MknyLogic {
 			}
 
 			if($cvalue->rel_type == 'UNIQUE'){
-				$arrUnify[$cvalue->table_foreign_field]->uniq_field = "'.(\Schema::getConnection()->getName()).'.{$cvalue->schema_foreign}.{$cvalue->table_foreign},{$cvalue->table_foreign_field},'.(\$this->one?:0).',{$constraints[0]->table_foreign_field}";
+				$arrUnify[$cvalue->table_foreign_field]->uniq_field = "'.(\Schema::getConnection()->getName()).'.{$cvalue->schema_foreign}.{$cvalue->table_foreign},{$cvalue->table_foreign_field},'.(\$this->one?:0).',{$this->_getPrimaryKey($table)}";
 			}
 		}
 

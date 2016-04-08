@@ -35,22 +35,11 @@ abstract class CRUDController extends Controller
 
     protected function index()
     {
-        $data = $this->datagrid();
-        return view('cinimod::admin.default.list')->with('data',$data);
-    }
 
-
-    /**
-     * Datagrid action
-     * 
-     * -Implementando busca referenciada (parei kk)
-     */
-    protected function datagrid()
-    {
-        // skip (OFFSET HAHA)
         // Pega as configuracoes de campos para a datagrid
         $config = $this->model->_getConfig('datagrid');
 
+        $controller = $this->_getControllerName();
         
         // Ordena os campos
         $order = $this->model->primaryKey;
@@ -62,29 +51,106 @@ abstract class CRUDController extends Controller
         // Quantidade por pagina
         $limit = \Request::input('perpage', 10);
 
+
+        // $rows_debug = $this
+        // ->model
+        // ->with('cod_cidades')
+        // ->orderBy($order, 'asc')
+        // ->get(['cod_cidades.cod_estado'])
+        // ;
+        // echo '<pre>';
+        // print_r($rows_debug);
+        // exit;
+
+        // Pega os dados do banco
         $rows = $this
         ->model
         ->orderBy($order, \Request::input('card', 'asc'))
+        // ->with('cod_cidades')
         ->paginate(
             // Qtd de campos
             $limit,
             // Pega os fieldnames para o select
             array_keys($config)
-            )->appends(\Request::only(['order', 'card', 'perpage']));
-        
-        // Titulo da pagina
-        $data['title'] = $this->_getControllerName()." List ";
-        $data['fields'] = $config;
-        $data['card'] = (\Request::input('card', 'asc') == 'asc') ? 'desc':'asc';
-        $data['grid'] = $rows;
-        // Nome do controlador
-        $data['controller'] = $this->_getControllerName();
-        // dd($data);
-        // Configuracao do link de exibicao da paginacao
-        // $data['grid']->setPath('index/'.http_build_query($_GET));
+            )
+        ->appends(\Request::only(['order', 'card', 'perpage']));
 
-        return $data;
+        // Monta o datagrid
+        $datagrid = $this->_getDatagrid($rows, $config, $this->model->primaryKey, $controller);
+
+        // Monta os dados para exibicao
+        $data = array(
+            'title' => $controller . ' List',
+            'table' => $datagrid,
+            'controller' => $controller,
+            'grid' => $rows
+            );
+
+        return view('cinimod::admin.default.list_new')->with(['data' => $data]);
     }
+
+    protected function _getDatagrid($rows, $config, $primaryKey, $controller)
+    {
+        return $this->CL->datagrid(
+            $rows,
+            $config,
+            $primaryKey,
+            $controller
+            );
+    }
+
+    // protected function index()
+    // {
+    //     $data = $this->datagrid();
+    //     return view('cinimod::admin.default.list')->with('data',$data);
+    // }
+
+
+    // /**
+    //  * Datagrid action
+    //  * 
+    //  * -Implementando busca referenciada (parei kk)
+    //  */
+    // protected function datagrid()
+    // {
+    //     // skip (OFFSET HAHA)
+    //     // Pega as configuracoes de campos para a datagrid
+    //     $config = $this->model->_getConfig('datagrid');
+
+
+    //     // Ordena os campos
+    //     $order = $this->model->primaryKey;
+    //     $orderParam = \Request::input('order');
+    //     if ($orderParam) {
+    //         $order = array_keys($config)[$orderParam];
+    //     }
+
+    //     // Quantidade por pagina
+    //     $limit = \Request::input('perpage', 10);
+
+    //     $rows = $this
+    //     ->model
+    //     ->orderBy($order, \Request::input('card', 'asc'))
+    //     ->paginate(
+    //         // Qtd de campos
+    //         $limit,
+    //         // Pega os fieldnames para o select
+    //         array_keys($config)
+    //         )->appends(\Request::only(['order', 'card', 'perpage']));
+
+    //     // Titulo da pagina
+    //     $data['title'] = $this->_getControllerName()." List ";
+    //     $data['fields'] = $config;
+    //     $data['card'] = (\Request::input('card', 'asc') == 'asc') ? 'desc':'asc';
+    //     $data['grid'] = $rows;
+    //     // Nome do controlador
+    //     $data['controller'] = $this->_getControllerName();
+    //     // dd($data);
+    //     // Configuracao do link de exibicao da paginacao
+    //     // $data['grid']->setPath('index/'.http_build_query($_GET));
+
+    //     return $data;
+    // }
 
     /**
      * Show the form for creating a new resource.

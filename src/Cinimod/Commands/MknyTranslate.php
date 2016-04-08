@@ -115,7 +115,7 @@ class MknyTranslate extends GeneratorCommand
         $fields = [];
         foreach ($columns as $col) {
             $field = $col->name;
-            $field_camel = Logic\UtilLogic::camelCase($col->name, '_', ' ');
+            $field_camel = camel_case($col->name, '_', ' ');
             $fields[] = "\n\t// {$field}\n\t'{$field}_grid' => '{$field_camel}',\n\t'{$field}_form' => '{$field_camel}',\n\t'{$field}_form_tip' => '{$field_camel}',\n";
         }
 

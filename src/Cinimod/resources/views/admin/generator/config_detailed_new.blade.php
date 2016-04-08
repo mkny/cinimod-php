@@ -38,7 +38,7 @@
 					<a href="javascript:;" onclick="var e = $(this).closest('tr');e.prev('tr').before(e);recount();">up</a>
 					<br>
 					<a href="javascript:;" onclick="var e = $(this).closest('tr');e.next('tr').after(e);recount();">down</a>
-					{!! Form::hidden($field_config['name'].'[order]', $field_config['order'], ['class' => 'input-count']) !!}
+					{!! Form::text($field_config['name'].'[order]', $field_config['order'], ['class' => 'input-count']) !!}
 				</td>
 				<td>{{$field_config['name']}}</td>
 				<td>

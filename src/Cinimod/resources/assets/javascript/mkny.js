@@ -43,11 +43,12 @@ Mkny.prototype = {
 		}
 
 		var _type = options['type'] || 'post';
-
+		// var _async = options['async'] ? true:false;
 
 		var ajx = $.ajax(caller, {
 			data : options['data'],
 			type : _type,
+			// async : _async,
 			dataType: 'json'
 		});
 
@@ -62,6 +63,7 @@ Mkny.prototype = {
 		.fail(function( jqXHR, textStatus, errorThrown ) {
 			callFail();
 		});
+		return ajx;
 
 
 		// var def = $.Deferred(),

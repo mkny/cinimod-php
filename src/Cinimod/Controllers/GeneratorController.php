@@ -210,7 +210,7 @@ class GeneratorController extends Controller
         
         // Pula o primeiro indice
         array_shift($config_str);
-
+        $valOrder=0;
         // Fornece o tipo "types" para todos os campos, para selecao
         foreach ($config_str as $key => $value) {
 
@@ -220,14 +220,28 @@ class GeneratorController extends Controller
           $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
           $config_str[$key]['relationship'] = isset($value['relationship']) ? $value['relationship']:false;
           $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
-          $config_str[$key]['order'] = isset($value['order']) ? $value['order']:0;
+          $config_str[$key]['order'] = isset($value['order']) ? $value['order']:$valOrder++;
 
           $config_str[$key]['types'] = array_combine($f_types,$f_types);
         }
-        if(isset(array_values($config_str)[0]['order'])){
-          usort(($config_str), function($dt, $db){
-            return $dt['order'] - $db['order'];
-          });
+
+        if (isset(array_values($config_str)[1]['order'])) {
+            usort(($config_str), function($dt, $db){
+                if(!isset($db['order'])){
+                    $db['order'] = 0;
+                }
+                if(isset($dt['order'])){
+                    return $dt['order'] - $db['order'];
+                } else {
+                    return 0;
+                }
+            });
+
+            $newConfig = [];
+            foreach ($config_str as $sortfix) {
+                $newConfig[$sortfix['name']] = $sortfix;
+            }
+            $config_str = $newConfig;
         }
         
         $data['controller'] = $controller;

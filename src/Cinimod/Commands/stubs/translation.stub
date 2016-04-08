@@ -13,6 +13,8 @@ return [
 	'button_status_disable' => 'Desativar',
 	'button_status_enable' => 'Ativar',
 
+	'actions_grid' => 'Ações',
+
 	{{variables_data}}
 ];
 

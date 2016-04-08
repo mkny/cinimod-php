@@ -4,9 +4,132 @@ namespace Mkny\Cinimod\Logic;
 
 use DB;
 
-class CRUDLogic extends MknyLogic {
-	public function getForm($Model = false, $Action, $FormFields, $ControllerName)
-	{
+class CRUDLogic {
+
+    /**
+     * Facilitador para montagem da datagrid
+     * 
+     * @param  Illuminate\Pagination\LengthAwarePaginator $dbRows      Paginador
+     * @param  array $fields_data Configuracao de campos
+     * @param  string $pkey        Nome da primary key
+     * @param  string $modelName   Nome do model
+     * @return array              Tabela + paginator
+     */
+    public function datagrid($dbRows,$fields_data, $pkey, $modelName)
+    {
+        // echo '<pre>';
+        // print_r($dbRows);
+        // exit;
+        // Instancia a tabela
+        $table = new TableLogic();
+
+        // Trata os fields, apenas para pegar os nomes
+        $fields = array_keys($fields_data);
+
+
+        // Adiciona as classes na tabela
+        $table->addTableClass([
+            'table',
+            'table-striped',
+            'check-all-container'
+            ]);
+
+        // Monta todos os cabecalhos, inclusive os dinamicos
+        $headers = array_merge(
+            array('checks' => [\Form::checkbox('idx', '', '', ['class' => 'checkbox check-all'])]),
+            $fields,
+            array('actions')
+            );
+
+
+        // Traducao dos headers, que vem com os nomes do banco de dados, 
+        // aqui eles tomam nomes especificos dos arquivos de configuracao
+        $headersTranslated = [];
+        foreach ($headers as $field_key => $field_name) {
+            // Se nao for numerico, indica um conteudo customizado
+            if(is_numeric($field_key)){
+                $headersTranslated[$field_name] = trans($modelName.'.'.$field_name.'_grid');
+
+                // Aqui faz o tratamento do link no titulo,
+                // Usado para campos de busca, ordenacao, etc
+                if(isset($fields_data[$field_name]['searchable']) && $fields_data[$field_name]['searchable']){
+                    // Insere o link nos items marcados como searchable (o link e de ordenacao)
+                    $headersTranslated[$field_name] = [
+                    \Html::tag(
+                        'a',
+                        $headersTranslated[$field_name],
+                        ['href' => "?order=".array_search($field_name, $fields)."&card=".(\Request::input('card', 'asc') == 'asc' ? 'desc':'asc')]
+                        )
+                    ];
+                }
+            } else {
+                // Conteudo customizado
+                $headersTranslated[$field_key] = $field_name;
+            }
+        }
+        // Setta os headers
+        $table->setHeaders($headersTranslated);
+
+        // Monta as linhas
+        // Fiz essa alteracao por causa do presenter()
+        $dataRows = [];
+        foreach ($dbRows->items() as $item) {
+            // Monta as colunas
+            $dataCols = [];
+            foreach ($fields as $field_name) {
+                if (isset($fields_data[$field_name]['relationship']) && $fields_data[$field_name]['relationship']) {
+                    if($item->{$field_name.'s'}){
+                        $dataCols[$field_name] = $item->{$field_name.'s'}->{$fields_data[$field_name]['relationship']['field_show']};
+                    } else {
+                        $dataCols[$field_name] = '';
+                    }
+                } else {
+                    // Setta a coluna com o presenter no array de colunas
+                    $dataCols[$field_name] = $item->present()->{$field_name};
+                }
+            }
+
+            // Setta a linha no array de linhas
+            $dataRows[] = $dataCols;
+        }
+
+        // Aqui monta o objeto propriamente dito
+        foreach ($dataRows as $dataRow) {
+
+            // Adiciona o check individual
+            $dataRow['checks'] = array(
+                \Form::checkbox('id_sec[]', $dataRow[$pkey], '', ['class'=> 'checkbox'])
+                );
+
+            // Adiciona os botoes
+            $dataRow['actions'] = array(
+                // \Html::tag('center', [
+                    $table->button(
+                        action($modelName.'Controller@getEdit', [$dataRow[$pkey]]),
+                        'Editar',
+                        'glyphicon glyphicon-edit btn btn-sm btn-success'),
+
+                    $table->button(
+                        action($modelName.'Controller@getSwitchStatus', [$dataRow[$pkey]]),
+                        'Editar',
+                        'glyphicon btn btn-sm '.($dataRow['ind_status'] == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info')),
+
+                    $table->button(
+                        action($modelName.'Controller@getDelete', [$dataRow[$pkey]]),
+                        'Editar',
+                        'glyphicon glyphicon-trash btn btn-sm btn-danger')
+                    // ], ['class' => ''])
+                );
+
+            $table->insertRow($dataRow);
+        }
+
+        // Retorna a tabela montada
+        return $table->getTable();
+    }
+
+    public function getForm($Model = false, $Action, $FormFields, $ControllerName)
+    {
 
         if($Model){
             // Abre o form com os campos preenchidos 
@@ -42,6 +165,7 @@ class CRUDLogic extends MknyLogic {
 
                 // Se for um relacionamento
                 if(isset($field_config['relationship']) && $field_config['relationship']){
+                    // echo 'a';exit;
                     if(isset($field_config['relationship']['dependsOn']) && $field_config['relationship']['dependsOn']){
                         // class para funcoes ajax
                         $options['class'][] = 'mkny-select-depends';
@@ -71,7 +195,7 @@ class CRUDLogic extends MknyLogic {
 
                 
                 $options['data-value'] = ($Model?$Model->{$field_config['name']}:'');
-
+                
                 $options['class'] = implode(' ', $options['class']);
 
 

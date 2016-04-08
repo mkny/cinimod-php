@@ -28,7 +28,7 @@ $(function(){
 });
 function recount(){
 	$('.input-count').val(function(k,v){
-		return k;
+		return parseInt(k)+1;
 	});
 }
 

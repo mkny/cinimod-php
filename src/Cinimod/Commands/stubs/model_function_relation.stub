@@ -6,6 +6,6 @@
 	 * 
 	 * @return Eloquent\Model
 	 */
-	public function {{relation_field_id}}(){
+	public function {{relation_field_id}}s(){
 		return $this->belongsTo('\App\Models\{{relation_class_name}}', '{{relation_field_id}}');
 	}
