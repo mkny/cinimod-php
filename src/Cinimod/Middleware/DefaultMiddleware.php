@@ -79,6 +79,12 @@ abstract class DefaultMiddleware
         'description' => 'Configurador',
         'parent_id' => '1',
         ],
+        [
+        'id' => '4',
+        'linkhref' => 'admin/g/trans',
+        'description' => 'Tradutor',
+        'parent_id' => '1',
+        ],
         ];
 
         $menus_tree = $this->buildTree($menus);

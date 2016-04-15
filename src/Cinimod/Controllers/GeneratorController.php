@@ -226,22 +226,22 @@ class GeneratorController extends Controller
         }
 
         if (isset(array_values($config_str)[1]['order'])) {
-            usort(($config_str), function($dt, $db){
-                if(!isset($db['order'])){
-                    $db['order'] = 0;
-                }
-                if(isset($dt['order'])){
-                    return $dt['order'] - $db['order'];
-                } else {
-                    return 0;
-                }
-            });
-
-            $newConfig = [];
-            foreach ($config_str as $sortfix) {
-                $newConfig[$sortfix['name']] = $sortfix;
+          usort(($config_str), function($dt, $db){
+            if(!isset($db['order'])){
+              $db['order'] = 0;
             }
-            $config_str = $newConfig;
+            if(isset($dt['order'])){
+              return $dt['order'] - $db['order'];
+            } else {
+              return 0;
+            }
+          });
+
+          $newConfig = [];
+          foreach ($config_str as $sortfix) {
+            $newConfig[$sortfix['name']] = $sortfix;
+          }
+          $config_str = $newConfig;
         }
         
         $data['controller'] = $controller;
@@ -264,56 +264,9 @@ class GeneratorController extends Controller
       // Arquivo de configuracao
       $cfg_file = mkny_model_config_path($module).'.php';
 
-      // String do arquivo
-      $config_str = $this->files->getRequire($cfg_file);
 
-      // Construcao da nova string
-      // $config_new = array_filter(\Request::all());
-      $config_new = array_filter(\Request::only(array_merge(array_keys($config_str),array('new_fields'))));
-
-      if (isset($config_new['new_fields'])) {
-          $nf = $config_new['new_fields'];
-
-          foreach ($nf as $n_field) {
-            $name = $n_field['name'];
-            // unset($n_field['name']);
-
-            $config_new[$name] = $n_field;
-          }
-          
-          unset($config_new['new_fields']);
-      }
-
+      \Mkny\Cinimod\Logic\UtilLogic::updateConfigFile($cfg_file, \Request::all());
       
-
-      // Resultado gerado
-      $new_config_str = array_replace_recursive($config_str, $config_new);
-      // dd($new_config_str);
-      // Tratamento do true / false
-      foreach ($new_config_str as $key => $value) {
-        foreach ($value as $vKey => $vValue) {
-          if(in_array($vKey, array('order'))){
-            continue;
-          }
-          if($vValue == '0' || $vValue === false){
-            // Forca false
-            $vValue = false;
-          } elseif($vValue == '1' || $vValue === true){
-            // Forca true
-            $vValue = true;
-          }
-
-          // Adiciona o valor no novo array
-          $new_config_str[$key][$vKey] = $vValue;
-        }
-      }
-
-      // Monta a string corretamente para gravar
-      $string = '<?php return '.var_export($new_config_str,true).';';
-
-      // Grava no arquivo
-      $this->files->put($cfg_file, $string);
-
       // Volta para a tela de selecao
       return redirect()->route('adm::config')->with(array(
         'status' => 'success',
@@ -338,5 +291,183 @@ class GeneratorController extends Controller
       }
 
       return $arrConfig;
+    }
+
+
+    /**
+     * Varre o diretorio em busca de arquivos de traducao
+     * 
+     * @return array
+     */
+    public function _getTransFiles($langpack)
+    {
+      $arrExclude = array('auth', 'pagination', 'passwords', 'validation');
+      // Pega todos os arquivos do diretorio
+      $configs = $this->files->files(mkny_lang_path().$langpack.'/');
+
+      // Monta o array
+      $arrConfig = array();
+      foreach ($configs as $config) {
+        $c_data = substr(class_basename($config),0,-4);
+        if(in_array($c_data, $arrExclude)){
+          continue;
+        }
+        $arrConfig[] = $c_data;
+      }
+
+      return $arrConfig; 
+    }
+
+    private function _getLangPacks()
+    {
+      $langFiles = array();
+
+      $langs = $this->files->directories(mkny_lang_path());
+      foreach ($langs as $lang) {
+
+        $langFiles[] = class_basename($lang);
+      }
+
+      return $langFiles;
+    }
+
+    public function postTrans($lang, $module=false)
+    {
+      $req_fields = \Request::all();
+      // if (isset($req_fields['new_file_name'])) {
+        // return redirect()->route('adm::trans', [$lang, $req_fields['new_file_name']]);
+      // }
+      
+      // Arquivo de configuracao
+      $cfg_file = mkny_lang_path($lang.'/'.$module).'.php';
+
+
+      \Mkny\Cinimod\Logic\UtilLogic::updateConfigFile($cfg_file, $req_fields);
+      
+      // Volta para a tela de selecao
+      return redirect()->route('adm::trans')->with(array(
+        'status' => 'success',
+        'message' => 'Arquivo atualizado!'
+        ));
+    }
+
+
+    /**
+     * Funcao para edicao da traducao do [Modulo]
+     * @param string $controller Nome do controlador
+     * @return void
+     */
+    public function getTrans($lang=false, $controller=false)
+    {
+      if(!$lang){
+        $lang = \App::getLocale();
+      }
+
+
+      if($controller){
+        // Busca o arquivo especificado
+        $cfg_file = mkny_lang_path($lang.'/'.$controller).'.php';
+
+        // Field types
+        $f_types = array_unique(array_values($this->logic->_getFieldTypes()));
+
+        // Config file data
+        if(!$this->files->exists($cfg_file)){
+          // $this->files->put($cfg_file, '<?php return array();');
+        }
+        $config_str = $this->files->getRequire($cfg_file);
+
+        // echo '<pre>';
+        // print_r($config_str);
+        // exit;
+
+        $arrFields = array();
+        foreach ($config_str as $field_name => $field_value) {
+          if(!is_string($field_value)){
+            // echo '<pre>';
+            // print_r($field_value);
+            // exit;
+
+            // $field_name = $field_name.'[]';
+            // foreach ($field_value as $k_key => $k_value) {
+              
+            // }
+            // $arrFields[$field_name] = array(
+            //   'name' => $field_name,
+            //   // 'default_value' => $field_value,
+            //   'type' => 'string',
+            //   'trans' => $field_name
+            //   );
+
+            // echo '<pre>';
+            // print_r($arrFields);
+            // exit;
+          } else {
+            $arrFields[$field_name] = array(
+              'name' => $field_name,
+              'default_value' => $field_value,
+              'type' => 'string',
+              'trans' => $field_name
+              );
+          }
+          
+        }
+
+        $cl = new \Mkny\Cinimod\Logic\CRUDLogic();
+        $d = $cl->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
+
+
+        return view('cinimod::admin.generator.trans_detailed')->with(['form' => $d]);
+        // echo '<pre>';
+        // print_r($config_str);
+        // exit;
+        // Pula o primeiro indice
+        // array_shift($config_str);
+        // $valOrder=0;
+        // // Fornece o tipo "types" para todos os campos, para selecao
+        // foreach ($config_str as $key => $value) {
+
+        //   $config_str[$key]['name'] = $key;
+        //   $config_str[$key]['type'] = isset($value['type']) ? $value['type']:'string';
+        //   $config_str[$key]['form'] = isset($value['form']) ? $value['form']:true;
+        //   $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
+        //   $config_str[$key]['relationship'] = isset($value['relationship']) ? $value['relationship']:false;
+        //   $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
+        //   $config_str[$key]['order'] = isset($value['order']) ? $value['order']:$valOrder++;
+
+        //   $config_str[$key]['types'] = array_combine($f_types,$f_types);
+        // }
+
+        // if (isset(array_values($config_str)[1]['order'])) {
+        //     usort(($config_str), function($dt, $db){
+        //         if(!isset($db['order'])){
+        //             $db['order'] = 0;
+        //         }
+        //         if(isset($dt['order'])){
+        //             return $dt['order'] - $db['order'];
+        //         } else {
+        //             return 0;
+        //         }
+        //     });
+
+        //     $newConfig = [];
+        //     foreach ($config_str as $sortfix) {
+        //         $newConfig[$sortfix['name']] = $sortfix;
+        //     }
+        //     $config_str = $newConfig;
+        // }
+
+        // $data['controller'] = $controller;
+        // $data['data'] = $config_str;
+
+        // return view('cinimod::admin.generator.config_detailed_new')->with($data);
+        // return view('cinimod::admin.generator.config_detailed')->with($data);
+      }
+
+      return view('cinimod::admin.generator.trans')->with([
+        'langlist' => $this->_getLangPacks(),
+        'langlist_sel' => $lang,
+        'langfiles' => $this->_getTransFiles($lang)
+        ]);
     }
   }

@@ -58,4 +58,58 @@ class UtilLogic {
         return false;
     }
 
+    static public function updateConfigFile($file,$data)
+    {
+
+        // String do arquivo
+        $config_str = \File::getRequire($file);
+
+
+        $config_new = array_only($data, array_merge(array_keys($config_str),array('new_fields')));
+
+        if (isset($config_new['new_fields'])) {
+            $nf = $config_new['new_fields'];
+
+            foreach ($nf as $n_field) {
+                $config_new[$n_field['name']] = $n_field;
+            }
+
+            unset($config_new['new_fields']);
+        }
+
+        // Resultado gerado
+        $new_config_str = array_replace_recursive($config_str, $config_new);
+        // echo '<pre>';
+        // print_r($new_config_str);
+        // exit;
+        // Tratamento do true / false
+        foreach ($new_config_str as $key => $value) {
+            if(is_array($value)){
+                foreach ($value as $vKey => $vValue) {
+                    if(in_array($vKey, array('order'))){
+                        continue;
+                    }
+                    if($vValue == '0' || $vValue === false){
+                    // Forca false
+                        $vValue = false;
+                    } elseif($vValue == '1' || $vValue === true){
+                    // Forca true
+                        $vValue = true;
+                    }
+
+                // Adiciona o valor no novo array
+                    $new_config_str[$key][$vKey] = $vValue;
+                }
+            }
+        }
+
+        // Monta a string corretamente para gravar
+        $string = '<?php return '.var_export($new_config_str,true).';';
+        // echo '<pre>';
+        // print_r($file);
+        // exit;
+        // Grava no arquivo
+        return \File::put($file, $string);
+    }
+
 }

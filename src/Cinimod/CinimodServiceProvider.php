@@ -11,7 +11,7 @@ use Mkny\Cinimod\Logic;
 
 use Config;
 use Illuminate\Foundation\AliasLoader;
-use Collective;
+// use Collective;
 /**
 * 
 */
@@ -44,11 +44,13 @@ class CinimodServiceProvider extends ServiceProvider
 	}
 	
 	public function register() {
-		// app('')
-		// $this->app->bind('Class');
-		$this->app->register(Collective\Html\HtmlServiceProvider::class);
-		AliasLoader::getInstance()->alias('Form', Collective\Html\FormFacade::class);
-		AliasLoader::getInstance()->alias('Html', Collective\Html\HtmlFacade::class);
+		
+		$this->app->register(\Collective\Html\HtmlServiceProvider::class);
+		$this->app->register(\Lavary\Menu\ServiceProvider::class);
+
+		AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
+		AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
+		AliasLoader::getInstance()->alias('Menu', \Lavary\Menu\Facade::class);
 
 	}
 
@@ -96,7 +98,8 @@ class CinimodServiceProvider extends ServiceProvider
 				$router->controller('g', 'GeneratorController', [
 					'getIndex' => 'gen::index',
 					'getDeleter' => 'gen::del',
-					'getConfig' => 'config'
+					'getConfig' => 'config',
+					'getTrans' => 'trans'
 					]);
 				// $router->controller('dashboard', 'DashboardController');
 				

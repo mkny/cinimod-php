@@ -139,20 +139,26 @@ class CRUDLogic {
             $data[] = \Form::open(array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
         }
 
+        // echo '<pre>';
+        // print_r($FormFields);
+        // exit;
+
         foreach ($FormFields as $field_config) {
             // Form variavel name
             $form_data_name = $ControllerName.'.'.$field_config['name'].'_form';
 
             // Traducao do campo
-            $field_trans = trans($form_data_name);
+            
+            $field_trans = isset($field_config['trans'])? $field_config['trans']:trans($form_data_name);
 
             // Monta o label, adicionando um "*" se o campo for requerido
             $label = \Form::label(
                 $field_config['name'],
-                $field_trans.($field_config['required'] ? '*':'')
+                $field_trans.((isset($field_config['required']) && $field_config['required']) ? '*':'')
                 );
 
             // Verifica os tipos de campos fornecidos
+            // if(isset($field_config['type']))
             switch($field_config['type']){
                 case 'select':
                 // Helper classname
@@ -205,7 +211,7 @@ class CRUDLogic {
                 case 'date':
                 case 'string':
                 // Monta o field texto
-                $field = \Form::text($field_config['name'],null,['class' => 'form-control', 'placeholder' => $field_trans]);
+                $field = \Form::text($field_config['name'],(isset($field_config['default_value']) ? $field_config['default_value']:null),['class' => 'form-control', 'placeholder' => $field_trans]);
                 break;
                 default:
                 // Dumpa o item inexistente
@@ -214,10 +220,10 @@ class CRUDLogic {
             }
 
             // Formata o label
-            $label_format = \Html::tag('div', $label->toHtml(), ['class' => 'col-md-2']);
+            $label_format = \Html::tag('div', $label->toHtml(), ['class' => 'col-md-3']);
 
             // Formata o field
-            $field_format = \Html::tag('div', $field->toHtml(), ['class' => 'col-md-10']);
+            $field_format = \Html::tag('div', $field->toHtml(), ['class' => 'col-md-9']);
 
             // Adiciona os items no elemento principal
             $data[] = \Html::tag('div', $label_format.$field_format, ['class' => 'form-group col-md-12']);
