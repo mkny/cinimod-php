@@ -63,7 +63,7 @@ abstract class DefaultMiddleware
         $menus = [
         [
         'id' => '1',
-        'linkhref' => '',
+        'linkhref' => 'admin/',
         'description' => 'Gerencial',
         'parent_id' => '',
         ],

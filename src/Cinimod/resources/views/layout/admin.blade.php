@@ -6,6 +6,7 @@
 	<!-- Styles -->
 	<!-- {{-- <link href="{{ elixir('css/app.css') }}" rel="stylesheet"> --}} -->
 	<link rel="stylesheet" type="text/css" href="/css/app.css">
+	<link rel="stylesheet" type="text/css" href="/css/cinimod.css">
 	<!-- Styles -->
 	<!-- Scripts -->
 	<script src="/js/jquery.min.js" type="text/javascript"></script>
@@ -21,7 +22,7 @@
 	@include('cinimod::layout.admin_navbar')
 	
 
-	<div class="container">
+	<div class="container-fluid">
 		@yield('conteudo')
 	</div>
 

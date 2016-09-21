@@ -61,6 +61,10 @@ class GeneratorController extends Controller
 	 */
 	public function getIndex()
 	{
+    if(Config::get('database.default') == 'ws'){
+      Session::forget('banco');
+      return redirect()->route('adm::gen::index');
+    }
     // Busca todas as tabelas do banco
     $tables = $this->logic->buildTables();
 
@@ -390,7 +394,7 @@ class GeneratorController extends Controller
 
             // $field_name = $field_name.'[]';
             // foreach ($field_value as $k_key => $k_value) {
-              
+
             // }
             // $arrFields[$field_name] = array(
             //   'name' => $field_name,

@@ -23,3 +23,10 @@ Usage
 ============
 
 Description
+
+
+Dependencies
+
+    "laracasts/presenter": "^0.2.1",
+    "lavary/laravel-menu": "dev-master",
+    "laravelcollective/html": "5.2.*"

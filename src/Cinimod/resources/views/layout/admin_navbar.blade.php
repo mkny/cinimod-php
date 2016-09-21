@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="/css/nav.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/nav.css"> -->
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
@@ -9,15 +9,29 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="/admin">
                 <i><img src="/img/mafia-flower.png" style="width:20px;height: 20px;margin-top: -4px;" alt=""></i>
                 <b>Cinimod</b>
             </a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
+                @if (isset($navBar))
                 @include('cinimod::layout.admin_navbar-menu-items', array('items' => $navBar->roots()))
+                @endif
             </ul>
-        </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <!-- <li><a href="#">Action</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li> -->
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
+</div>
 </nav>

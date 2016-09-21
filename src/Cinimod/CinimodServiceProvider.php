@@ -11,6 +11,7 @@ use Mkny\Cinimod\Logic;
 
 use Config;
 use Illuminate\Foundation\AliasLoader;
+
 // use Collective;
 /**
 * 
@@ -29,6 +30,7 @@ class CinimodServiceProvider extends ServiceProvider
     	// $this->loadViewsFrom(mkny_path().'/Cinimod/resources/views');
 
 		$this->publishes([
+			// publish images
 			// mkny_path().'/Cinimod/resources/views' => resource_path('views/cinimod'),
 			// mkny_path().'/Cinimod/resources/lang' => resource_path('lang'),
 			// mkny_path().'/Cinimod/resources/assets' => resource_path('assets/cinimod')
@@ -74,36 +76,15 @@ class CinimodServiceProvider extends ServiceProvider
 		$router->middleware('admin','Mkny\Cinimod\Middleware\Admin');
 		$router->middleware('site','Mkny\Cinimod\Middleware\Site');
 
-		// Sai do csrf
-		$router->group([
-			'middleware' => ['web', 'admin'],
-			'prefix' => 'admin',
-			'as' => 'adm::',
-			'namespace' => $this->namespace
-			], function($router){
-			$router->controller('dashboard', 'DashboardController');
-			$router->controller('rel', 'ReportController');
-		});
 		
+
 		$router->group([
-			'middleware' => ['web', 'admin'],
-			'prefix' => 'admin',
-			'as' => 'adm::',
-			'namespace' => $this->namespace
-			], function($router){
-				
-				$router->get('/', function(){
-					return redirect()->route('adm::gen::index');
-				});
-				$router->controller('g', 'GeneratorController', [
-					'getIndex' => 'gen::index',
-					'getDeleter' => 'gen::del',
-					'getConfig' => 'config',
-					'getTrans' => 'trans'
-					]);
-				// $router->controller('dashboard', 'DashboardController');
-				
-			});
+            'namespace' => $this->namespace, 'middleware' => 'web',
+        ], function ($router) {
+            require mkny_path().'\Cinimod\Controllers\routes.php';
+        });
+		
+		
 
 		// $this->routeResolver($router);
 

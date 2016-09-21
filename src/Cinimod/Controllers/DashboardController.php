@@ -20,7 +20,11 @@ use Mkny\Cinimod\Logic;
 
 class DashboardController extends Controller
 {
-	public function anyIndex(Logic\TableLogic $t)
+	public function anyIndex(){
+		return view('cinimod::admin.dashboard');
+	}
+
+	public function anyIndexes(Logic\TableLogic $t)
 	{
 		// $m = new \App\Models\Pessoa();
 		// $fields_data = $m->_getConfig('datagrid');

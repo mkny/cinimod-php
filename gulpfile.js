@@ -12,23 +12,25 @@ var elixir = require('laravel-elixir');
  */
 
  elixir(function(mix) {
- 	
-
  	mix
- 	.copy('../../../node_modules/bootstrap-sass/assets/fonts', '../../../public/fonts')
- 	.copy('../../../node_modules/bootstrap-sass/assets/images', '../../../public/images')
- 	.copy('../../../node_modules/bootstrap-sass/assets/javascripts', '../../../public/js')
- 	// .copy('../../../node_modules/tablesorter/dist/js/jquery.tablesorter.min.js', '../../../public/javascripts')
- 	// .copy('../../../node_modules/datatables.net/js/jquery.dataTables.js', '../../../public/javascripts')
- 	// .copy('../../../node_modules/datatables.net-bs/js/dataTables.bootstrap.js', '../../../public/javascripts')
- 	// .sass('app.scss')
- 	.copy('../../../node_modules/jquery/dist/jquery.min.js', '../../../public/js/')
- 	// .scriptsIn('resources/assets/cinimod/javascript', 'public/js/cinimod.js')
- 	// .copy('resources/assets/cinimod/favicon.ico', 'public/')
+    // bootstrap related
+    .copy('node_modules/bootstrap-sass/assets/fonts', 'public/fonts')
+    .copy('node_modules/bootstrap-sass/assets/images', 'public/images')
+    .copy('node_modules/bootstrap-sass/assets/javascripts', 'public/js')
 
+ 	// test data
+ 	// .copy('node_modules/tablesorter/dist/js/jquery.tablesorter.min.js', 'public/javascripts')
+ 	// .copy('node_modules/datatables.net/js/jquery.dataTables.js', 'public/javascripts')
+ 	// .copy('node_modules/datatables.net-bs/js/dataTables.bootstrap.js', 'public/javascripts')
+ 	
+ 	// jquery related
+ 	.copy('node_modules/jquery/dist/jquery.min.js', 'public/js/')
 
-
- 	.scriptsIn('../../../resources/assets/cinimod/javascript', '../../../public/js/cinimod.js')
- 	.copy('../../../resources/assets/cinimod/favicon.ico', '../../../public/')
- 	.stylesIn('../../../resources/assets/cinimod/css', '../../../public/css/cinimod.css');
+ 	// cinimod stuff
+ 	.scriptsIn('resources/assets/cinimod/javascript', 'public/js/cinimod.js')
+ 	.stylesIn('resources/assets/cinimod/css', 'public/css/cinimod.css')
+ 	.copy('resources/assets/cinimod/favicon.ico', 'public/favicon.ico')
+ 	.copy('resources/assets/cinimod/img', 'public/img/');
  });
+
+ // "Mkny\\": "/Users/marcony.neves/Documents/GitHub/cinimod/src"
