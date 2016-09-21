@@ -11,9 +11,11 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "laracasts/presenter": "^0.2.1",
-        "lavary/laravel-menu": "dev-master",
         "laravelcollective/html": "5.2.*"
         },
+	"require-dev": {
+        "lavary/laravel-menu": "dev-master"
+	},
     "autoload": {
         "files" : [
             "src/helpers.php"
@@ -32,5 +34,6 @@
         "post-update-cmd": [
             "gulp"
         ]
-    }
+    },
+    "minimum-stability": "dev"
 }
