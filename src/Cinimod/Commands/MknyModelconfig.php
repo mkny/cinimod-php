@@ -164,7 +164,8 @@ class MknyModelconfig extends GeneratorCommand
                 'var_type' => $row->type,
                 'var_type_laravel' => $field_types[$row->type],
                 'go_to_grid' => 'true',
-                'go_to_form' => $indice === 0 ? 'false':'true',
+                'go_to_form_add' => $indice === 0 ? 'false':'true',
+                'go_to_form_edit' => $indice === 0 ? 'false':'true',
                 'is_required' => $row->is_null == 'NO' ? 'true':'false',
                 'var_relationship' => 'false',
                 'var_values' => 'false'

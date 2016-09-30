@@ -7,7 +7,8 @@
 	'type' => '{{var_type_laravel}}', // Fieldtype no Laravel
 
 	// Enable/disable field Form/Grid
-	'form' => {{go_to_form}}, // Boolean Exibe no form (pode ser que de problema, caso esteja presente no FormRequest!)
+	'form_add' => {{go_to_form_add}}, // Boolean Exibe no form de adicao (pode ser que de problema, caso esteja presente no FormRequest!)
+	'form_edit' => {{go_to_form_edit}}, // Boolean Exibe no form de edicao
 	'grid' => {{go_to_grid}}, // Boolean Exibe na grid
 
 	// Form-specific

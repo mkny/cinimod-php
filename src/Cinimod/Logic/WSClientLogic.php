@@ -34,6 +34,11 @@ class WSClientLogic {
 	 */
 	private $ws_client;
 
+	private $primaryTypes = [
+	'int' => 'integer',
+	'integer' => 'integer'
+	];
+
 	/**
 	 * Armazena os tipos de dados da funcao
 	 * 
@@ -92,12 +97,16 @@ class WSClientLogic {
 				abort(400, 'Quantidade de parametros nao bate');
 			}
 
-			// Combina os parametros solicitados, com os argumentos informados, montando o request
-			$params = array_combine($method_parameters,$args);
+			if(is_array($method_parameters)){
+				// Combina os parametros solicitados, com os argumentos informados, montando o request
+				$params = array_combine($method_parameters,$args);
+			} else {
+				$params = $args[0];
+			}
 		} else {
 			$params = [];
 		}
-
+		
 		// Passa pro tratador, apos efetuar o request no ws, fornecendo os parametros
 		if(count($params) == 0){
 			return $this->treatRequest($this->getWSClient()->{$method}());
@@ -121,7 +130,7 @@ class WSClientLogic {
 
 		// Preformatacao do request
 		$pre = $request;
-		
+
 		// Tratamento para WS em .NET
 		if(strstr(array_keys((array) $request)[0], 'Result') !== false){
 			// Pre-formata o request (tirando o primeiro indice inutil que vem sempre)
@@ -212,9 +221,10 @@ class WSClientLogic {
 				return substr(explode(' ', trim($arr))[1],0,-1);
 			}, $type_parts));
 			$arrTypes[$typeName] = $type_parts;
+			$this->ws_types[$typeName] = $type_parts;
 		}
 
-		return $this->ws_types = $arrTypes;
+		return $this->ws_types;
 	}
 
 	/**
@@ -230,10 +240,19 @@ class WSClientLogic {
 		$types = $this->build_types($client->__getTypes());
 		// Constroi as funcoes
 		$functions = $this->build_functions($client->__getFunctions());
-
+		
 		// Faz o casamento funcao <> tipos
 		foreach ($functions as $fname => $ftype) {
-			$functions[$fname] = isset($types[$ftype]) ? $types[$ftype]:array();
+			if(!isset($types[$ftype])){
+				if(isset($this->primaryTypes[$ftype])){
+					$types[$ftype] = $this->primaryTypes[$ftype];
+				} else {
+					$types[$ftype] = NULL;
+				}
+			}
+			
+			$functions[$fname] = $types[$ftype];
+			// $functions[$fname] = isset($types[$ftype]) ? $types[$ftype]:array();
 		}
 
 		// Armazena na variavel principal

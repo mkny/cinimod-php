@@ -80,7 +80,7 @@ class UtilLogic {
         // Resultado gerado
         $new_config_str = array_replace_recursive($config_str, $config_new);
         // echo '<pre>';
-        // print_r($new_config_str);
+        // print_r($data);
         // exit;
         // Tratamento do true / false
         foreach ($new_config_str as $key => $value) {
@@ -102,6 +102,8 @@ class UtilLogic {
                 }
             }
         }
+
+        // dd($config_str);
 
         // Monta a string corretamente para gravar
         $string = '<?php return '.var_export($new_config_str,true).';';

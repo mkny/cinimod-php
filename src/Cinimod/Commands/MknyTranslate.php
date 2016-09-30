@@ -119,6 +119,7 @@ class MknyTranslate extends GeneratorCommand
             $fields[] = "\n\t// {$field}\n\t'{$field}_grid' => '{$field_camel}',\n\t'{$field}_form' => '{$field_camel}',\n\t'{$field}_form_tip' => '{$field_camel}',\n";
         }
 
+        // $this->setTranslation('controller', $tb);
         $this->setTranslation('variables_data', "\n\t".substr(trim(implode("\n", $fields)),0,-1)."\n\t");
     }
 

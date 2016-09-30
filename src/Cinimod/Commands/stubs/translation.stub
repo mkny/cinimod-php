@@ -4,6 +4,9 @@ return [
 
 	// Default values
 	
+	'title_list' => 'Listagem de DummyClass',
+	'title_list_subtitle' => '',
+
 	'button_new' => 'Novo',
 	'button_save' => 'Salvar',
 	'button_search' => 'Buscar',

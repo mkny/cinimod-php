@@ -46,14 +46,13 @@ class CinimodServiceProvider extends ServiceProvider
 	}
 	
 	public function register() {
-		
-		$this->app->register(\Collective\Html\HtmlServiceProvider::class);
 		$this->app->register(\Lavary\Menu\ServiceProvider::class);
+		$this->app->register(\Collective\Html\HtmlServiceProvider::class);
 
+		AliasLoader::getInstance()->alias('Form', \Collective\Html\HtmlServiceProvider::class);
 		AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
 		AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
 		AliasLoader::getInstance()->alias('Menu', \Lavary\Menu\Facade::class);
-
 	}
 
 	private function artisanize(){

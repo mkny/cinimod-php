@@ -80,13 +80,13 @@ abstract class CRUDController extends Controller
 
         // Monta os dados para exibicao
         $data = array(
-            'title' => $controller . ' List',
+            // 'title' => $controller . ' Listage',
             'table' => $datagrid,
             'controller' => $controller,
             'grid' => $rows
             );
-
-        return view('cinimod::admin.default.list_new')->with(['data' => $data]);
+        // dd($data);
+        return view('cinimod::admin.default.list')->with(['data' => $data]);
     }
 
     protected function _getDatagrid($rows, $config, $primaryKey, $controller)
@@ -153,7 +153,7 @@ abstract class CRUDController extends Controller
     // }
 
     /**
-     * Show the form for creating a new resource.
+     * Exibe formulario para criacao de um novo registro
      *
      * @return \Illuminate\Http\Response
      */
@@ -162,13 +162,34 @@ abstract class CRUDController extends Controller
         return view('cinimod::admin.default.add')->with(['form' => $this->CL->getForm(
             false,
             action($this->_getController().'@postAdd'),
-            $this->model->_getConfig('form'),
+            $this->model->_getConfig('form_add'),
+            $this->_getControllerName()
+            )]);
+    }
+    
+    /**
+     * Exibe formulario para edicao de um registro
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    protected function edit($id)
+    {
+        $M = $this
+        ->model
+        ->findOrFail($id, $this->model->getFillable());
+        
+        return view('cinimod::admin.default.edit')->with(['form' => $this->CL->getForm(
+            $M,
+            action($this->_getController().'@postEdit', [$id]),
+            $this->model->_getConfig('form_edit'),
             $this->_getControllerName()
             )]);
     }
 
+    // CRUD
     /**
-     * Store a newly created resource in storage.
+     * Armazena um novo registro no database
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -178,7 +199,7 @@ abstract class CRUDController extends Controller
         // Varre o array procurando valores vazios, para settar como nulos
         $post = array_map(function($dataPost){
             return ($dataPost == '') ?null:$dataPost;
-        }, $request->only(array_keys($this->model->_getConfig('form'))));
+        }, $request->only(array_keys($this->model->_getConfig('form_add'))));
 
         // Novo filtro no array postado, pq quando grava, nao importa valores nulos!
         // Esta regra não se aplica para update!
@@ -194,40 +215,9 @@ abstract class CRUDController extends Controller
             ));
     }
 
+    // CRUD
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    protected function show($id)
-    {
-        $this->model->findOrFail($id)->toArray();
-        return view('cinimod::admin.default.show');
-    }
-    
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    protected function edit($id)
-    {
-        $M = $this
-        ->model
-        ->findOrFail($id, $this->model->getFillable());
-        
-        return view('cinimod::admin.default.edit')->with(['form' => $this->CL->getForm(
-            $M,
-            action($this->_getController().'@postEdit', [$id]),
-            $this->model->_getConfig('form'),
-            $this->_getControllerName()
-            )]);
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Atualiza o registro na base de dados
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
@@ -246,6 +236,18 @@ abstract class CRUDController extends Controller
             'status' => 'success',
             'message' => "Register ({$id}) Updated!"
             ));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    protected function show($id)
+    {
+        $this->model->findOrFail($id)->toArray();
+        return view('cinimod::admin.default.show');
     }
 
     /**
@@ -314,7 +316,7 @@ abstract class CRUDController extends Controller
 
 
 
-        $fields = $this->model->_getConfig('form');
+        $fields = $this->model->_getConfig('form_add');
         $field_request = \Request::input('method_name');
 
         $data = $this->model->relation($fields[Logic\UtilLogic::array_finder($fields, $field_request)]['relationship'], \Request::input('filter'));

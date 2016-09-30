@@ -49,7 +49,7 @@ class GeneratorController extends Controller
       }
     }
 
-    if (Session::get('banco')) {
+    if (Session::get('banco') && Session::get('banco') != 'ws') {
       Config::set('database.default', Session::get('banco'));
     }
   }
@@ -61,62 +61,72 @@ class GeneratorController extends Controller
 	 */
 	public function getIndex()
 	{
-    if(Config::get('database.default') == 'ws'){
-      Session::forget('banco');
-      return redirect()->route('adm::gen::index');
-    }
-    // Busca todas as tabelas do banco
-    $tables = $this->logic->buildTables();
 
-    // Varre as tabelas para buscar relacionamentos, controllers e dados especificos
-    foreach ($tables as $key => $table) {
+    // dd(\Request::input('banco'));
+    // if(Session::get('banco') == 'ws'){
+      // Session::forget('banco');
+      // return redirect()->route('adm::gen::index', ['wsurl' => '1']);
+    // } else {
+     // Busca todas as tabelas do banco
+      $tables = $this->logic->buildTables();
 
-      // Constroi um array para organizar o retorno das relacoes
-      $arrRelations = [];
+      // Varre as tabelas para buscar relacionamentos, controllers e dados especificos
+      foreach ($tables as $key => $table) {
 
-      // Busca os relacionamentos
-      $relations = $this->logic->buildRelationships($table->schema.'.'.$table->name);
-      if($relations){
-        foreach ($relations as $relation) {
-          // Formata em string, para melhor analise no codigo
-          $arrRelations[] = "{$relation->table_foreign}.{$relation->table_foreign_field} > {$relation->table_primary}.{$relation->table_primary_field}";
+       // Constroi um array para organizar o retorno das relacoes
+        $arrRelations = [];
+
+       // Busca os relacionamentos
+        $relations = $this->logic->buildRelationships($table->schema.'.'.$table->name);
+        if($relations){
+          foreach ($relations as $relation) {
+           // Formata em string, para melhor analise no codigo
+            $arrRelations[] = "{$relation->table_foreign}.{$relation->table_foreign_field} > {$relation->table_primary}.{$relation->table_primary_field}";
+          }
         }
+
+        $tables[$key]->relation = $arrRelations;
+
+       // Monta o provavel nome do controlador
+        $controller = $this->logic->controllerName($table->name);
+
+        // Predetermina o nome do controller
+        $tables[$key]->controller = $controller;
+
+        // Verifica se o [Modulo] ja foi gerado
+        $tables[$key]->is_generated = $this->files->exists(mkny_models_path($controller).'.php');
       }
 
-      $tables[$key]->relation = $arrRelations;
+      // Cria uma collection das tables
+      $tables = collect($tables);
 
-      // Monta o provavel nome do controlador
-      $controller = $this->logic->controllerName($table->name);
+      // Schemas selecionados
+      $data['schemas_selected'] = \Request::input('schema')?:array();
 
-      // Predetermina o nome do controller
-      $tables[$key]->controller = $controller;
+      // Faz o filtro inteligente nos schemas selecionados
+      if (isset($data['schemas_selected']) && count($data['schemas_selected'])) { 
+        $tables = $tables->whereIn('schema', $data['schemas_selected']);
+      }
 
-      // Verifica se o [Modulo] ja foi gerado
-      $tables[$key]->is_generated = $this->files->exists(mkny_models_path($controller).'.php');
-    }
+      // Pega todas as tabelas selecionadas
+      $data['tables'] = $tables->all();
 
-    // Cria uma collection das tables
-    $tables = collect($tables);
-    
+      // Schemas para a selecao
+      $data['schemas'] = explode(',',$this->logic->_getSchemas());
+    // }
     // Informa o database
-    $data['database'] = Config::get('database.default');
-
-    // Schemas para a selecao
-    $data['schemas'] = explode(',',$this->logic->_getSchemas());
-
-    // Schemas selecionados
-    $data['schemas_selected'] = \Request::input('schema')?:array();
+    $data['database'] = Session::get('banco');
+    // $data['database'] = Config::get('database.default');
 
     // Conexoes disponiveis (config/database.php)
     $data['connections'] = array_keys(Config::get('database.connections'));
 
-    // Faz o filtro inteligente nos schemas selecionados
-    if (count($data['schemas_selected'])) { 
-      $tables = $tables->whereIn('schema', $data['schemas_selected']);
-    }
-
-    // Pega todas as tabelas selecionadas
-    $data['tables'] = $tables->all();
+    // Tratamento do WS
+    // if(\Request::get('wsurl')){
+    //   $ws = new \Mkny\Cinimod\Logic\WSClientLogic();
+    //   $ws->init(\Request::get('wsurl'));
+    //   $data['ws_methods'] = $ws->getAvailableFunctions();
+    // }
 
     // Get the view
     return view('cinimod::admin.generator.index')->with($data);
@@ -214,13 +224,14 @@ class GeneratorController extends Controller
         
         // Pula o primeiro indice
         array_shift($config_str);
-        $valOrder=0;
+        $valOrder=1;
         // Fornece o tipo "types" para todos os campos, para selecao
         foreach ($config_str as $key => $value) {
 
           $config_str[$key]['name'] = $key;
           $config_str[$key]['type'] = isset($value['type']) ? $value['type']:'string';
-          $config_str[$key]['form'] = isset($value['form']) ? $value['form']:true;
+          $config_str[$key]['form_add'] = isset($value['form_add']) ? $value['form_add']:true;
+          $config_str[$key]['form_edit'] = isset($value['form_edit']) ? $value['form_edit']:true;
           $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
           $config_str[$key]['relationship'] = isset($value['relationship']) ? $value['relationship']:false;
           $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
@@ -267,7 +278,6 @@ class GeneratorController extends Controller
     public function postConfig($module){
       // Arquivo de configuracao
       $cfg_file = mkny_model_config_path($module).'.php';
-
 
       \Mkny\Cinimod\Logic\UtilLogic::updateConfigFile($cfg_file, \Request::all());
       

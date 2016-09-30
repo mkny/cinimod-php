@@ -15,10 +15,10 @@
 		<li><a href="javascript:;" onclick="selectGridRequired();">Select grid required's</a></li>
 		<li><a href="javascript:;" onclick="recount();">Reorder</a></li>
 		<li>
-			<a href="javascript:;" onclick="addDynamicField('table tr:not(.clone-block):eq(1)');">Add new field (dynamic)</a>
+			<a href="javascript:;" onclick="addDynamicField('.table-list-fields > tbody > tr:eq(0)')">Add new field (dynamic)</a>
 		</li>
 	</ol>
-	<table class="table table-striped">
+	<table class="table table-striped table-list-fields">
 		<thead>
 			<tr>
 				<th>#</th>
@@ -28,7 +28,7 @@
 				<th>Grid</th>
 				<th>Required</th>
 				<!-- <th>Relationship</th> -->
-				<th>Searchable</th>
+				<th>Sortable</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -113,9 +113,13 @@
 				</td>
 				<td>
 					<div class="checkbox">
+							{!! Form::hidden($field_config['name'].'[form_add]', 0) !!}
+							{!! Form::hidden($field_config['name'].'[form_edit]', 0) !!}
 						<label>
-							{!! Form::hidden($field_config['name'].'[form]', 0) !!}
-							{!! Form::checkbox($field_config['name'].'[form]', '1', $field_config['form'], ['class' => 'input-select-form']) !!} Enable
+							{!! Form::checkbox($field_config['name'].'[form_add]', '1', $field_config['form_add'], ['class' => 'input-select-form']) !!} Enable add
+						</label>
+						<label>
+							{!! Form::checkbox($field_config['name'].'[form_edit]', '1', $field_config['form_edit'], ['class' => 'input-select-form']) !!} Enable edit
 						</label>
 					</div>
 				</td>

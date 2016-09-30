@@ -123,7 +123,7 @@ class CRUDLogic {
 
             $table->insertRow($dataRow);
         }
-
+        // dd($table);
         // Retorna a tabela montada
         return $table->getTable();
     }
@@ -171,7 +171,8 @@ class CRUDLogic {
 
                 // Se for um relacionamento
                 if(isset($field_config['relationship']) && $field_config['relationship']){
-                    // echo 'a';exit;
+                    // Quando tem dependencia na tabela
+                    // 
                     if(isset($field_config['relationship']['dependsOn']) && $field_config['relationship']['dependsOn']){
                         // class para funcoes ajax
                         $options['class'][] = 'mkny-select-depends';
@@ -180,11 +181,17 @@ class CRUDLogic {
                         $options['data-depends'] = $field_config['relationship']['dependsOn'];
 
                         $dataModel = [];
-                        // $dataModel = $field_config['relationship']['model']::relation($field_config['relationship']);
+                        // $dataModel = $field_config['relationship']['model']::relation($field_config['relationship'],($Model?$Model->{$field_config['relationship']['dependsOn']}:''));
                     } else {
                         // dd($field_config);exit;
                         $dataModel = $field_config['relationship']['model']::relation($field_config['relationship']);
                     }
+
+
+                    // if($field_config['relationship']['model'] == '\App\Models\Estado'){
+                        // $field_config['relationship']['dependsOn'] = $Model->{$field_config['relationship']['dependsOn']};
+                        // print_r($field_config['relationship']);exit;
+                    // }
 
                     foreach ($dataModel as $dm){
                         $arrDataSelect[$dm['id']] = $dm['name'];

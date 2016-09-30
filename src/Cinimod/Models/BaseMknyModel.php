@@ -22,6 +22,8 @@ class BaseMknyModel extends Model
 
         // echo '<pre>';
         // print_r($conf['field_key'] = $filterID);
+        // var_dump($filterID);
+        // print_r($conf);
         // exit;
     	$fields = [];
         // $fields[] = $conf['field_key']. ' AS id';
@@ -36,6 +38,8 @@ class BaseMknyModel extends Model
         if ($filterID) {
             $model->whereRaw("{$conf['dependsOn']} = {$filterID}");
         }
+
+
 
         return $model->get($fields);
 
@@ -60,9 +64,19 @@ class BaseMknyModel extends Model
                 return isset($var['grid']) && $var['grid'] == 1;
             });
             break;
-            case 'form':
+            // case 'form':
+            // $config = array_filter($cfg, function($var){
+            //     return isset($var['form']) && $var['form'] == 1;
+            // });
+            // break;
+            case 'form_add':
             $config = array_filter($cfg, function($var){
-                return isset($var['form']) && $var['form'] == 1;
+                return isset($var['form_add']) && $var['form_add'] == 1;
+            });
+            break;
+            case 'form_edit':
+            $config = array_filter($cfg, function($var){
+                return isset($var['form_edit']) && $var['form_edit'] == 1;
             });
             break;
             case 'search':

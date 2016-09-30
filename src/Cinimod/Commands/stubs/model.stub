@@ -72,7 +72,7 @@ class DummyClass extends BaseMknyModel  {
     // Custom functions
     
     // Caso a utilizacao seja constante, eu vou colocar isso automatizado!
-    // Modelo estado
+    // Modelo principal, que ira buscar o valor da variavel neta
     // public function getCodPaisAttribute()
     // {
     //     return $this->cod_estados->cod_pais;
