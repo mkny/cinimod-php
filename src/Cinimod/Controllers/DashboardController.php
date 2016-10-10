@@ -21,6 +21,11 @@ use Mkny\Cinimod\Logic;
 class DashboardController extends Controller
 {
 	public function anyIndex(){
+
+		
+
+		// return view('unicorn.admin.dashboard');
+		// return view('unicorn.pagina');
 		return view('cinimod::admin.dashboard');
 	}
 

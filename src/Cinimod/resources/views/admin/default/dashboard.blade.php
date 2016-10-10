@@ -9,7 +9,7 @@
 	@foreach ( $reports as $reportData )
 	@foreach ( $reportData as $reportName => $reportType )
 	<div class="col-md-6">
-		<div data-chart="{{$reportName}}" data-charttype="{{$reportType}}"></div>
+		<div data-chart="{{$reportName}}" data-charttype="{{$reportType}}">sss</div>
 	</div>
 	@endforeach
 	@endforeach

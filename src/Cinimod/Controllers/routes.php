@@ -3,15 +3,15 @@
 
 
 // Sai do csrf
-Route::group([
-	// 'middleware' => ['web', 'admin'],
-	'prefix' => 'admin',
-	'as' => 'adm::',
-	// 'namespace' => $this->namespace
-	], function($router){
-	Route::controller('dashboard', 'DashboardController');
-	Route::controller('rel', 'ReportController');
-});
+// Route::group([
+// 	// 'middleware' => ['web', 'admin'],
+// 	'prefix' => 'admin',
+// 	'as' => 'adm::',
+// 	// 'namespace' => $this->namespace
+// 	], function($router){
+// 	Route::controller('dashboard', 'DashboardController');
+// 	Route::controller('rel', 'ReportController');
+// });
 
 
 

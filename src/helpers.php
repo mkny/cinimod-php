@@ -1,6 +1,14 @@
 <?php
 
 
+if (!function_exists('mdd')) {
+	function mdd($input){
+		echo '<pre>';
+		print_r($input);
+		exit;
+	}
+}
+
 if (!function_exists('mkny_path')) {
 	function mkny_path(){
 		return __DIR__;

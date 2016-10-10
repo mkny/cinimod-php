@@ -10,7 +10,12 @@
 	'form_add' => {{go_to_form_add}}, // Boolean Exibe no form de adicao (pode ser que de problema, caso esteja presente no FormRequest!)
 	'form_edit' => {{go_to_form_edit}}, // Boolean Exibe no form de edicao
 	'grid' => {{go_to_grid}}, // Boolean Exibe na grid
-
+	// Array de atributos, para o campo
+	'attributes' => array(
+		// 'data' => ['id' => '1000'], // Exemplo usando um data-id="1000"
+		'disabled_add' => false,
+		'disabled_edit' => false,
+		)
 	// Form-specific
 	'required' => {{is_required}}, // Boolean para exibir campo pre-requerido
 	// 'default_value' => '', // Valor default pro input

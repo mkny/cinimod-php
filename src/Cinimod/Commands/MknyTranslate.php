@@ -116,7 +116,17 @@ class MknyTranslate extends GeneratorCommand
         foreach ($columns as $col) {
             $field = $col->name;
             $field_camel = camel_case($col->name, '_', ' ');
-            $fields[] = "\n\t// {$field}\n\t'{$field}_grid' => '{$field_camel}',\n\t'{$field}_form' => '{$field_camel}',\n\t'{$field}_form_tip' => '{$field_camel}',\n";
+
+            $field_format = 
+                array(
+                    'grid' => $field_camel,
+                    'form' => $field_camel,
+                    'form_tip' => $field_camel
+                    );
+
+
+            $fields[] = "\n\t// {$field}\n\t'{$field}' => ".(var_export($field_format, true)).",\n";
+            // $fields[] = "\n\t// {$field}\n\t'{$field}_grid' => '{$field_camel}',\n\t'{$field}_form' => '{$field_camel}',\n\t'{$field}_form_tip' => '{$field_camel}',\n";
         }
 
         // $this->setTranslation('controller', $tb);

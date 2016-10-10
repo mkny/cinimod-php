@@ -10,13 +10,16 @@ return [
 	'button_new' => 'Novo',
 	'button_save' => 'Salvar',
 	'button_search' => 'Buscar',
+
 	'button_edit' => 'Editar',
+	// 'button_switch_status' => 'Ativar/Desativar',
+
 	'button_reset' => 'Limpar',
 	'button_delete' => 'Excluir',
 	'button_status_disable' => 'Desativar',
 	'button_status_enable' => 'Ativar',
 
-	'actions_grid' => 'Ações',
+	'actions' => 'Ações',
 
 	{{variables_data}}
 ];

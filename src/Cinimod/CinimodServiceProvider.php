@@ -9,9 +9,10 @@ use Mkny\Cinimod\Commands;
 
 use Mkny\Cinimod\Logic;
 
-use Config;
 use Illuminate\Foundation\AliasLoader;
 
+use Config;
+use Blade;
 // use Collective;
 /**
 * 
@@ -27,6 +28,7 @@ class CinimodServiceProvider extends ServiceProvider
 		$this->routerize($router);
 
     	$this->loadViewsFrom(mkny_path().'/Cinimod/resources/views', 'cinimod');
+    	// $this->loadViewsFrom(resource_path('themes'), 'unicorn');
     	// $this->loadViewsFrom(mkny_path().'/Cinimod/resources/views');
 
 		$this->publishes([
@@ -43,6 +45,10 @@ class CinimodServiceProvider extends ServiceProvider
 		// AliasLoader::getInstance()->alias('FormField', 'Way\Form\FormField');
 		// $loader = \Illuminate\Foundation\AliasLoader::getInstance();
   //     	$loader->alias('Tools', 'Pulpitum\Core\Models\Tools');
+      	// que locura ta isso ein! hahaha
+      	// 
+
+
 	}
 	
 	public function register() {
@@ -78,7 +84,8 @@ class CinimodServiceProvider extends ServiceProvider
 		
 
 		$router->group([
-            'namespace' => $this->namespace, 'middleware' => 'web',
+            'namespace' => $this->namespace,
+            'middleware' => 'web',
         ], function ($router) {
             require mkny_path().'\Cinimod\Controllers\routes.php';
         });

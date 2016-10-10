@@ -25,26 +25,39 @@ class BaseMknyPresenter extends Presenter {
 		}
 
 		return $arrData;
-
-		
 	}
 
-	public function dta_cadastro()
+	private function date($date)
 	{
-		return date('d/m/Y H:i', strtotime($this->entity->dta_cadastro));
+		if(!$date){
+			return null;
+		}
+		return date('d/m/Y H:i', strtotime($date));
 		// return Carbon::createFromFormat('d/m/Y H:i', $this->entity->dta_cadastro)->toDateTimeString();
 		// return Carbon::createFromFormat('Y-m-d H:i:s', $this->entity->dta_cadastro)->diffForHumans();
 	}
 
+	public function ind_status()
+	{
+		$str = '';
+		// Recupera o arquivo de traducao default
+		$translated = trans(class_basename($this->entity).'.ind_status.form_values'); 
+
+		// Verifica se o indice esta presente
+		if (isset($translated[$this->entity->ind_status]) && !empty($translated[$this->entity->ind_status])) {
+			$str = $translated[$this->entity->ind_status];
+		}
+
+		return $str ? $str:$this->entity->ind_status;
+	}
+
+	public function dta_cadastro()
+	{
+		return $this->date($this->entity->dta_cadastro);
+	}
+
 	public function dta_atualizacao()
 	{
-		if(!$this->entity->dta_atualizacao){
-			return null;
-		}
-		return date('d/m/Y H:i', strtotime($this->entity->dta_atualizacao));
+		return $this->date($this->entity->dta_atualizacao);
 	}
 }
-
-// $treino->dta_cadastro;
-// $a = new BaseMknyPresenter();
-// $a->blablaba();

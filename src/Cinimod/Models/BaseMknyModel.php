@@ -5,7 +5,7 @@ namespace Mkny\Cinimod\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use Mkny\Cinimod\Logic;
-
+use DB;
 
 class BaseMknyModel extends Model
 {
@@ -28,7 +28,8 @@ class BaseMknyModel extends Model
     	$fields = [];
         // $fields[] = $conf['field_key']. ' AS id';
     	$fields[] = $conf['field_fkey']. ' AS id';
-    	$fields[] = $conf['field_show'].' AS name';
+    	$fields[] = DB::raw($conf['field_show'].' AS name');
+        // mdd($fields);
 
         $model = $conf['model']::orderBy($conf['field_show'], 'ASC');
         // if(isset($conf['where']) && !empty(trim($conf['where']))) {
@@ -38,8 +39,6 @@ class BaseMknyModel extends Model
         if ($filterID) {
             $model->whereRaw("{$conf['dependsOn']} = {$filterID}");
         }
-
-
 
         return $model->get($fields);
 

@@ -17,9 +17,7 @@ class CRUDLogic {
      */
     public function datagrid($dbRows,$fields_data, $pkey, $modelName)
     {
-        // echo '<pre>';
-        // print_r($dbRows);
-        // exit;
+
         // Instancia a tabela
         $table = new TableLogic();
 
@@ -38,7 +36,7 @@ class CRUDLogic {
         $headers = array_merge(
             array('checks' => [\Form::checkbox('idx', '', '', ['class' => 'checkbox check-all'])]),
             $fields,
-            array('actions')
+            array('actions' => trans($modelName.'.actions'))
             );
 
 
@@ -48,7 +46,7 @@ class CRUDLogic {
         foreach ($headers as $field_key => $field_name) {
             // Se nao for numerico, indica um conteudo customizado
             if(is_numeric($field_key)){
-                $headersTranslated[$field_name] = trans($modelName.'.'.$field_name.'_grid');
+                $headersTranslated[$field_name] = trans($modelName.'.'.$field_name.'.grid');
 
                 // Aqui faz o tratamento do link no titulo,
                 // Usado para campos de busca, ordenacao, etc
@@ -58,7 +56,8 @@ class CRUDLogic {
                     \Html::tag(
                         'a',
                         $headersTranslated[$field_name],
-                        ['href' => "?order=".array_search($field_name, $fields)."&card=".(\Request::input('card', 'asc') == 'asc' ? 'desc':'asc')]
+                        ['href' => "?order={$field_name}&card=".(\Request::input('order') == $field_name && \Request::input('card', 'desc') == 'asc' ? 'desc':'asc')]
+                        // ['href' => "?order=".array_search($field_name, $fields)."&card=".(\Request::input('card', 'desc') == 'asc' ? 'desc':'asc')]
                         )
                     ];
                 }
@@ -86,6 +85,8 @@ class CRUDLogic {
                 } else {
                     // Setta a coluna com o presenter no array de colunas
                     $dataCols[$field_name] = $item->present()->{$field_name};
+
+                    // $dataCols[$field_name] = $item->{$field_name};
                 }
             }
 
@@ -102,24 +103,31 @@ class CRUDLogic {
                 );
 
             // Adiciona os botoes
-            $dataRow['actions'] = array(
-                // \Html::tag('center', [
-                    $table->button(
-                        action($modelName.'Controller@getEdit', [$dataRow[$pkey]]),
-                        'Editar',
-                        'glyphicon glyphicon-edit btn btn-sm btn-success'),
+            
+            $dataRow['actions'] = array();
 
-                    $table->button(
-                        action($modelName.'Controller@getSwitchStatus', [$dataRow[$pkey]]),
-                        'Editar',
-                        'glyphicon btn btn-sm '.($dataRow['ind_status'] == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info')),
 
-                    $table->button(
-                        action($modelName.'Controller@getDelete', [$dataRow[$pkey]]),
-                        'Editar',
-                        'glyphicon glyphicon-trash btn btn-sm btn-danger')
-                    // ], ['class' => ''])
-                );
+            // Botao de edição
+            $dataRow['actions'][] = $table->button(
+                action($modelName.'Controller@getEdit', [$dataRow[$pkey]]),
+                trans($modelName.'.button_edit'),
+                'glyphicon glyphicon-edit btn btn-sm btn-success');
+
+            // Botão de alteração de status (personalizado então não é obrigatório)
+            if (isset($dataRow['ind_status']) && !empty($dataRow['ind_status'])) {
+                $status = substr($dataRow['ind_status'],0,1);
+
+                $dataRow['actions'][] = $table->button(
+                    action($modelName.'Controller@getSwitchStatus', [$dataRow[$pkey]]),
+                    trans($modelName.'.'.($status == 'A' ? 'button_status_disable':'button_status_enable')),
+                    'glyphicon btn btn-sm '.($status == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info'));
+            }
+
+            // Botão de exclusão
+            $dataRow['actions'][] = $table->button(
+                action($modelName.'Controller@getDelete', [$dataRow[$pkey]]),
+                trans($modelName.'.button_delete'),
+                'glyphicon glyphicon-trash btn btn-sm btn-danger');
 
             $table->insertRow($dataRow);
         }
@@ -130,6 +138,7 @@ class CRUDLogic {
 
     public function getForm($Model = false, $Action, $FormFields, $ControllerName)
     {
+        exit('use new logic file');
 
         if($Model){
             // Abre o form com os campos preenchidos 
@@ -139,13 +148,9 @@ class CRUDLogic {
             $data[] = \Form::open(array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
         }
 
-        // echo '<pre>';
-        // print_r($FormFields);
-        // exit;
-
         foreach ($FormFields as $field_config) {
             // Form variavel name
-            $form_data_name = $ControllerName.'.'.$field_config['name'].'_form';
+            $form_data_name = $ControllerName.'.'.$field_config['name'].'.form';
 
             // Traducao do campo
             

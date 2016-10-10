@@ -79,11 +79,12 @@ class UtilLogic {
 
         // Resultado gerado
         $new_config_str = array_replace_recursive($config_str, $config_new);
-        // echo '<pre>';
-        // print_r($data);
-        // exit;
+
+        
+
         // Tratamento do true / false
         foreach ($new_config_str as $key => $value) {
+
             if(is_array($value)){
                 foreach ($value as $vKey => $vValue) {
                     if(in_array($vKey, array('order'))){

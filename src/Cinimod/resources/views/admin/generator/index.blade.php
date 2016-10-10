@@ -37,9 +37,7 @@
 						</div>
 						@if (isset($schemas) && count($schemas) > 0)
 						<div class="row">
-							<div class="form-group col-md-5">
-								<label for="">Schema</label>
-							</div>
+							<div class="form-group col-md-5">{{Form::label('', 'Schema')}}</div>
 							<div class="form-group col-md-5 checkbox">
 								<ul class="list-unstyled">
 									@foreach ($schemas as $schema)

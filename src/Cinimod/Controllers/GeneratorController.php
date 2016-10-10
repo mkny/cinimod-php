@@ -68,51 +68,51 @@ class GeneratorController extends Controller
       // return redirect()->route('adm::gen::index', ['wsurl' => '1']);
     // } else {
      // Busca todas as tabelas do banco
-      $tables = $this->logic->buildTables();
+    $tables = $this->logic->buildTables();
 
       // Varre as tabelas para buscar relacionamentos, controllers e dados especificos
-      foreach ($tables as $key => $table) {
+    foreach ($tables as $key => $table) {
 
        // Constroi um array para organizar o retorno das relacoes
-        $arrRelations = [];
+      $arrRelations = [];
 
        // Busca os relacionamentos
-        $relations = $this->logic->buildRelationships($table->schema.'.'.$table->name);
-        if($relations){
-          foreach ($relations as $relation) {
+      $relations = $this->logic->buildRelationships($table->schema.'.'.$table->name);
+      if($relations){
+        foreach ($relations as $relation) {
            // Formata em string, para melhor analise no codigo
-            $arrRelations[] = "{$relation->table_foreign}.{$relation->table_foreign_field} > {$relation->table_primary}.{$relation->table_primary_field}";
-          }
+          $arrRelations[] = "{$relation->table_foreign}.{$relation->table_foreign_field} > {$relation->table_primary}.{$relation->table_primary_field}";
         }
+      }
 
-        $tables[$key]->relation = $arrRelations;
+      $tables[$key]->relation = $arrRelations;
 
        // Monta o provavel nome do controlador
-        $controller = $this->logic->controllerName($table->name);
+      $controller = $this->logic->controllerName($table->name);
 
         // Predetermina o nome do controller
-        $tables[$key]->controller = $controller;
+      $tables[$key]->controller = $controller;
 
         // Verifica se o [Modulo] ja foi gerado
-        $tables[$key]->is_generated = $this->files->exists(mkny_models_path($controller).'.php');
-      }
+      $tables[$key]->is_generated = $this->files->exists(mkny_models_path($controller).'.php');
+    }
 
       // Cria uma collection das tables
-      $tables = collect($tables);
+    $tables = collect($tables);
 
       // Schemas selecionados
-      $data['schemas_selected'] = \Request::input('schema')?:array();
+    $data['schemas_selected'] = \Request::input('schema')?:array();
 
       // Faz o filtro inteligente nos schemas selecionados
-      if (isset($data['schemas_selected']) && count($data['schemas_selected'])) { 
-        $tables = $tables->whereIn('schema', $data['schemas_selected']);
-      }
+    if (isset($data['schemas_selected']) && count($data['schemas_selected'])) { 
+      $tables = $tables->whereIn('schema', $data['schemas_selected']);
+    }
 
       // Pega todas as tabelas selecionadas
-      $data['tables'] = $tables->all();
+    $data['tables'] = $tables->all();
 
       // Schemas para a selecao
-      $data['schemas'] = explode(',',$this->logic->_getSchemas());
+    $data['schemas'] = explode(',',$this->logic->_getSchemas());
     // }
     // Informa o database
     $data['database'] = Session::get('banco');
@@ -223,7 +223,7 @@ class GeneratorController extends Controller
         $config_str = $this->files->getRequire($cfg_file);
         
         // Pula o primeiro indice
-        array_shift($config_str);
+        // array_shift($config_str);
         $valOrder=1;
         // Fornece o tipo "types" para todos os campos, para selecao
         foreach ($config_str as $key => $value) {
@@ -385,9 +385,16 @@ class GeneratorController extends Controller
         // Field types
         $f_types = array_unique(array_values($this->logic->_getFieldTypes()));
 
+        // Se o diretorio nao existir
+        if (!realpath(dirname($cfg_file))) {
+          $this->files->makeDirectory(dirname($cfg_file));
+          // echo dirname($cfg_file);exit;
+        }
+
         // Config file data
         if(!$this->files->exists($cfg_file)){
-          // $this->files->put($cfg_file, '<?php return array();');
+          
+          $this->files->put($cfg_file, '<?php return array();');
         }
         $config_str = $this->files->getRequire($cfg_file);
 
@@ -398,9 +405,7 @@ class GeneratorController extends Controller
         $arrFields = array();
         foreach ($config_str as $field_name => $field_value) {
           if(!is_string($field_value)){
-            // echo '<pre>';
-            // print_r($field_value);
-            // exit;
+            
 
             // $field_name = $field_name.'[]';
             // foreach ($field_value as $k_key => $k_value) {
@@ -416,19 +421,34 @@ class GeneratorController extends Controller
             // echo '<pre>';
             // print_r($arrFields);
             // exit;
+            // mdd($field_value);
+            // array('name')
+            
+            $arrFields[$field_name] = array(
+              'name' => $field_name,
+              'trans' => $field_name,
+              'values' => $field_value,
+              'type' => 'multi',
+              );
           } else {
             $arrFields[$field_name] = array(
               'name' => $field_name,
+              'trans' => $field_name,
               'default_value' => $field_value,
-              'type' => 'string',
-              'trans' => $field_name
+              // 'type' => 'string',
               );
           }
           
         }
+        // mdd($arrFields);
+        
 
-        $cl = new \Mkny\Cinimod\Logic\CRUDLogic();
-        $d = $cl->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
+        $form = new \Mkny\Cinimod\Logic\FormLogic();
+        $d = $form->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
+
+        // $cl = new \Mkny\Cinimod\Logic\CRUDLogic();
+        // $d = $cl->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
+
 
 
         return view('cinimod::admin.generator.trans_detailed')->with(['form' => $d]);

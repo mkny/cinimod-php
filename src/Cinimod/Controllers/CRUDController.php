@@ -39,17 +39,39 @@ abstract class CRUDController extends Controller
         // Pega as configuracoes de campos para a datagrid
         $config = $this->model->_getConfig('datagrid');
 
+        // Separa apenas o nome dos campos
+        $config_fields = array_keys($config);
+
+        // Recupera o nome do controlador principal
         $controller = $this->_getControllerName();
         
         // Ordena os campos
-        $order = $this->model->primaryKey;
-        $orderParam = \Request::input('order');
-        if ($orderParam) {
-            $order = array_keys($config)[$orderParam];
+        // Default busca no model, o valor para orderBy
+        $orderModel = $this->model->orderBy;
+        // Vindo de parametrizacao
+        $order = \Request::input('order',$orderModel[0]);
+
+        // Se for numerico, indica que veio da parametrizacao de url (ou precisa do tratamento numerico)
+        if (is_numeric($order)) {
+            $order = array_keys($config)[$order];
+        }
+
+        // Aqui protege de bugar o sistema
+        if(!in_array($order, $config_fields)){
+            $order = $orderModel[0];
+        }
+
+        // Cardinalidade
+        $card = \Request::input('card', $orderModel[1]);
+        if(!in_array($card, array('asc', 'desc'))){
+            $card = 'asc';
         }
 
         // Quantidade por pagina
-        $limit = \Request::input('perpage', 10);
+        $limit = \Request::input('perpage', $this->model->maxPerPage);
+
+        // Para nao deixar o sistema sobrecarregar, deixa o limit maximo em 1000 registros;
+        $limit = ($limit > 1000) ? 1000:$limit;
 
 
         // $rows_debug = $this
@@ -58,15 +80,14 @@ abstract class CRUDController extends Controller
         // ->orderBy($order, 'asc')
         // ->get(['cod_cidades.cod_estado'])
         // ;
-        // echo '<pre>';
-        // print_r($rows_debug);
-        // exit;
+        
+
 
         // Pega os dados do banco
         $rows = $this
         ->model
-        ->orderBy($order, \Request::input('card', 'asc'))
-        // ->with('cod_cidades')
+        ->orderBy($order, $card)
+        // ->with('cod_estados')
         ->paginate(
             // Qtd de campos
             $limit,
@@ -75,8 +96,9 @@ abstract class CRUDController extends Controller
             )
         ->appends(\Request::only(['order', 'card', 'perpage']));
 
+        // return ($rows->toArray()['data']);
         // Monta o datagrid
-        $datagrid = $this->_getDatagrid($rows, $config, $this->model->primaryKey, $controller);
+        $datagrid = $this->CL->datagrid($rows, $config, $this->model->primaryKey, $controller);
 
         // Monta os dados para exibicao
         $data = array(
@@ -89,15 +111,15 @@ abstract class CRUDController extends Controller
         return view('cinimod::admin.default.list')->with(['data' => $data]);
     }
 
-    protected function _getDatagrid($rows, $config, $primaryKey, $controller)
-    {
-        return $this->CL->datagrid(
-            $rows,
-            $config,
-            $primaryKey,
-            $controller
-            );
-    }
+    // protected function _getDatagrid($rows, $config, $primaryKey, $controller)
+    // {
+    //     return $this->CL->datagrid(
+    //         $rows,
+    //         $config,
+    //         $primaryKey,
+    //         $controller
+    //         );
+    // }
 
     // protected function index()
     // {
@@ -159,7 +181,7 @@ abstract class CRUDController extends Controller
      */
     protected function create()
     {
-        return view('cinimod::admin.default.add')->with(['form' => $this->CL->getForm(
+        return view('cinimod::admin.default.add')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic')->getForm(
             false,
             action($this->_getController().'@postAdd'),
             $this->model->_getConfig('form_add'),
@@ -178,13 +200,12 @@ abstract class CRUDController extends Controller
         $M = $this
         ->model
         ->findOrFail($id, $this->model->getFillable());
-        
-        return view('cinimod::admin.default.edit')->with(['form' => $this->CL->getForm(
-            $M,
-            action($this->_getController().'@postEdit', [$id]),
-            $this->model->_getConfig('form_edit'),
-            $this->_getControllerName()
-            )]);
+
+        $a = new \Mkny\Cinimod\Logic\FormLogic();
+        return view('cinimod::admin.default.edit')->with(['form' => $a->getForm($M,
+                action($this->_getController().'@postEdit', [$id]),
+                $this->model->_getConfig('form_edit'),
+                $this->_getControllerName())]);
     }
 
     // CRUD
