@@ -9,55 +9,58 @@ class CRUDLogic {
     /**
      * Facilitador para montagem da datagrid
      * 
-     * @param  Illuminate\Pagination\LengthAwarePaginator $dbRows      Paginador
-     * @param  array $fields_data Configuracao de campos
+     * @param  array $rows      Linhas pra montar a datagrid
+     * @param  array $fields_config Configuracao de campos
      * @param  string $pkey        Nome da primary key
      * @param  string $modelName   Nome do model
      * @return array              Tabela + paginator
      */
-    public function datagrid($dbRows,$fields_data, $pkey, $modelName)
+    public function datagrid(Array $rows,$fields_config, $pkey, $modelName)
     {
 
         // Instancia a tabela
         $table = new TableLogic();
 
         // Trata os fields, apenas para pegar os nomes
-        $fields = array_keys($fields_data);
+        $field_names = array_keys($fields_config);
+
 
 
         // Adiciona as classes na tabela
-        $table->addTableClass([
-            'table',
-            'table-striped',
-            'check-all-container'
-            ]);
+        $table->addTableClass(['table','table-striped','check-all-container']);
 
         // Monta todos os cabecalhos, inclusive os dinamicos
         $headers = array_merge(
             array('checks' => [\Form::checkbox('idx', '', '', ['class' => 'checkbox check-all'])]),
-            $fields,
+            $field_names,
             array('actions' => trans($modelName.'.actions'))
             );
+        // mdd($headers);
 
 
         // Traducao dos headers, que vem com os nomes do banco de dados, 
         // aqui eles tomam nomes especificos dos arquivos de configuracao
         $headersTranslated = [];
         foreach ($headers as $field_key => $field_name) {
+
             // Se nao for numerico, indica um conteudo customizado
             if(is_numeric($field_key)){
+                // Busca a traducao para o campo
                 $headersTranslated[$field_name] = trans($modelName.'.'.$field_name.'.grid');
-
                 // Aqui faz o tratamento do link no titulo,
                 // Usado para campos de busca, ordenacao, etc
-                if(isset($fields_data[$field_name]['searchable']) && $fields_data[$field_name]['searchable']){
+                if(isset($fields_config[$field_name]['searchable']) && $fields_config[$field_name]['searchable']){
+
+
                     // Insere o link nos items marcados como searchable (o link e de ordenacao)
                     $headersTranslated[$field_name] = [
+                    // Link com o campo order e o campo cardinalidade
                     \Html::tag(
                         'a',
                         $headersTranslated[$field_name],
-                        ['href' => "?order={$field_name}&card=".(\Request::input('order') == $field_name && \Request::input('card', 'desc') == 'asc' ? 'desc':'asc')]
-                        // ['href' => "?order=".array_search($field_name, $fields)."&card=".(\Request::input('card', 'desc') == 'asc' ? 'desc':'asc')]
+                        ['href' =>
+                        "?order={$field_name}&card=".(\Request::input('order') == $field_name && \Request::input('card', 'desc') == 'asc' ? 'desc':'asc').
+                        "&".http_build_query(\Request::except(['order', 'card', 'page']))]
                         )
                     ];
                 }
@@ -66,72 +69,92 @@ class CRUDLogic {
                 $headersTranslated[$field_key] = $field_name;
             }
         }
+        
         // Setta os headers
         $table->setHeaders($headersTranslated);
 
         // Monta as linhas
         // Fiz essa alteracao por causa do presenter()
         $dataRows = [];
-        foreach ($dbRows->items() as $item) {
+
+        // mdd($rows);
+        foreach ($rows as $row) {
+
             // Monta as colunas
             $dataCols = [];
-            foreach ($fields as $field_name) {
-                if (isset($fields_data[$field_name]['relationship']) && $fields_data[$field_name]['relationship']) {
-                    if($item->{$field_name.'s'}){
-                        $dataCols[$field_name] = $item->{$field_name.'s'}->{$fields_data[$field_name]['relationship']['field_show']};
-                    } else {
-                        $dataCols[$field_name] = '';
-                    }
-                } else {
-                    // Setta a coluna com o presenter no array de colunas
-                    $dataCols[$field_name] = $item->present()->{$field_name};
 
-                    // $dataCols[$field_name] = $item->{$field_name};
+            foreach ($field_names as $field_name) {
+                if(is_array($row)){
+                    $dataCols[$field_name] = $row[$field_name];
+                } else {
+                    // Tratamento para relacionamentos (para exibir os items dentro da listagem)
+                    if (isset($fields_config[$field_name]['relationship']) && $fields_config[$field_name]['relationship']) {
+
+                        // Verifica se tem o metodo para exibir os campos adicionais
+                        if($row->{$field_name.'s'}){
+
+                            // Entra no metodo (Eloquent), retornando ele pega o nome do campo, definido no relationship
+                            // Existe um projeto ai pra fazer esse campo ser dinamico kk
+                            $dataCols[$field_name] = $row->{$field_name.'s'}->{$fields_config[$field_name]['relationship']['field_show']};
+                        } else {
+
+                            // Se nao existe, bota um zerado ae
+                            $dataCols[$field_name] = '';
+                        }
+                    } else {
+                        // Setta a coluna com o presenter no array de colunas
+                        $dataCols[$field_name] = $row->present()->{$field_name};
+                        // $dataCols[$field_name] = $row[$field_name];
+                    }
                 }
             }
 
-            // Setta a linha no array de linhas
-            $dataRows[] = $dataCols;
-        }
-
-        // Aqui monta o objeto propriamente dito
-        foreach ($dataRows as $dataRow) {
-
-            // Adiciona o check individual
-            $dataRow['checks'] = array(
-                \Form::checkbox('id_sec[]', $dataRow[$pkey], '', ['class'=> 'checkbox'])
-                );
-
-            // Adiciona os botoes
-            
-            $dataRow['actions'] = array();
+            if($pkey){
 
 
-            // Botao de edição
-            $dataRow['actions'][] = $table->button(
-                action($modelName.'Controller@getEdit', [$dataRow[$pkey]]),
-                trans($modelName.'.button_edit'),
-                'glyphicon glyphicon-edit btn btn-sm btn-success');
+                // Adiciona o check individual
+                $dataCols['checks'] = array(
+                    \Form::checkbox('id_sec[]', $row[$pkey], '', ['class'=> 'checkbox'])
+                    );
 
-            // Botão de alteração de status (personalizado então não é obrigatório)
-            if (isset($dataRow['ind_status']) && !empty($dataRow['ind_status'])) {
-                $status = substr($dataRow['ind_status'],0,1);
+                // Adiciona os botoes
+                $dataCols['actions'] = array();
 
-                $dataRow['actions'][] = $table->button(
-                    action($modelName.'Controller@getSwitchStatus', [$dataRow[$pkey]]),
-                    trans($modelName.'.'.($status == 'A' ? 'button_status_disable':'button_status_enable')),
-                    'glyphicon btn btn-sm '.($status == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info'));
+                // Botao de edição
+                $dataCols['actions'][] = $table->button(
+                    action($modelName.'Controller@getEdit', [$dataCols[$pkey]]),
+                    trans($modelName.'.button_edit'),
+                    'glyphicon glyphicon-edit btn btn-sm btn-success');
+
+                // Botão de alteração de status (personalizado então não é obrigatório)
+                if (isset($dataCols['ind_status']) && !empty($dataCols['ind_status'])) {
+                    $status = substr($dataCols['ind_status'],0,1);
+
+                    $dataCols['actions'][] = $table->button(
+                        action($modelName.'Controller@getSwitchStatus', [$dataCols[$pkey]]),
+                        trans($modelName.'.'.($status == 'A' ? 'button_status_disable':'button_status_enable')),
+                        'glyphicon btn btn-sm '.($status == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info'));
+                }
+
+                // Botão de exclusão
+                $dataCols['actions'][] = $table->button(
+                    action($modelName.'Controller@getDelete', [$dataCols[$pkey]]),
+                    trans($modelName.'.button_delete'),
+                    'glyphicon glyphicon-trash btn btn-sm btn-danger');
+            } else {
+                $dataCols['checks'] = array();
+                $dataCols['actions'] = array();
             }
+            $dataRows[] = $dataCols;
 
-            // Botão de exclusão
-            $dataRow['actions'][] = $table->button(
-                action($modelName.'Controller@getDelete', [$dataRow[$pkey]]),
-                trans($modelName.'.button_delete'),
-                'glyphicon glyphicon-trash btn btn-sm btn-danger');
-
-            $table->insertRow($dataRow);
+            // Setta a linha no array de linhas
+            $table->insertRow($dataCols);
         }
-        // dd($table);
+
+        // return $dataRows;
+
+        // mdd($dataRows);
+        // dd($table->getTable());
         // Retorna a tabela montada
         return $table->getTable();
     }

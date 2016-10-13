@@ -65,8 +65,11 @@ class UtilLogic {
         $config_str = \File::getRequire($file);
 
 
-        $config_new = array_only($data, array_merge(array_keys($config_str),array('new_fields')));
+        $config_new = array_except($data, array('_token'));
+        // $config_new = array_only($data, array_merge(array_keys($config_str),array('new_fields')));
 
+
+        // mdd($config_new);
         if (isset($config_new['new_fields'])) {
             $nf = $config_new['new_fields'];
 
@@ -81,7 +84,6 @@ class UtilLogic {
         $new_config_str = array_replace_recursive($config_str, $config_new);
 
         
-
         // Tratamento do true / false
         foreach ($new_config_str as $key => $value) {
 
@@ -113,6 +115,32 @@ class UtilLogic {
         // exit;
         // Grava no arquivo
         return \File::put($file, $string);
+    }
+
+
+
+    /**
+     * Sets a value in a nested array based on path
+     * See http://stackoverflow.com/a/9628276/419887
+     *
+     * @param array $array The array to modify
+     * @param string $path The path in the array
+     * @param mixed $value The value to set
+     * @param string $delimiter The separator for the path
+     * @return The previous value
+     */
+    static function setNestedArrayValue(&$array, $path, &$value, $delimiter = '/') {
+        $pathParts = explode($delimiter, $path);
+
+        $current = &$array;
+        foreach($pathParts as $key) {
+            $current = &$current[$key];
+        }
+
+        $backup = $current;
+        $current = $value;
+
+        return $backup;
     }
 
 }

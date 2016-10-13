@@ -9,53 +9,99 @@ use Mkny\Cinimod\Logic;
 use DB;
 
 
+// use Illuminate\Pagination\LengthAwarePaginator;
+
+
 abstract class CRUDController extends Controller
 {
     /**
-     * Controller default model
-     * @var object
-     */
+    * Controller default model
+    * @var object
+    */
     protected $model;
 
     /**
-     * CRUDLogic
-     * 
-     * @var object
-     */
+    * CRUDLogic
+    * 
+    * @var object
+    */
     private $CL;
 
     /**
-     * Construtor da classe
-     * @return void
-     */
+    * Construtor da classe
+    * @return void
+    */
     public function __construct()
     {
         $this->CL = new Logic\CRUDLogic;
+
+        Logic\UtilLogic::addViewVar('controller', $this->_getControllerName());
+    }
+
+
+
+    /**
+    * Datasource de dados para a listagem
+    * @param  array $fields Campos para serem buscados
+    * @param  int $limit  Valor de limite
+    * @param  int|string $order  Campo de ordenacao
+    * @param  string $card   Cardinalidade do campo de ordenacao
+    * @return object
+    */
+    public function _datasource($fields, $limit, $order, $card)
+    {
+        $rows = $this
+        ->model
+        ->orderBy($order, $card)
+        ->paginate(
+            // Qtd de linhas
+            $limit,
+            // Pega os fieldnames para o select
+            $fields
+            )
+        ->appends(\Request::only(['order', 'card', 'perpage']));
+
+        return $rows;
+    }
+
+    protected function datagrid()
+    {
+        
+    }
+
+    /**
+     * Funcao para retornar os campos para montar a listagem
+     * 
+     * @return array
+     */
+    public function _getFields()
+    {
+        return $this->model->_getConfig('datagrid');
     }
 
     protected function index()
     {
 
-        // Pega as configuracoes de campos para a datagrid
-        $config = $this->model->_getConfig('datagrid');
-
-        // Separa apenas o nome dos campos
-        $config_fields = array_keys($config);
-
         // Recupera o nome do controlador principal
         $controller = $this->_getControllerName();
-        
+
+        // Pega as configuracoes de campos para a datagrid
+        $modelconfig = $this->_getFields();
+
+        // Separa apenas o nome dos campos
+        $config_fields = array_keys($modelconfig);
+
+
+
         // Ordena os campos
         // Default busca no model, o valor para orderBy
-        $orderModel = $this->model->orderBy;
+        $orderModel = ($this->model ? $this->model->orderBy:array('0', 'asc'));
         // Vindo de parametrizacao
         $order = \Request::input('order',$orderModel[0]);
-
         // Se for numerico, indica que veio da parametrizacao de url (ou precisa do tratamento numerico)
         if (is_numeric($order)) {
-            $order = array_keys($config)[$order];
+            $order = $config_fields[$order];
         }
-
         // Aqui protege de bugar o sistema
         if(!in_array($order, $config_fields)){
             $order = $orderModel[0];
@@ -68,119 +114,38 @@ abstract class CRUDController extends Controller
         }
 
         // Quantidade por pagina
-        $limit = \Request::input('perpage', $this->model->maxPerPage);
+        $limit = \Request::input('perpage', ($this->model ? $model->maxPerPage:10));
 
         // Para nao deixar o sistema sobrecarregar, deixa o limit maximo em 1000 registros;
         $limit = ($limit > 1000) ? 1000:$limit;
 
 
-        // $rows_debug = $this
-        // ->model
-        // ->with('cod_cidades')
-        // ->orderBy($order, 'asc')
-        // ->get(['cod_cidades.cod_estado'])
-        // ;
-        
 
+        // Pega os dados do _datasource
+        $rows = $this->_datasource($config_fields, $limit, $order, $card);
 
-        // Pega os dados do banco
-        $rows = $this
-        ->model
-        ->orderBy($order, $card)
-        // ->with('cod_estados')
-        ->paginate(
-            // Qtd de campos
-            $limit,
-            // Pega os fieldnames para o select
-            array_keys($config)
-            )
-        ->appends(\Request::only(['order', 'card', 'perpage']));
-
-        // return ($rows->toArray()['data']);
         // Monta o datagrid
-        $datagrid = $this->CL->datagrid($rows, $config, $this->model->primaryKey, $controller);
+        $datagrid = $this->CL->datagrid(is_object($rows) ? $rows->items():$rows, $modelconfig, ($this->model ? $this->model->primaryKey:null ), $controller);
 
         // Monta os dados para exibicao
-        $data = array(
-            // 'title' => $controller . ' Listage',
+        return view('cinimod::admin.default.list')->with(array(
             'table' => $datagrid,
-            'controller' => $controller,
-            'grid' => $rows
-            );
-        // dd($data);
-        return view('cinimod::admin.default.list')->with(['data' => $data]);
+            'grid' => array(
+                'total' => $rows->total(),
+                'links' => $rows->links()
+                )
+            ));
     }
 
-    // protected function _getDatagrid($rows, $config, $primaryKey, $controller)
-    // {
-    //     return $this->CL->datagrid(
-    //         $rows,
-    //         $config,
-    //         $primaryKey,
-    //         $controller
-    //         );
-    // }
-
-    // protected function index()
-    // {
-    //     $data = $this->datagrid();
-    //     return view('cinimod::admin.default.list')->with('data',$data);
-    // }
-
-
-    // /**
-    //  * Datagrid action
-    //  * 
-    //  * -Implementando busca referenciada (parei kk)
-    //  */
-    // protected function datagrid()
-    // {
-    //     // skip (OFFSET HAHA)
-    //     // Pega as configuracoes de campos para a datagrid
-    //     $config = $this->model->_getConfig('datagrid');
-
-
-    //     // Ordena os campos
-    //     $order = $this->model->primaryKey;
-    //     $orderParam = \Request::input('order');
-    //     if ($orderParam) {
-    //         $order = array_keys($config)[$orderParam];
-    //     }
-
-    //     // Quantidade por pagina
-    //     $limit = \Request::input('perpage', 10);
-
-    //     $rows = $this
-    //     ->model
-    //     ->orderBy($order, \Request::input('card', 'asc'))
-    //     ->paginate(
-    //         // Qtd de campos
-    //         $limit,
-    //         // Pega os fieldnames para o select
-    //         array_keys($config)
-    //         )->appends(\Request::only(['order', 'card', 'perpage']));
-
-    //     // Titulo da pagina
-    //     $data['title'] = $this->_getControllerName()." List ";
-    //     $data['fields'] = $config;
-    //     $data['card'] = (\Request::input('card', 'asc') == 'asc') ? 'desc':'asc';
-    //     $data['grid'] = $rows;
-    //     // Nome do controlador
-    //     $data['controller'] = $this->_getControllerName();
-    //     // dd($data);
-    //     // Configuracao do link de exibicao da paginacao
-    //     // $data['grid']->setPath('index/'.http_build_query($_GET));
-
-    //     return $data;
-    // }
 
     /**
-     * Exibe formulario para criacao de um novo registro
-     *
-     * @return \Illuminate\Http\Response
-     */
+    * Exibe formulario para criacao de um novo registro
+    *
+    * @return \Illuminate\Http\Response
+    */
     protected function create()
     {
+
         return view('cinimod::admin.default.add')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic')->getForm(
             false,
             action($this->_getController().'@postAdd'),
@@ -188,13 +153,13 @@ abstract class CRUDController extends Controller
             $this->_getControllerName()
             )]);
     }
-    
+
     /**
-     * Exibe formulario para edicao de um registro
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    * Exibe formulario para edicao de um registro
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
     protected function edit($id)
     {
         $M = $this
@@ -203,18 +168,18 @@ abstract class CRUDController extends Controller
 
         $a = new \Mkny\Cinimod\Logic\FormLogic();
         return view('cinimod::admin.default.edit')->with(['form' => $a->getForm($M,
-                action($this->_getController().'@postEdit', [$id]),
-                $this->model->_getConfig('form_edit'),
-                $this->_getControllerName())]);
+            action($this->_getController().'@postEdit', [$id]),
+            $this->model->_getConfig('form_edit'),
+            $this->_getControllerName())]);
     }
 
     // CRUD
     /**
-     * Armazena um novo registro no database
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    * Armazena um novo registro no database
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
     protected function store(Request $request)
     {
         // Varre o array procurando valores vazios, para settar como nulos
@@ -228,7 +193,7 @@ abstract class CRUDController extends Controller
 
         // Pega o id inserido no momento
         $id = $this->model->create($post)->{$this->model->primaryKey};
-        
+
         // Redireciona para a index, com uma mensagem de inserção
         return redirect()->action($this->_getController()."@getIndex")->with(array(
             'status' => 'success',
@@ -238,12 +203,12 @@ abstract class CRUDController extends Controller
 
     // CRUD
     /**
-     * Atualiza o registro na base de dados
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    * Atualiza o registro na base de dados
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
     protected function update(Request $request, $id)
     {
         $post = array_map(function($dataPost){
@@ -260,11 +225,11 @@ abstract class CRUDController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    * Display the specified resource.
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
     protected function show($id)
     {
         $this->model->findOrFail($id)->toArray();
@@ -272,11 +237,11 @@ abstract class CRUDController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    * Remove the specified resource from storage.
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
     protected function destroy($id)
     {
         $M = $this
@@ -291,12 +256,13 @@ abstract class CRUDController extends Controller
     }
 
     /**
-     * Atualiza o status (ativo/bloqueado) do item
-     * 
-     * @param int $id Id a ser atualizado
-     * @return void
-     */
-    protected function statusChange($id){
+    * Atualiza o status (ativo/bloqueado) do item
+    * 
+    * @param int $id Id a ser atualizado
+    * @return void
+    */
+    protected function statusChange($id)
+    {
         $M = $this->model->findOrFail($id);
         $M->ind_status = ($M->ind_status == 'A')?'B':'A';
         $M->save();
@@ -317,17 +283,17 @@ abstract class CRUDController extends Controller
     }
 
     /**
-     * Retorna o nome deste controller para o CRUD
-     * @return string Nome da classe controlador
-     */
+    * Retorna o nome deste controller para o CRUD
+    * @return string Nome da classe controlador
+    */
     protected function _getController(){
         return class_basename($this);
     }
 
     /**
-     * Retorna o nome deste controller para o CRUD
-     * @return string Nome da classe controlador
-     */
+    * Retorna o nome deste controller para o CRUD
+    * @return string Nome da classe controlador
+    */
     protected function _getControllerName(){
         return str_replace('Controller', '', $this->_getController());
     }

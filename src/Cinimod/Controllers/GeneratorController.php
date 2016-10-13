@@ -115,8 +115,8 @@ class GeneratorController extends Controller
     $data['schemas'] = explode(',',$this->logic->_getSchemas());
     // }
     // Informa o database
-    $data['database'] = Session::get('banco');
-    // $data['database'] = Config::get('database.default');
+    // $data['database'] = Session::get('banco');
+    $data['database'] = Config::get('database.default');
 
     // Conexoes disponiveis (config/database.php)
     $data['connections'] = array_keys(Config::get('database.connections'));
@@ -347,7 +347,23 @@ class GeneratorController extends Controller
 
     public function postTrans($lang, $module=false)
     {
+      // Armazena os dados enviados
       $req_fields = \Request::all();
+
+      if(isset($req_fields['new_fields'])){
+        // Percorre todos os indices, em busca de novos fields
+        foreach ($req_fields['new_fields']['key'] as $key_field => $new_field) {
+          $to_set = $req_fields['new_fields']['value'][$key_field];
+
+          // Faz o nest pro item
+          \Mkny\Cinimod\Logic\UtilLogic::setNestedArrayValue($req_fields,$new_field, $to_set, '.');
+        };
+
+        unset($req_fields['new_fields']);
+      }
+
+      // mdd($req_fields);
+      
       // if (isset($req_fields['new_file_name'])) {
         // return redirect()->route('adm::trans', [$lang, $req_fields['new_file_name']]);
       // }
@@ -393,7 +409,7 @@ class GeneratorController extends Controller
 
         // Config file data
         if(!$this->files->exists($cfg_file)){
-          
+
           $this->files->put($cfg_file, '<?php return array();');
         }
         $config_str = $this->files->getRequire($cfg_file);
@@ -405,7 +421,7 @@ class GeneratorController extends Controller
         $arrFields = array();
         foreach ($config_str as $field_name => $field_value) {
           if(!is_string($field_value)){
-            
+
 
             // $field_name = $field_name.'[]';
             // foreach ($field_value as $k_key => $k_value) {
@@ -423,7 +439,7 @@ class GeneratorController extends Controller
             // exit;
             // mdd($field_value);
             // array('name')
-            
+            // mdd($field_value);
             $arrFields[$field_name] = array(
               'name' => $field_name,
               'trans' => $field_name,
@@ -435,7 +451,7 @@ class GeneratorController extends Controller
               'name' => $field_name,
               'trans' => $field_name,
               'default_value' => $field_value,
-              // 'type' => 'string',
+              'type' => 'string',
               );
           }
           

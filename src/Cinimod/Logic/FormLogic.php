@@ -61,7 +61,16 @@ class FormLogic
 
 		foreach ($FormFields as $field_name => $field_config) {
 			// Monta o label, adicionando um "*" se o campo for requerido
-			$label = \Form::label($field_config['name'],trans($this->Module.".{$field_config['name']}.form").((isset($field_config['required']) && $field_config['required']) ? '*':''));
+			// $label = \Form::label($field_config['name'],($this->Module.".{$field_config['name']}.form"));
+			
+			$translation = trans($this->Module.".{$field_config['name']}.form").((isset($field_config['required']) && $field_config['required']) ? '*':'');
+			if(isset($field_config['trans'])){
+				$translation = $field_config['trans'];
+			}
+			
+
+			// Monta a label
+			$label = \Form::label($field_config['name'],$translation);
 
 			// Monta o field
 			$field = $this->input($field_config);
@@ -119,6 +128,7 @@ class FormLogic
 
 		// Formatador de campos
 		$field = null;
+		// $config['type'] = (isset($config['type']) ? :'string');
 		switch($config['type']){
 			case 'select':
 			$field = $this->select($config);
@@ -127,53 +137,85 @@ class FormLogic
 			case 'string':
 			$field = $this->text($config);
 			break;
+			case 'multi':
+			$field = $this->multi($config);
+			break;
 			default:
-			echo $config['type'];
+			echo $config['type'];exit;
 			break;
 		}
 
 		return $field;
 	}
 
-	public function multi($config, $translation)
+	public function multi($config)
 	{
-		// mdd($config);
+		if($config['name'] == 'ind_status'){
+			// mdd($config);
+		}
 		$fields = [];
 		foreach($config['values'] as $key => $value){
-
-			$translated = trans($translation.'.'.$key);
+			// mdd($value);
+			$translated = trans($this->Module.".{$config['name']}.{$key}");
+			$inp_name = "{$config['name']}[{$key}]";
 
 			# need fix
-			if(is_array($value)){
-				continue;
-				$translated = '';
+			// if(is_array($value)){
+			// 	continue;
+			// 	$translated = '';
 
 				// mdd($translated);
 				// $value = $this->multi()
-				$value = (string) (json_encode($value));
+				// $value = (string) (json_encode($value));
 				// dd($value);
-			}
+			// }
 			
+			if(is_array($value)){
+				$cfg = [];
+				$cfg['type'] = 'multi';
+				$cfg['name'] = $inp_name;
+				// $cfg['trans'] = $inp_name;
+				$cfg['values'] = $value;
 
-			$fields[] = \Form::label($config['name'].'['.$key.']', $config['name'].'['.$key.']');
-			$fields[] = $this->text(array('name' => $config['name'].'['.$key.']','default_value' => $value), $translated);
-			
+				$input = $this->input($cfg);
+			} else {
+				$input = $this->input(array(
+					'type' => 'string',
+					'name' => $inp_name,
+					'default_value' => $value));
+			}
+
+			$label = \Form::label($inp_name, $inp_name);
+			$fields[] = \Html::tag('li', array($label, $input));
 		}
 
-		// $fields[] = \Html::tag('hr', '');
-		return \Html::tag('div', $fields);
+		
+
+		
+		return \Html::tag('div',array(
+
+			\Html::tag('hr', ''),
+			\Html::tag('ul', $fields),
+			// \Html::tag('hr', '')
+			));
 	}
 
 	public function text($config)
 	{
+		// Variavel atributos do objeto
 		$attributes = $config['attributes'];
 
 		$attributes['class'][] = 'form-control';
-		$attributes['placeholder'] = trans($this->Module.".{$config['name']}.form");
+
+		// Setta o place holder
+		$attributes['placeholder'] = ($config['name']) ? :trans($this->Module.".{$config['name']}.form");
+		// mdd($config);
+		// Junta os nomes de classes
 		$attributes['class'] = implode(" ", $attributes['class']);
 
 		$value = null;
 
+		// Verifica se e edicao, para adicionar o default value
 		if(!$this->isEdit() && isset($config['default_value'])){
 			$value = $config['default_value'];
 		}

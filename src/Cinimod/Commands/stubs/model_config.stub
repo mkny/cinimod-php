@@ -13,9 +13,9 @@
 	// Array de atributos, para o campo
 	'attributes' => array(
 		// 'data' => ['id' => '1000'], // Exemplo usando um data-id="1000"
-		'disabled_add' => false,
-		'disabled_edit' => false,
-		)
+		'disabled_add' => false, // Desativa o campo no modo de adicionar
+		'disabled_edit' => false, // Desativa o campo no modo de edicao
+		),
 	// Form-specific
 	'required' => {{is_required}}, // Boolean para exibir campo pre-requerido
 	// 'default_value' => '', // Valor default pro input

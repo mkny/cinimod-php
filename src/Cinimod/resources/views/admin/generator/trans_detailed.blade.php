@@ -11,10 +11,12 @@
 	</div>
 	@endif
 
-	<!-- <ul>
-		<li><a href="javascript:;">new field</a></li>
-	</ul> -->
-
-	@include('cinimod::admin.default.form', ['form' => $form])
+	<ul>
+		<li><a href="javascript:;" onclick="addNewFieldTrans();">add new field</a></li>
+	</ul>
+	
+	<div class="form-data">
+		@include('cinimod::admin.default.form', ['form' => $form])
+	</div>
 </div>
 @stop

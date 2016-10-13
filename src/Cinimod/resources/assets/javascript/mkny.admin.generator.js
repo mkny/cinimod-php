@@ -38,6 +38,27 @@ function recount(){
 	});
 }
 
+
+function addNewFieldTrans() {
+	var block = $('.form-data .form-group:eq(0)');
+	var cl = block.clone();
+
+	
+	cl.find('div:eq(0)').html($('<input />').attr({
+		'class' : 'form-control',
+		'name' : 'new_fields[key][]',
+		'type' : 'text'
+	}));
+	cl.find('div:eq(1)').html($('<input />').attr({
+		'class' : 'form-control',
+		'name' : 'new_fields[value][]',
+		'type' : 'text'
+	}));
+
+	cl.insertBefore(block);
+}
+
+
 function addDynamicField(obj){
 	var block = $(obj).clone();
 

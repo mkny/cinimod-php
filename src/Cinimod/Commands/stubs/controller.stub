@@ -78,3 +78,16 @@ class DummyClassController extends CRUDController  {
 		return $this->statusChange($id);
 	}
 }
+
+
+/**
+ * Ideas
+ *
+ * Custom dataset:
+ *
+ * 
+       // $dataset = collect($this->model->orderBy($order, $card)->get()->toArray());
+       // $rows = new LengthAwarePaginator($dataset->take($limit),count($dataset), $limit, null, array('path' => '/routeToCidadeController'));
+       // $rows->appends(\Request::only(['order', 'card', 'perpage']));
+       
+ */
