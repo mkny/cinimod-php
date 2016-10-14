@@ -80,8 +80,9 @@ class GeneratorController extends Controller
       $relations = $this->logic->buildRelationships($table->schema.'.'.$table->name);
       if($relations){
         foreach ($relations as $relation) {
+          // mdd($relation);
            // Formata em string, para melhor analise no codigo
-          $arrRelations[] = "{$relation->table_foreign}.{$relation->table_foreign_field} > {$relation->table_primary}.{$relation->table_primary_field}";
+          $arrRelations[] = "{$relation->schema_foreign}.{$relation->table_foreign}.{$relation->table_foreign_field} > {$relation->schema_primary}.{$relation->table_primary}.{$relation->table_primary_field}";
         }
       }
 

@@ -40,9 +40,9 @@ class DummyClassController extends CRUDController  {
 	}
 
 	/**
-	 * Ação para edit-mode
-	 * @param  integer $id Id do objeto de edição
-	 * @return view     Form para edição
+	 * Retorna a tela para ser feita a edicao
+	 * @param  int $id Id do elemento
+	 * @return \Illuminate\Http\Response
 	 */
 	public function getEdit($id){
 		return $this->edit($id);

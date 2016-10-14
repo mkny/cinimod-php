@@ -135,13 +135,14 @@ class FormLogic
 			break;
 			case 'date':
 			case 'string':
+			case 'integer':
 			$field = $this->text($config);
 			break;
 			case 'multi':
 			$field = $this->multi($config);
 			break;
 			default:
-			echo $config['type'];exit;
+				throw new \Exception($config['type']. ' is not recognized (yet);');exit;
 			break;
 		}
 

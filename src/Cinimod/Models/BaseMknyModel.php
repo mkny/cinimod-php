@@ -9,6 +9,25 @@ use DB;
 
 class BaseMknyModel extends Model
 {
+    
+    /**
+     * Funcao para implementar os filtros dinamicos, 
+     * definidos no arquivo de configuracao (modelconfig)
+     * 
+     * @param  boolean $excludeDeleted
+     * @return Object
+     */
+    public function newQuery($excludeDeleted = true) {
+
+        $filters = $this->_getDefaultFilter();
+
+        $query = parent::newQuery($excludeDeleted = true);
+        foreach ($filters as $filter) {
+            $query->whereRaw($filter);
+        }
+        
+        return $query;
+    }
 
 	/**
 	 * Funcao para buscar os dados, para auxiliar na listagem
@@ -20,11 +39,6 @@ class BaseMknyModel extends Model
     static public function relation($conf,$filterID=false)
     {
 
-        // echo '<pre>';
-        // print_r($conf['field_key'] = $filterID);
-        // var_dump($filterID);
-        // print_r($conf);
-        // exit;
     	$fields = [];
         // $fields[] = $conf['field_key']. ' AS id';
     	$fields[] = $conf['field_fkey']. ' AS id';
@@ -54,8 +68,7 @@ class BaseMknyModel extends Model
         $config = [];
 
 
-        $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php');
-
+        $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['fields'];
         
         switch ($type) {
             case 'datagrid':
@@ -63,11 +76,6 @@ class BaseMknyModel extends Model
                 return isset($var['grid']) && $var['grid'] == 1;
             });
             break;
-            // case 'form':
-            // $config = array_filter($cfg, function($var){
-            //     return isset($var['form']) && $var['form'] == 1;
-            // });
-            // break;
             case 'form_add':
             $config = array_filter($cfg, function($var){
                 return isset($var['form_add']) && $var['form_add'] == 1;
@@ -109,6 +117,31 @@ class BaseMknyModel extends Model
         }
 
         return $config;
+    }
+
+    /**
+     * Retorna o filtro padrao (definido no arquivo de configuracao)
+     * 
+     * @return array Filtros where em 'raw' ja tratado
+     */
+    protected function _getDefaultFilter()
+    {
+        $filters = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['grid']['pre-filter'];
+        foreach ($filters as $kfilter => $filter) {
+            // Tratamento para parametros de where
+            $matches = array();
+            
+            // Verifica as ocorrencias de variaveis enclausuradas
+            preg_match('/\{(.*?)\}/', $filter, $matches);
+            if(count($matches)){
+                $replace = null;
+                eval('$replace = ' . $matches[1] . ';');
+
+                $filters[$kfilter] = str_replace($matches[0], $replace, $filter);
+            }
+        }
+        
+        return $filters;
     }
 
 }

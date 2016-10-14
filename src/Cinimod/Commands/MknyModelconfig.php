@@ -86,7 +86,15 @@ class MknyModelconfig extends GeneratorCommand
         $table = $this->argument('table')? : str_plural(strtolower($tb));
         $this->_getRelations($table);
 
-        return "<?php\n\n\nreturn [\n".$this->_getModelConfig($table)."\n];";
+        // model_config.stub;
+        $stub = $this->files->get(__DIR__.'/stubs/model_config.stub');
+        
+        $this->setTranslation('var_fields_data', $this->_getModelConfig($table));
+
+        Logic\UtilLogic::translateStub($this->translation, $stub);
+        
+        return $stub;
+        // return "<?php\n\n\nreturn [\n".$this->_getModelConfig($table)."\n];";
     }
 
 
@@ -145,7 +153,7 @@ class MknyModelconfig extends GeneratorCommand
      * @return  array Dados do config
      */
     private function _getModelConfig($table){
-        $stubModelConfig = $this->files->get(__DIR__.'/stubs/model_config.stub');
+        $stubModelConfig = $this->files->get(__DIR__.'/stubs/model_config_fields.stub');
 
         // Pega as colunas da tabela do banco
         $AppLogic = new Logic\AppLogic();

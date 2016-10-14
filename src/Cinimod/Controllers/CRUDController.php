@@ -33,7 +33,7 @@ abstract class CRUDController extends Controller
     */
     public function __construct()
     {
-        $this->CL = new Logic\CRUDLogic;
+        // $this->CL = new Logic\CRUDLogic;
 
         Logic\UtilLogic::addViewVar('controller', $this->_getControllerName());
     }
@@ -114,7 +114,7 @@ abstract class CRUDController extends Controller
         }
 
         // Quantidade por pagina
-        $limit = \Request::input('perpage', ($this->model ? $model->maxPerPage:10));
+        $limit = \Request::input('perpage', ($this->model ? $this->model->maxPerPage:10));
 
         // Para nao deixar o sistema sobrecarregar, deixa o limit maximo em 1000 registros;
         $limit = ($limit > 1000) ? 1000:$limit;
@@ -125,7 +125,7 @@ abstract class CRUDController extends Controller
         $rows = $this->_datasource($config_fields, $limit, $order, $card);
 
         // Monta o datagrid
-        $datagrid = $this->CL->datagrid(is_object($rows) ? $rows->items():$rows, $modelconfig, ($this->model ? $this->model->primaryKey:null ), $controller);
+        $datagrid = app()->make('\Mkny\Cinimod\Logic\CRUDLogic')->datagrid(is_object($rows) ? $rows->items():$rows, $modelconfig, ($this->model ? $this->model->primaryKey:null ), $controller);
 
         // Monta os dados para exibicao
         return view('cinimod::admin.default.list')->with(array(
