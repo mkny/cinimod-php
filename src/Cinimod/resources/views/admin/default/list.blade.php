@@ -44,7 +44,7 @@
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-md-1">Total ({{ $grid['total'] }})</div>
+						<div class="col-md-1">Total ({{ $info['total'] }})</div>
 						<div class="col-md-2">
 							<div class="row">
 								<div class="col-md-2">
@@ -65,7 +65,7 @@
 						<div class="col-md-5 col-md-offset-4">
 							<div class="text-right">
 								<!-- pagination pagination-sm -->
-								{{ $grid['links'] }}
+								{{ $info['links'] }}
 								
 							</div>
 						</div>

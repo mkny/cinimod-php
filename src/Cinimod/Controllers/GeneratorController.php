@@ -220,6 +220,16 @@ class GeneratorController extends Controller
         // Field types
         $f_types = array_unique(array_values($this->logic->_getFieldTypes()));
 
+        // Se o diretorio nao existir
+        if (!realpath(dirname($cfg_file))) {
+          $this->files->makeDirectory(dirname($cfg_file));
+        }
+
+        // Config file data
+        if(!$this->files->exists($cfg_file)){
+          $this->files->put($cfg_file, '<?php return array();');
+        }
+
         // Config file data
         $config_str = $this->files->getRequire($cfg_file);
         
@@ -376,7 +386,7 @@ class GeneratorController extends Controller
       \Mkny\Cinimod\Logic\UtilLogic::updateConfigFile($cfg_file, $req_fields);
       
       // Volta para a tela de selecao
-      return redirect()->route('adm::trans')->with(array(
+      return redirect()->route('adm::trans', [$lang, $module])->with(array(
         'status' => 'success',
         'message' => 'Arquivo atualizado!'
         ));
@@ -405,14 +415,14 @@ class GeneratorController extends Controller
         // Se o diretorio nao existir
         if (!realpath(dirname($cfg_file))) {
           $this->files->makeDirectory(dirname($cfg_file));
-          // echo dirname($cfg_file);exit;
         }
 
         // Config file data
         if(!$this->files->exists($cfg_file)){
-
           $this->files->put($cfg_file, '<?php return array();');
         }
+
+        // Arquivo aberto
         $config_str = $this->files->getRequire($cfg_file);
 
         // echo '<pre>';
@@ -455,7 +465,7 @@ class GeneratorController extends Controller
               'type' => 'string',
               );
           }
-          
+
         }
         // mdd($arrFields);
         
