@@ -165,13 +165,25 @@ abstract class CRUDController extends Controller
     */
     protected function create()
     {
+        $form_config = $this->model->_getFormConfig();
 
-        return view('cinimod::admin.default.add')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic')->getForm(
+        $a = app()->make('\Mkny\Cinimod\Logic\FormLogic', [$form_config])->getForm(
             false,
             action($this->_getController().'@postAdd'),
             $this->model->_getConfig('form_add'),
             $this->_getControllerName()
-            )]);
+            );
+
+        // $a->setClass('form-horizontal col-md-12');
+        // $a->setModel($this
+        // ->model
+        // ->findOrFail(56, $this->model->getFillable()));
+        // $a;
+        // mdd('hwg');
+
+        // return view('cinimod::admin.default.add')->with(['form' => 'helloworld']);
+
+        return view('cinimod::admin.default.add')->with(['form' => $a]);
     }
 
     /**

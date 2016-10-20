@@ -120,13 +120,25 @@ class BaseMknyModel extends Model
     }
 
     /**
-     * Retorna o filtro padrao (definido no arquivo de configuracao)
+     * Retorna as configuracoes do formulario
+     * 
+     * @return array
+     */
+    public function _getFormConfig()
+    {
+        return Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['form'];
+    }
+
+    /**
+     * Retorna as configuracoes do datagrid
+     * //Retorna o filtro padrao (definido no arquivo de configuracao)
      * 
      * @return array Filtros where em 'raw' ja tratado
      */
     protected function _getDefaultFilter()
     {
         $filters = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['grid']['pre-filter'];
+        
         foreach ($filters as $kfilter => $filter) {
             // Tratamento para parametros de where
             $matches = array();

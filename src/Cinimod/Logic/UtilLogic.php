@@ -81,9 +81,8 @@ class UtilLogic {
         }
 
         // Resultado gerado
-        $new_config_str = array_replace_recursive($config_str, $config_new);
+        $new_config_str = array_replace_recursive($config_str['fields'], $config_new);
 
-        
         // Tratamento do true / false
         foreach ($new_config_str as $key => $value) {
 
@@ -106,13 +105,11 @@ class UtilLogic {
             }
         }
 
-        // dd($config_str);
-
+        $config_str['fields'] = $new_config_str;
+        
         // Monta a string corretamente para gravar
-        $string = '<?php return '.var_export($new_config_str,true).';';
-        // echo '<pre>';
-        // print_r($file);
-        // exit;
+        $string = '<?php return '.var_export($config_str,true).';';
+
         // Grava no arquivo
         return \File::put($file, $string);
     }

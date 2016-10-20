@@ -231,7 +231,7 @@ class GeneratorController extends Controller
         }
 
         // Config file data
-        $config_str = $this->files->getRequire($cfg_file);
+        $config_str = $this->files->getRequire($cfg_file)['fields'];
         
         // Pula o primeiro indice
         // array_shift($config_str);
@@ -245,6 +245,7 @@ class GeneratorController extends Controller
           $config_str[$key]['form_edit'] = isset($value['form_edit']) ? $value['form_edit']:true;
           $config_str[$key]['grid'] = isset($value['grid']) ? $value['grid']:true;
           $config_str[$key]['relationship'] = isset($value['relationship']) ? $value['relationship']:false;
+          $config_str[$key]['required'] = isset($value['required']) ? $value['required']:false;
           $config_str[$key]['searchable'] = isset($value['searchable']) ? $value['searchable']:false;
           $config_str[$key]['order'] = isset($value['order']) ? $value['order']:$valOrder++;
 
@@ -470,15 +471,23 @@ class GeneratorController extends Controller
         // mdd($arrFields);
         
 
-        $form = new \Mkny\Cinimod\Logic\FormLogic();
-        $d = $form->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
+        // $form = new \Mkny\Cinimod\Logic\FormLogic();
+        // $d = $form->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
 
         // $cl = new \Mkny\Cinimod\Logic\CRUDLogic();
         // $d = $cl->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
 
 
 
-        return view('cinimod::admin.generator.trans_detailed')->with(['form' => $d]);
+        return view('cinimod::admin.generator.trans_detailed')->with([
+          'form' => app()->make('\Mkny\Cinimod\Logic\FormLogic', [['fields-default-class' => 'form-control']])->getForm(
+            false,
+            route('adm::trans',[$lang, $controller]),
+            $arrFields,
+            $controller
+
+            )
+          ]);
         // echo '<pre>';
         // print_r($config_str);
         // exit;

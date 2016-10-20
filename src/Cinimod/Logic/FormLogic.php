@@ -3,8 +3,10 @@
 namespace Mkny\Cinimod\Logic;
 
 // $form = new Form($Model, false, array(), $controller);
+use Illuminate\Database\Eloquent\Model AS Model;
 
 
+// 'fields-default-class'
 
 class FormLogic
 {
@@ -25,11 +27,17 @@ class FormLogic
 	 * @var [type]
 	 */
 	private $Module;
-	
-	function __construct()
+
+	private $form_configurations = [];
+
+	public function __construct($form_config=false)
 	{
+		if($form_config){
+			$this->form_configurations = $form_config;
+		}
 		
 	}
+
 
 	public function isEdit()
 	{
@@ -51,10 +59,10 @@ class FormLogic
 		if($Model){
 			$this->Model = $Model;
             // Abre o form com os campos preenchidos 
-			$data[] = \Form::model($Model, array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
+			$data['head'] = \Form::model($Model, array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
 		} else {
             // Abre o form padrao
-			$data[] = \Form::open(array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
+			$data['head'] = \Form::open(array('url' => $Action, 'class' => 'form-horizontal col-md-12'));
 		}
 		
 		// $data = [];
@@ -75,43 +83,64 @@ class FormLogic
 			// Monta o field
 			$field = $this->input($field_config);
 
+			// mdd([$label, $field]);
+
 
             // Formata o label
-			$label_format = \Html::tag('div', $label->toHtml(), ['class' => 'col-md-3']);
+			// $label_format = \Html::tag('div', $label->toHtml(), ['class' => 'col-md-3']);
 
             // Formata o field
-			$field_format = \Html::tag('div', $field->toHtml(), ['class' => 'col-md-9']);
+			// $field_format = \Html::tag('div', $field->toHtml(), ['class' => 'col-md-9']);
 
             // Adiciona os items no elemento principal
-			$data[] = \Html::tag('div', $label_format.$field_format, ['class' => 'form-group col-md-12']);
+			// $data[$field_name] = \Html::tag('div', $label_format.$field_format, ['class' => 'form-group col-md-12']);
+			$data['fields'][$field_name]['label'] = $label;
+			$data['fields'][$field_name]['field'] = $field;
+			// mdd($data[$field_name]);
 		}
 
         // Botao de enviar
-		$data[] = \Form::submit(trans($this->Module.'.button_save'), ['class'=> 'btn btn-success']);
+		$data['submit'] = \Form::submit(trans($this->Module.'.button_save'), ['class'=> 'btn btn-success']);
 
         // Fecha o form
-		$data[] = \Form::close();
+		$data['foot'] = \Form::close();
 
+		// mdd($data);
+		
 		return $data;
 
 	}
 
+
 	public function input($config)
 	{
-		$config['attributes'] = isset($config['attributes']) && !empty($config['attributes']) ? $config['attributes']:array();
+		// Atributos fornecidos para o input
+		$config['attributes'] = isset($config['attributes']) && is_array($config['attributes']) ? $config['attributes']:array();
+		$config['attributes']['class'] = isset($config['attributes']['class']) ? $config['attributes']['class']:'';
+
+		// Verifica a existencia do atributo "data-", o que precisa de um tratemento
 		if(isset($config['attributes']['data']) && is_array($config['attributes']['data'])){
-			$dd = array();
-			foreach ($config['attributes']['data'] as $key => $value) {
-				$dd['data-'.$key] = $value;
-			}
+			// Percorre o array com o atributo data
+			$keys_format = array_map(function($key){
+				// Adiciona por referencia o "data-"
+				return 'data-'.$key;
+			},array_keys($config['attributes']['data']));
+
+			// Faz a combinacao com os valores, merge com o attributes e sobreescreve o mesmo
+			$config['attributes'] = array_merge($config['attributes'],array_combine($keys_format,$config['attributes']['data']));
+
+			// Remove o attributes.data do elemento
 			unset($config['attributes']['data']);
-			$config['attributes'] = array_merge($config['attributes'], $dd);
 		}
 
 		// Trata as classes como array, pra facilitar
-		if(isset($config['attributes']['class'])){
-			$config['attributes']['class'] = is_array($config['attributes']['class']) ? $config['attributes']['class']:[$config['attributes']['class']];
+		$config['attributes']['class'] = is_array($config['attributes']['class']) ? $config['attributes']['class']:[$config['attributes']['class']];
+		
+
+		if(isset($this->form_configurations['fields-default-class'])){
+			$config['attributes']['class'][] = $this->form_configurations['fields-default-class'];
 		}
+
 
 		// Regra para desabilitar o campo, quando em modo de edicao
 		if(isset($config['attributes']['disabled_edit']) && $config['attributes']['disabled_edit'] && $this->isEdit()){
@@ -206,8 +235,6 @@ class FormLogic
 		// Variavel atributos do objeto
 		$attributes = $config['attributes'];
 
-		$attributes['class'][] = 'form-control';
-
 		// Setta o place holder
 		$attributes['placeholder'] = ($config['name']) ? :trans($this->Module.".{$config['name']}.form");
 		// mdd($config);
@@ -226,14 +253,9 @@ class FormLogic
 
 	public function select($config)
 	{
-
-
-        // Helper classname
+		// Helper classname
 		$attributes = $config['attributes'];
-		// $options['class'] = (isset($config['attributes']['class']) && is_array($config['attributes']['class'])) ? $config['attributes']['class']:[];
-		$attributes['class'][] = 'form-control';
-
-
+		
         // No select, adiciona o primeiro indice um campo vazio, solicitando alteracao
 		$arrDataSelect = ['' => '- Selecione -'];
 
