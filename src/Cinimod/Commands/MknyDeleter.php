@@ -47,8 +47,7 @@ class MknyDeleter extends Command
     public function handle()
     {
         $c = strtolower($this->argument('controller'));
-        // exit($c);
-
+        
         $files = [];
 
         $files[] = mkny_models_path($c).'.php';

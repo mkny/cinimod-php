@@ -176,7 +176,8 @@ class MknyModelconfig extends GeneratorCommand
                 'go_to_form_edit' => $indice === 0 ? 'false':'true',
                 'is_required' => $row->is_null == 'NO' ? 'true':'false',
                 'var_relationship' => 'false',
-                'var_values' => 'false'
+                'var_values' => 'false',
+                'num_ordem' => $indice,
                 );
 
             // Trampa nos values pre-definidos

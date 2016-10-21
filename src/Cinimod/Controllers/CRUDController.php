@@ -46,7 +46,7 @@ abstract class CRUDController extends Controller
     * @param  string $card   Cardinalidade do campo de ordenacao
     * @return object
     */
-    public function _datasource($fields, $order, $card, $limit, $offset=false)
+    protected function _datasource($fields, $order, $card, $limit, $offset=false)
     {
         $rows = $this
         ->model
@@ -138,7 +138,7 @@ abstract class CRUDController extends Controller
      * 
      * @return array
      */
-    public function _getFields()
+    protected function _getFields()
     {
         return $this->model->_getConfig('datagrid');
     }
@@ -150,8 +150,6 @@ abstract class CRUDController extends Controller
 
         // Monta o datagrid
         $grid = $this->datagrid($modelconfig, $this->model, null );
-
-        // mdd($grid);
 
         // Monta os dados para exibicao
         return view('cinimod::admin.default.list')->with($grid);
@@ -199,7 +197,7 @@ abstract class CRUDController extends Controller
         ->findOrFail($id, $this->model->getFillable());
 
         ;
-        return view('cinimod::admin.default.edit')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic')->getForm($M,
+        return view('cinimod::admin.default.edit')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic',[$this->model->_getFormConfig()])->getForm($M,
             action($this->_getController().'@postEdit', [$id]),
             $this->model->_getConfig('form_edit'),
             $this->_getControllerName())]);

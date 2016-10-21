@@ -1,6 +1,12 @@
 <?php
 
 return array(
+	// Parametros de configuracao do formulario
+	'form' => array(
+		// Classe pre-definida para todos os campos
+		'fields-default-class' => 'form-control',
+		),
+
 	// Parametros de configuracao da exibicao da grid
 	'grid' => array(
 		// Pre filtragem na grid
