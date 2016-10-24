@@ -58,66 +58,66 @@ class BaseMknyModel extends Model
 
     }
 
-    /**
-     * Funcao para buscar a configuracao do [Model], baseado na area que ele esteja sendo chamado
-     * 
-     * @param string $type
-     * @return array
-     */
-    public function _getConfig($type='all'){
-        $config = [];
+    // /**
+    //  * Funcao para buscar a configuracao do [Model], baseado na area que ele esteja sendo chamado
+    //  * 
+    //  * @param string $type
+    //  * @return array
+    //  */
+    // public function _getConfig($type='all'){
+    //     $config = [];
 
 
-        $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['fields'];
+    //     $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['fields'];
         
-        switch ($type) {
-            case 'datagrid':
-            $config = array_filter($cfg, function($var){
-                return isset($var['grid']) && $var['grid'] == 1;
-            });
-            break;
-            case 'form_add':
-            $config = array_filter($cfg, function($var){
-                return isset($var['form_add']) && $var['form_add'] == 1;
-            });
-            break;
-            case 'form_edit':
-            $config = array_filter($cfg, function($var){
-                return isset($var['form_edit']) && $var['form_edit'] == 1;
-            });
-            break;
-            case 'search':
-            $config = array_filter($cfg, function($var){
-                return isset($var['searchable']) && $var['searchable'] == 1;
-            });
-            break;
-            case 'all':
-            default:
-            $config = $cfg;
-            break;
-        }
+    //     switch ($type) {
+    //         case 'datagrid':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['grid']) && $var['grid'] == 1;
+    //         });
+    //         break;
+    //         case 'form_add':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['form_add']) && $var['form_add'] == 1;
+    //         });
+    //         break;
+    //         case 'form_edit':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['form_edit']) && $var['form_edit'] == 1;
+    //         });
+    //         break;
+    //         case 'search':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['searchable']) && $var['searchable'] == 1;
+    //         });
+    //         break;
+    //         case 'all':
+    //         default:
+    //         $config = $cfg;
+    //         break;
+    //     }
 
-        if (isset(array_values($config)[1]['order'])) {
-            usort(($config), function($dt, $db){
-                if(!isset($db['order'])){
-                    $db['order'] = 0;
-                }
-                if(isset($dt['order'])){
-                    return $dt['order'] - $db['order'];
-                } else {
-                    return 0;
-                }
-            });
+    //     if (isset(array_values($config)[1]['order'])) {
+    //         usort(($config), function($dt, $db){
+    //             if(!isset($db['order'])){
+    //                 $db['order'] = 0;
+    //             }
+    //             if(isset($dt['order'])){
+    //                 return $dt['order'] - $db['order'];
+    //             } else {
+    //                 return 0;
+    //             }
+    //         });
 
-            $newConfig = [];
-            foreach ($config as $sortfix) {
-                $newConfig[$sortfix['name']] = $sortfix;
-            }
-            $config = $newConfig;
-        }
+    //         $newConfig = [];
+    //         foreach ($config as $sortfix) {
+    //             $newConfig[$sortfix['name']] = $sortfix;
+    //         }
+    //         $config = $newConfig;
+    //     }
 
-        return $config;
-    }
+    //     return $config;
+    // }
 
     /**
      * Retorna as configuracoes do formulario

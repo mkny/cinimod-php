@@ -13,6 +13,11 @@ use Mkny\Cinimod\Controllers\CRUDController;
 
 // Route::controller('routeToDummyClassController', 'DummyClassController');
 class DummyClassController extends CRUDController  {
+	/**
+	 * URL do WS, caso esteja sendo utilizado (ainda em testes, utilizado atualmente apenas para variavel da classe)
+	 * @var string
+	 */
+	// protected $rest_ws_url = 'http://jsonplaceholder.typicode.com/users';
 
 	/**
 	 * Armazena o nome dos relatorios. Ainda nao funciona.
@@ -95,61 +100,62 @@ class DummyClassController extends CRUDController  {
 
 
 /**
+ * Gerando um método totalmente independente, com acesso a WS
  *
- *
-	// to father
-	protected $rest_ws_url = 'http://jsonplaceholder.typicode.com/todos';
 
- public function _ds($fields, $order, $card, $limit, $offset=false)
+
+	public function _ds($fields, $order, $card, $limit, $offset=false)
 	{
+		// Um array
 		$dataset = json_decode(file_get_contents('http://jsonplaceholder.typicode.com/posts'),true);
-		// mdd($dataset);
+
+		// Ordenacao
+		$dataset = array_sort($dataset, function ($value) use ($order) {
+			return $value[$order];
+		});
+
+		// Cardinalidade
+		if($card == 'desc'){
+			$dataset = array_reverse($dataset);
+		}
+
+		// Retorna o metodo datagridFromArray, passando informacoes para o limit e offset
 		return app()->make('\Mkny\Cinimod\Logic\DatagridLogic')->datagridFromArray($dataset,$limit, $offset);
 	}
-    protected function _getFields2(){
-    	$a = array_keys(json_decode(file_get_contents('http://jsonplaceholder.typicode.com/posts'),true)[0]);
-    	$a = array_combine($a,$a);
-    	$a['id'] = array(
-    		'name' => 'id'
-    		);
-    	// mdd($a);
-    	unset($a['address']);
-    	unset($a['userId']);
-    	return $a;
-    }
 
-
-	public function getIndex2()
+	
+	public function getA2()
 	{
-		
-        // Pega as configuracoes de campos para a datagrid
-        $modelconfig = $this->_getFields2();
+		// Montagem do MConfig manual
+		$fields = array (
+			// Remove itens desnecessarios
+			// 'userId' => 'userId', 
+			'id' => array ( 
+				'name' => 'id', 
+				'trans' => '#',
+				'searchable' => true,
+				'type' => 'primaryKey',
+				),
+			'title' => array(
+				'name' => 'title',
+				'trans' => 'Título',
+				'searchable' => true,
+
+				),
+			'body' => array(
+				'name' => 'body',
+				'trans' => 'Corpo',
+				'searchable' => true,
+				),
+			);
 
         // Monta o datagrid
-        $grid = $this->datagrid($modelconfig, $this->model, '_ds' );
-
+		$grid = $this->_datagrid($fields, null, '_ds');
+		
         // Monta os dados para exibicao
-        return view('cinimod::admin.default.list')->with($grid);
+		return view('cinimod::admin.default.list')->with($grid);
 	}
-
-
-	// to father
-	protected function _datasource($fields, $order, $card, $limit, $offset=false){
-		$dataset = json_decode(file_get_contents($this->rest_ws_url),true);
-		// mdd($dataset);
-		return app()->make('\Mkny\Cinimod\Logic\DatagridLogic')->datagridFromArray($dataset,$limit, $offset);
-	}
-    protected function _getFields(){
-    	$a = array_keys(json_decode(file_get_contents($this->rest_ws_url),true)[0]);
-    	$a = array_combine($a,$a);
-    	$a['id'] = array(
-    		'name' => 'id'
-    		);
-    	// mdd($a);
-    	unset($a['address']);
-    	unset($a['userId']);
-    	return $a;
-    }
+ *
  *
  * 
  */

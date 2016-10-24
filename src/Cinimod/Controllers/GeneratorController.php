@@ -227,7 +227,13 @@ class GeneratorController extends Controller
 
         // Config file data
         if(!$this->files->exists($cfg_file)){
-          $this->files->put($cfg_file, '<?php return array();');
+          $stub = $this->files->get(__DIR__.'/../Commands/stubs/model_config.stub');
+
+          \Mkny\Cinimod\Logic\UtilLogic::translateStub(array(
+            'var_fields_data' => ''
+            ), $stub);
+          
+          $this->files->put($cfg_file, $stub);
         }
 
         // Config file data
@@ -238,8 +244,12 @@ class GeneratorController extends Controller
         $valOrder=1;
         // Fornece o tipo "types" para todos os campos, para selecao
         foreach ($config_str as $key => $value) {
+          if(!is_array($config_str[$key])){
+            $config_str[$key] = array();
+          }
 
           $config_str[$key]['name'] = $key;
+
           $config_str[$key]['type'] = isset($value['type']) ? $value['type']:'string';
           $config_str[$key]['form_add'] = isset($value['form_add']) ? $value['form_add']:true;
           $config_str[$key]['form_edit'] = isset($value['form_edit']) ? $value['form_edit']:true;
@@ -420,15 +430,12 @@ class GeneratorController extends Controller
 
         // Config file data
         if(!$this->files->exists($cfg_file)){
-          $this->files->put($cfg_file, '<?php return array();');
+          $this->files->put($cfg_file, "<?php return array( 'teste' => 'teste' );");
         }
 
         // Arquivo aberto
         $config_str = $this->files->getRequire($cfg_file);
 
-        // echo '<pre>';
-        // print_r($config_str);
-        // exit;
 
         $arrFields = array();
         foreach ($config_str as $field_name => $field_value) {
@@ -468,8 +475,7 @@ class GeneratorController extends Controller
           }
 
         }
-        // mdd($arrFields);
-        
+
 
         // $form = new \Mkny\Cinimod\Logic\FormLogic();
         // $d = $form->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
@@ -477,6 +483,7 @@ class GeneratorController extends Controller
         // $cl = new \Mkny\Cinimod\Logic\CRUDLogic();
         // $d = $cl->getForm(false,route('adm::trans', [$lang, $controller]),$arrFields, $controller);
 
+        
 
 
         return view('cinimod::admin.generator.trans_detailed')->with([

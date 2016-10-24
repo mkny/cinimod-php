@@ -81,7 +81,8 @@ class UtilLogic {
         }
 
         // Resultado gerado
-        $new_config_str = array_replace_recursive($config_str['fields'], $config_new);
+        $new_config_str = array_replace_recursive(isset($config_str['fields']) ? $config_str['fields']:$config_str, $config_new);
+        // $new_config_str = array_replace_recursive($config_str['fields'], $config_new);
 
         // Tratamento do true / false
         foreach ($new_config_str as $key => $value) {
@@ -105,7 +106,12 @@ class UtilLogic {
             }
         }
 
-        $config_str['fields'] = $new_config_str;
+
+
+        
+        $config_str = isset($config_str['fields']) ? ['fields' => $new_config_str]:$new_config_str;;
+
+
         
         // Monta a string corretamente para gravar
         $string = '<?php return '.var_export($config_str,true).';';
@@ -138,6 +144,71 @@ class UtilLogic {
         $current = $value;
 
         return $backup;
+    }
+
+
+
+    /**
+     * Funcao para buscar a configuracao do [Model], baseado na area que ele esteja sendo chamado
+     * 
+     * @param string $type
+     * @return array
+     */
+    public function _getConfig($model, $type='all'){
+        $config = [];
+
+
+        $cfg = UtilLogic::load(mkny_model_config_path($model).'.php')['fields'];
+        // mdd($cfg);
+        // $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($model)).'.php')['fields'];
+        
+        switch ($type) {
+            case 'datagrid':
+            $config = array_filter($cfg, function($var){
+                return isset($var['grid']) && $var['grid'] == 1;
+            });
+            break;
+            case 'form_add':
+            $config = array_filter($cfg, function($var){
+                return isset($var['form_add']) && $var['form_add'] == 1;
+            });
+            break;
+            case 'form_edit':
+            $config = array_filter($cfg, function($var){
+                return isset($var['form_edit']) && $var['form_edit'] == 1;
+            });
+            break;
+            case 'search':
+            $config = array_filter($cfg, function($var){
+                return isset($var['searchable']) && $var['searchable'] == 1;
+            });
+            break;
+            case 'all':
+            default:
+            $config = $cfg;
+            break;
+        }
+
+        if (isset(array_values($config)[1]['order'])) {
+            usort(($config), function($dt, $db){
+                if(!isset($db['order'])){
+                    $db['order'] = 0;
+                }
+                if(isset($dt['order'])){
+                    return $dt['order'] - $db['order'];
+                } else {
+                    return 0;
+                }
+            });
+            // mdd($config);
+            $newConfig = [];
+            foreach ($config as $sortfix) {
+                $newConfig[$sortfix['name']] = $sortfix;
+            }
+            $config = $newConfig;
+        }
+
+        return $config;
     }
 
 }

@@ -3,6 +3,7 @@
 	// {{var_name}}
 	'{{var_name}}' => array(
 	'name' => '{{var_name}}', // Nome do campo
+	// 'format' => "%1\$s - %2\$s - %3\$s - (%4\$s)" // Utilizado para formatar campos, quando o retorno e um array (na listagem)
 	// 'type_laravel' => '{{var_type}}', // Fieldtype na configuracao
 	'type' => '{{var_type_laravel}}', // Fieldtype no Laravel
 

@@ -178,14 +178,21 @@ class TableLogic
 
 			// Pega cada header (ideal para filtrar os elementos invalidos, ordenar, etc)
 			foreach ($headers as $headerKey => $headerValue) {
-				// echo '<pre>';
-				// print_r($headers);
-				// exit;
 
 				// Tratamento para os botoes montados dinamicamente
-				$colData = (is_array($row[$headerKey]) ? $row[$headerKey]:[$row[$headerKey]]);
-
+				if(!isset($row[$headerKey])){
+					$colData = '-';
+				} else {
+					$colData = (is_array($row[$headerKey])) ? $row[$headerKey]:[$row[$headerKey]];
+				}
+				
 				// Adiciona no elemento principal
+				if(is_string($colData)){
+					// mdd($colData);
+				} else {
+					$colData = $colData;
+					// $colData = json_encode($colData);
+				}
 				$cols[] = \Html::tag('td', $colData);
 			}
 

@@ -21,27 +21,27 @@ class DatagridLogic
      * @param  integer $offset  Valor de offset / paginacao
      * @return \Illuminate\Pagination\LengthAwarePaginator          Dados pra paginacao
      */
-	public function datagridFromArray($dataset, $limit, $offset)
-	{
+    public function datagridFromArray($dataset, $limit, $offset)
+    {
         // Instancia o objeto
-		return (new LengthAwarePaginator(
+      return (new LengthAwarePaginator(
             // 'Fatia' o array
-			array_slice($dataset, $offset, $limit, true),
+         array_slice($dataset, $offset, $limit, true),
 
             // Informa a quantidade de registros
-			count($dataset),
+         count($dataset),
 
             // Faz o limitador
-			$limit,
-			null,
+         $limit,
+         null,
 
             // Monta o caminho pra rota
-			array('path' => \Request::url())
-            
-            // Adiciona na rota, os campos para ter o controle da lista
-			))->appends(\Request::only(['order', 'card', 'perpage']));
+         array('path' => \Request::url())
 
-	}
+            // Adiciona na rota, os campos para ter o controle da lista
+         ))->appends(\Request::only(['order', 'card', 'perpage']));
+
+  }
 
 
 
@@ -82,7 +82,8 @@ class DatagridLogic
             // Se nao for numerico, indica um conteudo customizado
             if(is_numeric($field_key)){
                 // Busca a traducao para o campo
-                $headersTranslated[$field_name] = trans($modelName.'.'.$field_name.'.grid');
+                $headersTranslated[$field_name] = isset($fields_config[$field_name]['trans']) ? $fields_config[$field_name]['trans']:trans($modelName.'.'.$field_name.'.grid');
+
 
                 if(isset($fields_config[$field_name]['type']) && $fields_config[$field_name]['type'] == 'primaryKey'){
                     $pkey = $fields_config[$field_name]['name'];
@@ -116,17 +117,51 @@ class DatagridLogic
         // Monta as linhas
         // Fiz essa alteracao por causa do presenter()
         $dataRows = [];
-
-        // mdd($rows);
+        
         foreach ($rows as $row) {
-
 
             // Monta as colunas
             $dataCols = [];
 
+            // Faz o tratamento campo-a-campo
             foreach ($field_names as $field_name) {
+
+                // Se for um array simples, tratar como informacoes solidas
                 if(is_array($row)){
-                    $dataCols[$field_name] = $row[$field_name];
+
+                    // Verifica se esta sendo passado um retorno-array
+                    if(is_array($row[$field_name])){
+
+                        // Vericica a presenca do indice formatador
+                        if (isset($fields_config[$field_name]['format'])) {
+
+                            // Faz o vsprintf no campo, caso esteja sendo passado um array para a formacao do campo
+                            $dataCols[$field_name] = vsprintf($fields_config[$field_name]['format'], $row[$field_name]);
+                        } else {
+                            // Variavel que guarda os valores, para informar a serem formatados
+                            $data_help = json_encode($row[$field_name]);
+
+                            // Variavel que guarda a sugestao de formatacao pro elemento
+                            $data_help_f = ['name' => $field_name, 'format' => str_repeat('%s ', count($row[$field_name]))];
+
+                            // Joga uma exception pro programador identificar o que pode ser feito no elemento
+                            throw new \Exception("This field need format!\nAdd this to your config call: \"".var_export($data_help_f, true)."\"\nFractal data: \"".$data_help."\"");
+                        }
+                    } else {
+                        // Tenta identificar um valor multiplo definido no form-values (traducao)
+                        
+                            $translation_string = "$modelName.{$field_name}.form_values.{$row[$field_name]}";
+                            $translation_intent = trans($translation_string);
+                            if($translation_string <> $translation_intent){
+                                $row[$field_name] = $translation_intent;
+                            }
+
+                            
+                        
+                        // trans($modelName.'.'.$field_name);
+                        $dataCols[$field_name] = $row[$field_name];
+                    }
+
                 } else {
                     // Tratamento para relacionamentos (para exibir os items dentro da listagem)
                     if (isset($fields_config[$field_name]['relationship']) && $fields_config[$field_name]['relationship']) {

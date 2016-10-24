@@ -62,7 +62,7 @@ abstract class CRUDController extends Controller
         return $rows;
     }
 
-    protected function datagrid($fields, $Model=false, $datasourceAction=false, $recordOnly=false)
+    protected function _datagrid(Array $fields, $Model=null, $datasourceAction=null, $recordOnly=false)
     {
         // Nao sei pq fiz isso, nao tem como sair por enquanto haha
         $field_names = array_keys($fields);
@@ -140,7 +140,9 @@ abstract class CRUDController extends Controller
      */
     protected function _getFields()
     {
-        return $this->model->_getConfig('datagrid');
+
+        return app()->make('\Mkny\Cinimod\Logic\UtilLogic')->_getConfig($this->_getControllerName(), 'datagrid');
+        // return $this->model->_getConfig('datagrid');
     }
 
     protected function index()
@@ -149,7 +151,7 @@ abstract class CRUDController extends Controller
         $modelconfig = $this->_getFields();
 
         // Monta o datagrid
-        $grid = $this->datagrid($modelconfig, $this->model, null );
+        $grid = $this->_datagrid($modelconfig, $this->model, null );
 
         // Monta os dados para exibicao
         return view('cinimod::admin.default.list')->with($grid);
