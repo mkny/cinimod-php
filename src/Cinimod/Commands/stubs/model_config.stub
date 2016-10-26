@@ -9,6 +9,48 @@ return array(
 
 	// Parametros de configuracao da exibicao da grid
 	'grid' => array(
+		// Adiciona botoes na listagem
+		'buttons' => array(
+			// array(
+			// 	'link' => url('search/%s/now'),
+			// 	// 'text' => trans('cidade.cod_cidade.grid'),
+			// 	'attributes' => array(
+			// 		'class' => 'btn btn-danger btn-sm glyphicon glyphicon-ban-circle',
+			// 		'data' => array(
+			// 			'id' => 1000
+			// 			)
+			// 		),
+			// 	),
+			// array(
+			// 	'link' => '/search/%s/now',
+			// 	// 'text' => trans('cidade.cod_cidade.grid'),
+			// 	'attributes' => array(
+			// 		'class' => 'btn btn-info btn-sm glyphicon glyphicon-ban-circle',
+			// 		'data' => array(
+			// 			'id' => 1000
+			// 			)
+			// 		),
+			// 	)
+			),
+
+		// Habilita o botao de adicionar
+		'add' => true,
+
+		// Habilita os check's na grid
+		'checks' => true,
+
+		// Habilita a area de acoes na grid
+		'actions' => true,
+
+		// Habilita a acao de edicao na grid
+		'actions_edit' => true,
+
+		// Habilita a acao de alteracao de status na grid
+		'actions_status_change' => true,
+
+		// Habilita a acao de deletar na grid
+		'actions_delete' => true,
+
 		// Pre filtragem na grid
 		// 
 		/**

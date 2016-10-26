@@ -14,6 +14,9 @@
 	// Form-specific
 	'required' => {{is_required}}, // Boolean para exibir campo pre-requerido
 	// 'default_value' => '', // Valor default pro input
+	// 
+	// 
+	// relationship.controller => 'App\Http\Controllers\XXXXController', (Consegue identificar um controlador dependente para fazer o click-to-edit)
 	'relationship' => {{var_relationship}},
 	'values' => {{var_values}}, // Caso o campo seja select e tenha valores pre-definidos
 	// Array de atributos, para o campo

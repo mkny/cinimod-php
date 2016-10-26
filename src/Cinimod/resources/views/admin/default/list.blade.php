@@ -27,12 +27,14 @@
 
 		<div class="row">
 			<!-- <div class="col-md-12"> -->
+			@if (isset($configuration['add']) && $configuration['add'])
 			<a title="{{ trans($controller.'.button_new') }}" href="{{action($controller.'Controller@getAdd')}}">
 				<button type="button" class="btn btn-primary">
 					<span class="glyphicon glyphicon-file"></span> {{trans($controller.'.button_new')}}
 				</button>
 
 			</a>
+			@endif
 			<!-- </div> -->
 		</div>
 		<form action="?" method="get">

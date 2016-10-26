@@ -114,6 +114,8 @@ class FormLogic
 
 	public function input($config)
 	{
+		// app()->make('\Mkny\Cinimod\Logic\UtilLogic')->makeTag('div', $config['attributes']);
+		// exit;
 		// Atributos fornecidos para o input
 		$config['attributes'] = isset($config['attributes']) && is_array($config['attributes']) ? $config['attributes']:array();
 		$config['attributes']['class'] = isset($config['attributes']['class']) ? $config['attributes']['class']:'';

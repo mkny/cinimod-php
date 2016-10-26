@@ -122,9 +122,12 @@ abstract class CRUDController extends Controller
             return $_datasource->toArray();
         }
 
-        $datagrid = app()->make('\Mkny\Cinimod\Logic\DatagridLogic')->get(is_object($_datasource) ? $_datasource->items():$_datasource, $fields);
+        $datagrid_config = Logic\UtilLogic::load(mkny_model_config_path($this->_getControllerName()).'.php')['grid'];
+        // mdd($datagrid_config);
+        $datagrid = app()->make('\Mkny\Cinimod\Logic\DatagridLogic', [$datagrid_config])->get(is_object($_datasource) ? $_datasource->items():$_datasource, $fields);
 
         return array(
+            'configuration' => $datagrid_config,
             'table' => $datagrid,
             'info' => array(
                 'total' => $_datasource->total(),
@@ -201,7 +204,7 @@ abstract class CRUDController extends Controller
         ;
         return view('cinimod::admin.default.edit')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic',[$this->model->_getFormConfig()])->getForm($M,
             action($this->_getController().'@postEdit', [$id]),
-            $this->model->_getConfig('form_edit'),
+            app()->make('\Mkny\Cinimod\Logic\UtilLogic')->_getConfig($this->_getControllerName(), 'form_edit'),
             $this->_getControllerName())]);
     }
 
@@ -254,6 +257,11 @@ abstract class CRUDController extends Controller
             'status' => 'success',
             'message' => "Register ({$id}) Updated!"
             ));
+        // return redirect()->action($this->_getController()."@getIndex")
+        // ->with(array(
+        //     'status' => 'success',
+        //     'message' => "Register ({$id}) Updated!"
+        //     ));
     }
 
     /**

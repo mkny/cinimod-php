@@ -64,6 +64,9 @@ class BaseMknyModel extends Model
     //  * @param string $type
     //  * @return array
     //  */
+    public function _getConfig($type='all'){
+        throw new \Exception('Rebuild this using UtilLogic!');
+    }
     // public function _getConfig($type='all'){
     //     $config = [];
 
@@ -137,6 +140,7 @@ class BaseMknyModel extends Model
      */
     protected function _getDefaultFilter()
     {
+        // exit('abacate');
         $filters = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['grid']['pre-filter'];
         
         foreach ($filters as $kfilter => $filter) {

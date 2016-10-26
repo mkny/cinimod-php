@@ -162,8 +162,8 @@ class TableLogic
 
 		// Armazena o html do head montado
 		$headObj = [];
-		foreach ($headers as $header){
-			$headObj[] = \Html::tag('th', $header);
+		foreach ($headers as $headerKey_h => $header){
+			$headObj[] = \Html::tag('th', $header, ['data-head' => $headerKey_h]);
 		}
 		// Objeto thead
 		$thead = \Html::tag('thead', [\Html::tag('tr', $headObj)]);
@@ -173,15 +173,16 @@ class TableLogic
 
 		// Armazena o html do body montado
 		$rowsObj = [];
-		foreach ($rows as $row) {
+		foreach ($rows as $keyRow => $row) {
 			$cols = [];
+
 
 			// Pega cada header (ideal para filtrar os elementos invalidos, ordenar, etc)
 			foreach ($headers as $headerKey => $headerValue) {
 
 				// Tratamento para os botoes montados dinamicamente
 				if(!isset($row[$headerKey])){
-					$colData = '-';
+					// $colData = '-';
 				} else {
 					$colData = (is_array($row[$headerKey])) ? $row[$headerKey]:[$row[$headerKey]];
 				}
@@ -193,11 +194,12 @@ class TableLogic
 					$colData = $colData;
 					// $colData = json_encode($colData);
 				}
-				$cols[] = \Html::tag('td', $colData);
+				
+				$cols[] = \Html::tag('td', $colData, ['data-colid' => count($cols), 'data-col' => $headerKey]);
 			}
 
 			// Monta a linha
-			$rowsObj[] = \Html::tag('tr', $cols);
+			$rowsObj[] = \Html::tag('tr', $cols, ['data-rowid' => $keyRow]);
 		}
 
 		// Objeto tbody com as linhas montadas
@@ -216,13 +218,18 @@ class TableLogic
 	 * @param  string $html  Texto interno
 	 * @return \Html        Objeto botao
 	 */
-	public function button($link='javascript:;', $title='', $class='', $html='')
+	public function button_old($link='javascript:;', $title='', $class='', $html='')
 	{
 		return \Html::tag('a', '', [
 			'class' => $class,
 			'href' => $link,
 			'role' => 'button',
 			'title' => $title]);
+	}
+
+	public function button($data)
+	{
+		return app()->make('\Mkny\Cinimod\Logic\UtilLogic')->makeTag('a', $data);
 	}
 }
 
