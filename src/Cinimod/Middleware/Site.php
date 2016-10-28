@@ -12,7 +12,7 @@ class Site
 
     public function __construct()
     {
-        parent::__construct();
+        // parent::__construct();
         Logic\UtilLogic::addViewVar('scripts', ['/js/cinimod.js']);
     }
     /**

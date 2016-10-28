@@ -1,6 +1,6 @@
 <?php
 
-namespace Mkny\Cinimod\Commands;
+namespace Mkny\Cinimod\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;

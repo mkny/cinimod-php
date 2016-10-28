@@ -113,6 +113,8 @@ class TableLogic
 		foreach ($arrData as $data) {
 			$this->insertRow($data);
 		}
+
+		return $this;
 	}
 
 	/**
@@ -141,6 +143,13 @@ class TableLogic
 			// Se o item fornecido, tem um header que nao esta definido, ele ignora
 			if(count($arrHeadersKey) && !in_array($key, $arrHeadersKey)){
 				continue;
+			}
+			
+			if(!$value){
+				$value = '';
+			}
+			if(is_array($value)){
+				// mdd($value);
 			}
 			// Adiciona o item no array
 			$rowFormat[$key] = $value;
