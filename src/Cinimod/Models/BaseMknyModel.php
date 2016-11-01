@@ -22,6 +22,14 @@ class BaseMknyModel extends Model
         $filters = $this->_getDefaultFilter();
 
         $query = parent::newQuery($excludeDeleted = true);
+        // Illuminate\Database\Eloquent\Builder
+        
+        
+        // $query->whereHas('cod_paiss', function($querys){
+        //     mdd(get_class($querys));
+        //     $querys->where('ind_status', '=', 'A');
+        // });
+
         foreach ($filters as $filter) {
             $query->whereRaw($filter);
         }

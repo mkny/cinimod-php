@@ -49,8 +49,7 @@ class MknyModulo extends Command
 
         $this->mknyPresenter($modulo);
         
-
-        $this->mknyController($this->argument('modulo'));
+        $this->mknyController('Admin/'.ucfirst(strtolower($modulo)));
 
         echo 'finished..!';
     }

@@ -48,8 +48,15 @@ abstract class CRUDController extends Controller
     */
     protected function _datasource($fields, $order, $card, $limit, $offset=false)
     {
+        // DB::listen(function($query){
+        //     echo $query->sql."\n\n\n";
+        // });
+
         $rows = $this
         ->model
+        // ->whereHas('cod_paiss', function($query){
+        //     $query->whereRaw("ind_status = 'A'");
+        // })
         ->orderBy($order, $card)
         ->paginate(
             // Qtd de linhas
@@ -203,7 +210,7 @@ abstract class CRUDController extends Controller
 
         ;
         return view('cinimod::admin.default.edit')->with(['form' => app()->make('\Mkny\Cinimod\Logic\FormLogic',[$this->model->_getFormConfig()])->getForm($M,
-            action($this->_getController().'@postEdit', [$id]),
+            action('Admin\\'.$this->_getController().'@postEdit', [$id]),
             app()->make('\Mkny\Cinimod\Logic\UtilLogic')->_getConfig($this->_getControllerName(), 'form_edit'),
             $this->_getControllerName())]);
     }
@@ -252,7 +259,7 @@ abstract class CRUDController extends Controller
 
         $M = $this->model->findOrFail($id);
         $M->update($post);
-        return redirect()->action($this->_getController()."@getIndex")
+        return redirect()->action('Admin\\'.$this->_getController()."@getIndex")
         ->with(array(
             'status' => 'success',
             'message' => "Register ({$id}) Updated!"

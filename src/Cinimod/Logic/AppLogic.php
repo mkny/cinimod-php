@@ -11,6 +11,7 @@ class AppLogic {
 	 * @var array
 	 */
 	private $fieldTypes = [
+	'primaryKey' => 'primaryKey',
 	'select' => 'select',
 	'int' => 'integer',
 	'integer' => 'integer',

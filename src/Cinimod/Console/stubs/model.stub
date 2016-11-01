@@ -8,6 +8,8 @@ use Laracasts\Presenter\PresentableTrait;
 
 class DummyClass extends BaseMknyModel  {
 
+    // protected $with = ['cod_paiss'];
+    // 
 
     /**
      * Implementação das view-presenters.

@@ -302,7 +302,7 @@ class DatagridLogic
                   $dataCols[$field_name] = \Html::tag(
                     'a',
                     $row->{$field_name.'s'}->{$relation['field_show']},
-                    ['href' => action(class_basename($controller_edit_action), [$field_key])]
+                    ['href' => action('Admin\\'.class_basename($controller_edit_action), [$field_key])]
                     );
                 } else {
                   $dataCols[$field_name] = $row->{$field_name.'s'}->{$relation['field_show']};
@@ -338,7 +338,7 @@ class DatagridLogic
                     // Botao de edição
             if($this->hasActionEdit){
               $dataCols['actions'][] = $table->button(array(
-                'link' => action($modelName.'Controller@getEdit', [$dataCols[$pkey]]),
+                'link' => action('Admin\\'.$modelName.'Controller@getEdit', [$dataCols[$pkey]]),
                 'attributes' => [
                 'class' => 'glyphicon glyphicon-edit btn btn-sm btn-success',
                 'title' => trans($modelName.'.button_edit')
@@ -352,7 +352,7 @@ class DatagridLogic
                 $status = substr($dataCols['ind_status'],0,1);
 
                 $dataCols['actions'][] = $table->button(array(
-                  'link' => action($modelName.'Controller@getSwitchStatus', [$dataCols[$pkey]]),
+                  'link' => action('Admin\\'.$modelName.'Controller@getSwitchStatus', [$dataCols[$pkey]]),
                   'attributes' => [
                   'title' => trans($modelName.'.'.($status == 'A' ? 'button_status_disable':'button_status_enable')),
                   'class' => 'glyphicon btn btn-sm '.($status == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info')
@@ -364,7 +364,7 @@ class DatagridLogic
                     // Botão de exclusão
             if($this->hasActionDelete){
               $dataCols['actions'][] = $table->button(array(
-                'link' => action($modelName.'Controller@getDelete', [$dataCols[$pkey]]),
+                'link' => action('Admin\\'.$modelName.'Controller@getDelete', [$dataCols[$pkey]]),
                 'attributes' => [
                 'title' => trans($modelName.'.button_delete'),
                 'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger'

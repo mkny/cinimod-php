@@ -66,10 +66,11 @@ class UtilLogic {
 
 
         $config_new = array_except($data, array('_token'));
+        
         // $config_new = array_only($data, array_merge(array_keys($arrConfigFileData),array('new_fields')));
 
 
-        // mdd($config_new);
+        
         if (isset($config_new['new_fields'])) {
             $nf = $config_new['new_fields'];
 
@@ -86,9 +87,9 @@ class UtilLogic {
 
         // Tratamento do true / false
         foreach ($arrCamposData as $key => $value) {
-
             if(is_array($value)){
                 foreach ($value as $vKey => $vValue) {
+                    
                     if(in_array($vKey, array('order'))){
                         continue;
                     }
@@ -119,7 +120,7 @@ class UtilLogic {
         // mdd($arrCamposData);
         // $arrConfigFileData = isset($arrConfigFileData['fields']) ? ['fields' => $arrCamposData]:$arrCamposData;;
 
-
+        
         
         // Monta a string corretamente para gravar
         $string = '<?php return '.var_export($arrConfigFileData,true).';';

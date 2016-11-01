@@ -56,8 +56,9 @@ class MknyController extends GeneratorCommand
      */
     protected function getNameInput()
     {
+        // echo $this->basepath.ucfirst(($this->argument('controlador')));exit;
 
-        return $this->basepath.ucfirst(strtolower($this->argument('controlador')));
+        return $this->basepath.ucfirst(($this->argument('controlador')));
     }
 
     /**
