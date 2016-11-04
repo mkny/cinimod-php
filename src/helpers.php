@@ -1,5 +1,13 @@
 <?php
 
+if (!function_exists('trataPath')) {
+	function trataPath($path){
+		$ds = DIRECTORY_SEPARATOR;
+		$regex = "/[\/\\\]/";
+
+		return preg_replace($regex, $ds, $path);
+	}
+}
 
 if (!function_exists('mdd')) {
 	function mdd($input){
@@ -11,7 +19,10 @@ if (!function_exists('mdd')) {
 
 if (!function_exists('mkny_path')) {
 	function mkny_path(){
-		return __DIR__;
+		$string = func_get_args();
+
+
+		return trataPath(__DIR__.(isset($string[0])?$string[0]:null));
 	}
 }
 

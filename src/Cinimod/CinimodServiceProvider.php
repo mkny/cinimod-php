@@ -87,7 +87,8 @@ class CinimodServiceProvider extends ServiceProvider
             'namespace' => $this->namespace,
             'middleware' => 'web',
         ], function ($router) {
-            require mkny_path().'\Cinimod\Controllers\routes.php';
+            require mkny_path('\Cinimod\Controllers\routes.php');
+            // require mkny_path('\Cinimod\Controllers\routes.php');
         });
 		
 		
