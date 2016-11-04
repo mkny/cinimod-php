@@ -24,7 +24,7 @@ Route::group([
 	// Route::get('/', function(){
 	// 	return redirect()->route('adm::gen::index');
 	// });
-	Route::any('/', 'DashboardController@anyIndex');
+	Route::any('/', ['as' => 'index', 'uses' => 'DashboardController@anyIndex']);
 	Route::controller('g', 'GeneratorController', [
 		'getIndex' => 'gen::index',
 		'getDeleter' => 'gen::del',

@@ -90,3 +90,10 @@ if(!function_exists('mkny_lang_path')){
 	}
 	
 }
+
+if (!function_exists('jsonp')) {
+	function jsonp($data)
+	{
+		return \Request::input('callback').'('.json_encode($data).');';
+	}
+}

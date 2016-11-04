@@ -3,7 +3,8 @@
 namespace DummyNamespace;
 
 // Eloquent-Model
-use App\Models;
+use App\Models\DummyClass;
+
 // Request
 use App\Http\Requests\DummyClassRequest;
 
@@ -26,36 +27,16 @@ class DummyClassController extends CRUDController  {
 	 */
 	// protected $reports = [];
 
-	/**
-	 * Construtor da classe
-	 * @param Models\DummyClass $m Model para operações com o DB
-	 */
-	public function __construct(Models\DummyClass $m)
+	// Default
+	public function __construct(DummyClass $m)
 	{
 		parent::__construct();
 		$this->model = $m;
 	}
 
-	/**
-	 * Ação principal do controlador
-	 * @return view index
-	 */
+	// Default
 	public function getIndex(){
 		return $this->index();
-	}
-
-	/**
-	 * Retorna a tela para ser feita a edicao
-	 * @param  int $id Id do elemento
-	 * @return \Illuminate\Http\Response
-	 */
-	public function getEdit($id){
-		return $this->edit($id);
-	}
-
-	// Default
-	public function postEdit(DummyClassRequest $r, $id){
-		return $this->update($r,$id);
 	}
 
 	// Default
@@ -69,18 +50,28 @@ class DummyClassController extends CRUDController  {
 	}
 
 	// Default
+	public function getEdit($id){
+		return $this->edit($id);
+	}
+
+	// Default
+	public function postEdit(DummyClassRequest $r, $id){
+		return $this->update($r,$id);
+	}
+
+	// Default
 	public function getDelete($id){
 		return $this->destroy($id);
 	}
 
 	// Default
-	public function getShow($id){
-		return $this->show($id);
+	public function getSwitchStatus($id){
+		return $this->statusChange($id);
 	}
 
 	// Default
-	public function getSwitchStatus($id){
-		return $this->statusChange($id);
+	public function getShow($id){
+		return $this->show($id);
 	}
 }
 
