@@ -22,6 +22,14 @@ class BaseMknyModel extends Model
         $filters = $this->_getDefaultFilter();
 
         $query = parent::newQuery($excludeDeleted = true);
+        // Illuminate\Database\Eloquent\Builder
+        
+        
+        // $query->whereHas('cod_paiss', function($querys){
+        //     mdd(get_class($querys));
+        //     $querys->where('ind_status', '=', 'A');
+        // });
+
         foreach ($filters as $filter) {
             $query->whereRaw($filter);
         }
@@ -58,66 +66,69 @@ class BaseMknyModel extends Model
 
     }
 
-    /**
-     * Funcao para buscar a configuracao do [Model], baseado na area que ele esteja sendo chamado
-     * 
-     * @param string $type
-     * @return array
-     */
+    // /**
+    //  * Funcao para buscar a configuracao do [Model], baseado na area que ele esteja sendo chamado
+    //  * 
+    //  * @param string $type
+    //  * @return array
+    //  */
     public function _getConfig($type='all'){
-        $config = [];
-
-
-        $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['fields'];
-        
-        switch ($type) {
-            case 'datagrid':
-            $config = array_filter($cfg, function($var){
-                return isset($var['grid']) && $var['grid'] == 1;
-            });
-            break;
-            case 'form_add':
-            $config = array_filter($cfg, function($var){
-                return isset($var['form_add']) && $var['form_add'] == 1;
-            });
-            break;
-            case 'form_edit':
-            $config = array_filter($cfg, function($var){
-                return isset($var['form_edit']) && $var['form_edit'] == 1;
-            });
-            break;
-            case 'search':
-            $config = array_filter($cfg, function($var){
-                return isset($var['searchable']) && $var['searchable'] == 1;
-            });
-            break;
-            case 'all':
-            default:
-            $config = $cfg;
-            break;
-        }
-
-        if (isset(array_values($config)[1]['order'])) {
-            usort(($config), function($dt, $db){
-                if(!isset($db['order'])){
-                    $db['order'] = 0;
-                }
-                if(isset($dt['order'])){
-                    return $dt['order'] - $db['order'];
-                } else {
-                    return 0;
-                }
-            });
-
-            $newConfig = [];
-            foreach ($config as $sortfix) {
-                $newConfig[$sortfix['name']] = $sortfix;
-            }
-            $config = $newConfig;
-        }
-
-        return $config;
+        throw new \Exception('Rebuild this using UtilLogic!');
     }
+    // public function _getConfig($type='all'){
+    //     $config = [];
+
+
+    //     $cfg = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['fields'];
+        
+    //     switch ($type) {
+    //         case 'datagrid':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['grid']) && $var['grid'] == 1;
+    //         });
+    //         break;
+    //         case 'form_add':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['form_add']) && $var['form_add'] == 1;
+    //         });
+    //         break;
+    //         case 'form_edit':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['form_edit']) && $var['form_edit'] == 1;
+    //         });
+    //         break;
+    //         case 'search':
+    //         $config = array_filter($cfg, function($var){
+    //             return isset($var['searchable']) && $var['searchable'] == 1;
+    //         });
+    //         break;
+    //         case 'all':
+    //         default:
+    //         $config = $cfg;
+    //         break;
+    //     }
+
+    //     if (isset(array_values($config)[1]['order'])) {
+    //         usort(($config), function($dt, $db){
+    //             if(!isset($db['order'])){
+    //                 $db['order'] = 0;
+    //             }
+    //             if(isset($dt['order'])){
+    //                 return $dt['order'] - $db['order'];
+    //             } else {
+    //                 return 0;
+    //             }
+    //         });
+
+    //         $newConfig = [];
+    //         foreach ($config as $sortfix) {
+    //             $newConfig[$sortfix['name']] = $sortfix;
+    //         }
+    //         $config = $newConfig;
+    //     }
+
+    //     return $config;
+    // }
 
     /**
      * Retorna as configuracoes do formulario
@@ -137,6 +148,7 @@ class BaseMknyModel extends Model
      */
     protected function _getDefaultFilter()
     {
+        // exit('abacate');
         $filters = Logic\UtilLogic::load(mkny_model_config_path(class_basename($this)).'.php')['grid']['pre-filter'];
         
         foreach ($filters as $kfilter => $filter) {

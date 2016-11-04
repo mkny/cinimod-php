@@ -5,7 +5,7 @@ namespace Mkny\Cinimod;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 
-use Mkny\Cinimod\Commands;
+use Mkny\Cinimod\Console;
 
 use Mkny\Cinimod\Logic;
 
@@ -52,9 +52,17 @@ class CinimodServiceProvider extends ServiceProvider
 	}
 	
 	public function register() {
+		$this->app->singleton('front', function ($app) {
+            return new \Mkny\Front\FrontLayer();
+        });
+
 		$this->app->register(\Lavary\Menu\ServiceProvider::class);
 		$this->app->register(\Collective\Html\HtmlServiceProvider::class);
 
+
+        // $this->app->alias('html', 'Collective\Html\HtmlBuilder');
+        // $this->app->alias('form', 'Collective\Html\FormBuilder');
+		AliasLoader::getInstance()->alias('Front', \Mkny\Front\FrontFacade::class);
 		AliasLoader::getInstance()->alias('Form', \Collective\Html\HtmlServiceProvider::class);
 		AliasLoader::getInstance()->alias('Form', \Collective\Html\FormFacade::class);
 		AliasLoader::getInstance()->alias('Html', \Collective\Html\HtmlFacade::class);
@@ -64,14 +72,14 @@ class CinimodServiceProvider extends ServiceProvider
 	private function artisanize(){
 		$this->commands([
         // Commands\Inspire::class,
-			Commands\MknyController::class,
-			Commands\MknyDeleter::class,
-			Commands\MknyModel::class,
-			Commands\MknyModelconfig::class,
-			Commands\MknyModulo::class,
-			Commands\MknyPresenter::class,
-			Commands\MknyRequest::class,
-			Commands\MknyTranslate::class,
+			Console\MknyController::class,
+			Console\MknyDeleter::class,
+			Console\MknyModel::class,
+			Console\MknyModelconfig::class,
+			Console\MknyModulo::class,
+			Console\MknyPresenter::class,
+			Console\MknyRequest::class,
+			Console\MknyTranslate::class,
 			]);
 	}
 

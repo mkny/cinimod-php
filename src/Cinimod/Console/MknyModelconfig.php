@@ -1,6 +1,6 @@
 <?php
 
-namespace Mkny\Cinimod\Commands;
+namespace Mkny\Cinimod\Console;
 
 use Illuminate\Console\GeneratorCommand;
 
@@ -202,7 +202,7 @@ class MknyModelconfig extends GeneratorCommand
                 "'field_fkey' => '{$this->var_config_relations[$row->name]['relation_field_fkey']}',\n\t\t".
                 "'field_show' => '{$this->var_config_relations[$row->name]['relation_field_name']}',\n\t\t".
                 "'where' => false,\n\t\t".
-                "],\n\t";
+                "]\n\t";
 
             }
             // Trampa fim

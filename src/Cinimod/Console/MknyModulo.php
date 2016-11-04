@@ -1,6 +1,6 @@
 <?php
 
-namespace Mkny\Cinimod\Commands;
+namespace Mkny\Cinimod\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -49,8 +49,7 @@ class MknyModulo extends Command
 
         $this->mknyPresenter($modulo);
         
-
-        $this->mknyController($this->argument('modulo'));
+        $this->mknyController('Admin/'.ucfirst(strtolower($modulo)));
 
         echo 'finished..!';
     }

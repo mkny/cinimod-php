@@ -66,7 +66,7 @@ class FormLogic
 		}
 		
 		// $data = [];
-
+		
 		foreach ($FormFields as $field_name => $field_config) {
 			// Monta o label, adicionando um "*" se o campo for requerido
 			// $label = \Form::label($field_config['name'],($this->Module.".{$field_config['name']}.form"));
@@ -114,6 +114,8 @@ class FormLogic
 
 	public function input($config)
 	{
+		// app()->make('\Mkny\Cinimod\Logic\UtilLogic')->makeTag('div', $config['attributes']);
+		// exit;
 		// Atributos fornecidos para o input
 		$config['attributes'] = isset($config['attributes']) && is_array($config['attributes']) ? $config['attributes']:array();
 		$config['attributes']['class'] = isset($config['attributes']['class']) ? $config['attributes']['class']:'';
@@ -139,6 +141,10 @@ class FormLogic
 
 		if(isset($this->form_configurations['fields-default-class'])){
 			$config['attributes']['class'][] = $this->form_configurations['fields-default-class'];
+		}
+
+		if(isset($config['default_value'])){
+			$config['attributes']['value'] = $config['default_value'];
 		}
 
 
@@ -244,8 +250,8 @@ class FormLogic
 		$value = null;
 
 		// Verifica se e edicao, para adicionar o default value
-		if(!$this->isEdit() && isset($config['default_value'])){
-			$value = $config['default_value'];
+		if(!$this->isEdit() && isset($config['attributes']['value'])){
+			$value = $config['attributes']['value'];
 		}
 
 		return \Form::text($config['name'],$value,$attributes);
@@ -302,6 +308,6 @@ class FormLogic
 		}
 
         // Monta o field select
-		return \Form::select($config['name'], $arrDataSelect, null, $attributes);
+		return \Form::select($config['name'], $arrDataSelect, isset($attributes['value']) ? $attributes['value']:null, $attributes);
 	}
 }

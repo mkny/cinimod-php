@@ -125,14 +125,16 @@ class WSClientLogic {
 	 */
 	private function treatRequest($request)
 	{
+
 		// Define um formato vazio
 		$fRequest = '';
 
 		// Preformatacao do request
 		$pre = $request;
 
-		// Tratamento para WS em .NET
-		if(strstr(array_keys((array) $request)[0], 'Result') !== false){
+
+		// Tratamento para WS em .NET && Tratamento Java
+		if((strstr(array_keys((array) $request)[0], 'Result') !== false) || (strstr(array_keys((array) $request)[0], 'Return') !== false)){
 			// Pre-formata o request (tirando o primeiro indice inutil que vem sempre)
 			$pre = array_values((array) $request)[0];
 		}
