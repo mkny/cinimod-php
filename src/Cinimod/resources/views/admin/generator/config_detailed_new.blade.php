@@ -1,6 +1,8 @@
 @extends('cinimod::layout.admin')
 
 @section('conteudo')
+
+
 <h1 class="jumbotron">Model-Generator / Configurator - ({{ $controller or 'Default' }})</h1>
 
 <form class="form-horizontal col-md-12" method="post" action="">
@@ -33,7 +35,7 @@
 		</thead>
 		<tbody>
 			@foreach ($data as $field_config)
-			<tr>
+			<tr class="dragorder">
 				<td>
 					<a href="javascript:;" onclick="var e = $(this).closest('tr');e.prev('tr').before(e);recount();">up</a>
 					<br>
@@ -56,10 +58,10 @@
 							<td>depends</td>
 							<td>
 								{!! Form::text(
-										$field_config['name'].'[relationship][dependsOn]',
-										isset($field_config['relationship']['dependsOn'])?$field_config['relationship']['dependsOn']:null,
-										['class' => 'form-control']
-									)
+								$field_config['name'].'[relationship][dependsOn]',
+								isset($field_config['relationship']['dependsOn'])?$field_config['relationship']['dependsOn']:null,
+								['class' => 'form-control']
+								)
 								!!}
 							</td>
 						</tr>
@@ -67,10 +69,10 @@
 							<td>model</td>
 							<td>
 								{!! Form::text(
-										$field_config['name'].'[relationship][model]',
-										isset($field_config['relationship']['model'])?$field_config['relationship']['model']:null,
-										['class' => 'form-control']
-									)
+								$field_config['name'].'[relationship][model]',
+								isset($field_config['relationship']['model'])?$field_config['relationship']['model']:null,
+								['class' => 'form-control']
+								)
 								!!}
 							</td>
 						</tr>
@@ -78,9 +80,9 @@
 							<td>field_key</td>
 							<td>
 								{!! Form::text(
-									$field_config['name'].'[relationship][field_key]',
-									isset($field_config['relationship']['field_key']) ?$field_config['relationship']['field_key']:null,
-									['class' => 'form-control']
+								$field_config['name'].'[relationship][field_key]',
+								isset($field_config['relationship']['field_key']) ?$field_config['relationship']['field_key']:null,
+								['class' => 'form-control']
 								) !!}
 							</td>
 						</tr>
@@ -117,8 +119,8 @@
 				</td>
 				<td>
 					<div class="checkbox">
-							{!! Form::hidden($field_config['name'].'[form_add]', 0) !!}
-							{!! Form::hidden($field_config['name'].'[form_edit]', 0) !!}
+						{!! Form::hidden($field_config['name'].'[form_add]', 0) !!}
+						{!! Form::hidden($field_config['name'].'[form_edit]', 0) !!}
 						<label>
 							{!! Form::checkbox($field_config['name'].'[form_add]', '1', $field_config['form_add'], ['class' => 'input-select-form']) !!} Enable add
 						</label>
@@ -168,3 +170,5 @@
 	</div>
 </form>
 @stop
+
+

@@ -32,12 +32,19 @@ class UtilLogic {
 
     /**
      * Um Helper pra ajudar a settar variaveis no ambiente, utilizando o Blade
-     * @param string $key Nome da variavel comum
+     * @param string|array $key Nome da variavel comum
      * @param string|mixed $value Valor da variavel
      * @return void
      */
-    static public function addViewVar($key, $value=false)
+    static public function addViewVar($key, $value=false, $debug=false)
     {
+        if(is_array($key)){
+            foreach ($key as $k_key => $v_key) {
+                self::addViewVar($k_key, $v_key);
+            }
+            return;
+        }
+
     	$old = view()->shared($key);
 
     	if(is_array($old) && is_array($value)){
@@ -267,13 +274,13 @@ class UtilLogic {
     	],
     	[
     	'id' => '3',
-    	'linkhref' => 'admin/g/config',
+    	'linkhref' => route('adm::config'),
     	'description' => 'Configurador',
     	'parent_id' => '1',
     	],
     	[
     	'id' => '4',
-    	'linkhref' => 'admin/g/trans',
+    	'linkhref' => route('adm::trans'),
     	'description' => 'Tradutor',
     	'parent_id' => '1',
     	],

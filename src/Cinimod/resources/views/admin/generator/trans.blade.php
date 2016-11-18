@@ -12,7 +12,7 @@
 		<h4>Languages</h4>
 		<ul>
 			@foreach ($langlist as $lang)
-			<li><a href="{{route('adm::trans', [$lang])}}">{{$lang}}</a></li>
+			<li><a href="{{route('adm::trans', ['lang' => $lang])}}">{{$lang}}</a></li>
 			@endforeach
 		</ul>
 	</div>
@@ -23,7 +23,7 @@
 		<ul>
 			@foreach ($langfiles as $langf)
 			<li>
-				<a href="{{route('adm::trans', [$langlist_sel, $langf])}}">{{$langf}}</a>
+				<a href="{{action('\\'.$controller.'@getFile', [$langlist_sel, $langf])}}">{{$langf}}</a>
 			</li>
 			@endforeach
 		</ul>

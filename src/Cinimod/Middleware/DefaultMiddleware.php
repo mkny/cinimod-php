@@ -54,8 +54,9 @@ abstract class DefaultMiddleware
     private function defineAmbient(Request $request)
     {
         // Endpoint da rota
-        $endpoint = explode('@', class_basename($request->route()->getActionName()));
+        $endpoint = explode('@', ($request->route()->getActionName()));
 
+        // mdd($request->route()->getActionName());
 
         // Define a localizacao do esquema
         $data = array();
@@ -65,15 +66,21 @@ abstract class DefaultMiddleware
             $data = array(
                 'module' => $request->route()->getPrefix()?:'site',
                 'controller' => 'SystemController',
-                'action' => 'getClosure'
+                'action' => 'getClosure',
+                'route' => $request->route()->getAction()
                 );
         } else {
             $data = array(
                 'module' => $request->route()->getPrefix()?:'site',
                 'controller' => $endpoint[0],
                 'action' => $endpoint[1],
+                'route' => $request->route()->getAction()
                 );
         }
+
+        
+
+        app()->make('\Mkny\Cinimod\Logic\UtilLogic')->addViewVar($data);
 
         // Setta na classe, para que caso as sub-classes precisem utilizar
         $this->module = $data['module'];

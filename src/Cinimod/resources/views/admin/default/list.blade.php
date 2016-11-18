@@ -9,7 +9,7 @@
 		<!-- <div class="row">
 			<ol class="breadcrumb">
 				<li><a href="{{ route('adm::index') }}">Home</a></li>
-				<li><a href="{{ action('Admin\\'.$controller.'Controller@getIndex') }}">{{ $controller }}</a></li>
+				{-- <li><a href="{{ action('Admin\\'.$controller.'Controller@getIndex') }}">{{ $controller }}</a></li> --}
 				<li>Listagem</li>
 			</ol>
 		</div> -->
@@ -53,7 +53,7 @@
 						<div class="col-md-4">
 							<div class="row">
 								<div class="col-md-2">
-									<label>Search:</label>
+									<label>SmtSearch:</label>
 								</div>
 								<div class="col-md-5">
 									<input type="text" class="form-control admin-list-search" value="{!! isset(\Request::input('filter')['global']) ? \Request::input('filter')['global']:'' !!}" name="filter[global]" />

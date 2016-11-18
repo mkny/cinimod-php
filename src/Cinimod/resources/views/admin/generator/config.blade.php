@@ -12,7 +12,7 @@
 		<ul class="">
 			@foreach ($configs as $config)
 			<li>
-				<a class="" href="{{route('adm::config', [$config])}}">{{$config}}</a>
+				<a class="" href="{{action('\\'.$controller.'@getFile', [$config])}}">{{$config}}</a>
 			</li>
 			@endforeach
 		</ul>

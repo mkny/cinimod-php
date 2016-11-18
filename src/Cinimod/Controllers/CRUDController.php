@@ -140,10 +140,16 @@ abstract class CRUDController extends Controller
         // mdd($datagrid_config);
     	$datagrid = app()->make('\Mkny\Cinimod\Logic\DatagridLogic', [$datagrid_config])->get(is_object($_datasource) ? $_datasource->items():$_datasource, $fields);
 
+        // dd($_datasource);
+        // echo $_datasource->currentPage();
+        // echo $_datasource->currentPage();
+        // exit;
     	return array(
     		'configuration' => $datagrid_config,
     		'table' => $datagrid,
     		'info' => array(
+                // 'page_atual' => $_datasource->currentPage(),
+                // 'page_last' => $_datasource->lastPage(),
     			'total' => $_datasource->total(),
     			'links' => $_datasource->links()
     			)

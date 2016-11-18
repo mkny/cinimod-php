@@ -37,7 +37,7 @@ class MknyController extends GeneratorCommand
      * @var string
      */
     // protected $basepath = 'Controllers/';
-    protected $basepath = 'Http/Controllers/';
+    protected $basepath = 'Http/Controllers/Admin/';
 
     /**
      * Get the stub file for the generator.
@@ -56,8 +56,7 @@ class MknyController extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        // echo $this->basepath.ucfirst(($this->argument('controlador')));exit;
-
+        
         return $this->basepath.ucfirst(($this->argument('controlador')));
     }
 
@@ -69,9 +68,13 @@ class MknyController extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        $name = str_replace($this->laravel->getNamespace(), '', $name).$this->type;
+        // // $name = str_replace($this->laravel->getNamespace(), '', $name).$this->type;
+        return (mkny_controllers_path(class_basename($name).$this->type.'.php'));
         
-        // return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
-        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
+        // mdd(mkny_controllers_path('/'.str_replace('\\', '/', $name).'.php'));
+        // mdd($this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php');
+        
+        // // return mkny_app_path().'/'.str_replace('\\', '/', $name).'.php';
+        // return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 }

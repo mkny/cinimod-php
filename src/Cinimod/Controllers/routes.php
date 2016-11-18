@@ -28,8 +28,11 @@ Route::group([
 	Route::controller('g', 'GeneratorController', [
 		'getIndex' => 'gen::index',
 		'getDeleter' => 'gen::del',
-		'getConfig' => 'config',
-		'getTrans' => 'trans'
+		// 'getConfig' => 'config',
+		// 'getTrans' => 'trans'
 	]);
+
+	Route::controller('trans', 'TranslateController', ['getIndex' => 'trans']);
+	Route::controller('conf', 'ConfigurationController', ['getIndex' => 'config']);
 	// Route::controller('dashboard', 'DashboardController');
 });

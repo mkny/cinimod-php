@@ -355,7 +355,7 @@ class DatagridLogic
   							'link' => action('Admin\\'.$modelName.'Controller@getSwitchStatus', [$dataCols[$pkey]]),
   							'attributes' => [
   							'title' => trans($modelName.'.'.($status == 'A' ? 'button_status_disable':'button_status_enable')),
-  							'class' => 'glyphicon btn btn-sm '.($status == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info')
+  							'class' => 'confirm-before-go glyphicon btn btn-sm '.($status == 'A' ? 'glyphicon-ban-circle btn-warning':'glyphicon-ok btn-info')
   							]
   							));
   					}
@@ -367,7 +367,7 @@ class DatagridLogic
   						'link' => action('Admin\\'.$modelName.'Controller@getDelete', [$dataCols[$pkey]]),
   						'attributes' => [
   						'title' => trans($modelName.'.button_delete'),
-  						'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger'
+  						'class' => 'glyphicon glyphicon-trash btn btn-sm btn-danger confirm-before-go'
   						]
   						));
   				}
